@@ -2,6 +2,8 @@ package camp.woowak.lab.payaccount.domain;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
+import camp.woowak.lab.payaccount.exception.InvalidTransactionAmountException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,4 +19,33 @@ public class PayAccount {
 	@Column(name = "balance", nullable = false)
 	@ColumnDefault("0")
 	private long balance;
+
+	public PayAccount() {
+		this.balance = 0;
+	}
+
+	public long getBalance() {
+		return this.balance;
+	}
+
+	public void withdraw(long amount) {
+		validateTransactionAmount(amount);
+		validateInsufficientBalance(amount);
+		this.balance -= amount;
+	}
+
+	public void deposit(long amount) {
+		validateTransactionAmount(amount);
+		this.balance += amount;
+	}
+
+	private void validateTransactionAmount(long amount) {
+		if (amount <= 0)
+			throw new InvalidTransactionAmountException("Transaction amount must be greater than zero.");
+	}
+
+	private void validateInsufficientBalance(long amount) {
+		if (this.balance - amount < 0)
+			throw new InsufficientBalanceException("Insufficient balance for this transaction.");
+	}
 }
