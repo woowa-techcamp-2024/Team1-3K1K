@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Github Discussion, 회의에서 화제가 된 주제에 대해 제안합니다 [Moderator, Chef]
-title: '[REQ]'
-labels: enhancement
+title: "[기능] "
+labels: ✨ Feature
 assignees: ''
 
 ---
