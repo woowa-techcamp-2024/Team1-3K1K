@@ -67,8 +67,9 @@ public class Vendor {
 		if (password == null || password.isBlank()) {
 			throw new InvalidCreationException("Vendor password cannot be blank");
 		}
-		if (password.trim().length() > 30) {
-			throw new InvalidCreationException("Vendor password cannot be longer than 30 characters");
+		if (password.trim().length() < 8 || password.trim().length() > 30) {
+			throw new InvalidCreationException(
+				"Vendor password must be at least 8 characters and at most 30 characters");
 		}
 	}
 
