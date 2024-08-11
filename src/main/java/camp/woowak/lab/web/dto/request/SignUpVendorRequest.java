@@ -10,7 +10,7 @@ public record SignUpVendorRequest(
 	String name,
 	@Email
 	String email,
-	@Length(min = 1, max = 30)
+	@Length(min = 8, max = 30)
 	String password,
 	@Phone
 	String phone
