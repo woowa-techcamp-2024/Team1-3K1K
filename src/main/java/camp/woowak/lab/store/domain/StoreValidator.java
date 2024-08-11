@@ -20,6 +20,7 @@ public class StoreValidator {
 		validateAddress(address);
 		validateMinOrderPrice(minOrderPrice);
 		validateUnitOrderPrice(minOrderPrice);
+		validateTime(startTime, endTime);
 	}
 
 	private static void validateName(final String name) {
@@ -47,6 +48,30 @@ public class StoreValidator {
 		if (minOrderPrice % UNIT_OF_MIN_ORDER_PRICE != 0) {
 			throw new StoreException("최소 주문 금액은 1,000원 단위이어야 합니다.");
 		}
+	}
+
+	private static void validateTime(final LocalDateTime startTime,
+									 final LocalDateTime endTime
+	) {
+		if (isInvalidStoreTimeUnit(startTime)) {
+			throw new StoreException("가게 시작 시간은 분 단위까지 가능합니다");
+		}
+
+		if (isInvalidStoreTimeUnit(endTime)) {
+			throw new StoreException("가게 종료 시간은 분 단위까지 가능합니다");
+		}
+
+		if (endTime.isBefore(startTime)) {
+			throw new StoreException("가게 시작 시간은 종료 시간보다 이전이어야 합니다");
+		}
+
+		if (startTime.isEqual(endTime)) {
+			throw new StoreException("가게 시작 시간과 종료 시간이 일치합니다");
+		}
+	}
+
+	private static boolean isInvalidStoreTimeUnit(final LocalDateTime target) {
+		return target.getSecond() != 0 || target.getNano() != 0;
 	}
 
 }
