@@ -11,6 +11,7 @@ import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import jakarta.transaction.Transactional;
 
 @Service
 public class SignUpCustomerService {
@@ -25,6 +26,7 @@ public class SignUpCustomerService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	@Transactional
 	public Long signUp(SignUpCustomerCommand cmd) throws InvalidCreationException, DuplicateEmailException {
 		PayAccount payAccount = new PayAccount();
 		payAccountRepository.save(payAccount);
