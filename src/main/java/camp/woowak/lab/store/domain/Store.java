@@ -38,7 +38,7 @@ public class Store {
 	// TODO: 위치 정보에 대한 요구사항 논의 후 수정 예정.
 	//  i.g) 송파구로 특정, 도시 정보로 특정 등 요구사항이 정의되어야 엔티티 설계를 진행할 수 있음
 	@Embedded
-	private Address address;
+	private StoreAddress storeAddress;
 
 	@Column(nullable = false)
 	private String phoneNumber;
@@ -56,7 +56,7 @@ public class Store {
 		this.owner = owner;
 		this.storeCategory = storeCategory;
 		this.name = name;
-		this.address = new Address(address);
+		this.storeAddress = new StoreAddress(address);
 		this.phoneNumber = phoneNumber;
 		this.minOrderPrice = minOrderPrice;
 		this.storeTime = new StoreTime(startTime, endTime);

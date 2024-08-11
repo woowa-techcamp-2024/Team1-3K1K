@@ -32,7 +32,7 @@ public class StoreValidator {
 
 	// TODO: 가게 위치 비즈니스 요구사항 구체화하면, 주소 검증 로직 수정 예정
 	private static void validateAddress(final String address) {
-		if (Address.DEFAULT_DISTRICT.equals(address)) {
+		if (StoreAddress.DEFAULT_DISTRICT.equals(address)) {
 			return;
 		}
 		throw new StoreException("가게 주소는 송파구만 가능합니다.");
