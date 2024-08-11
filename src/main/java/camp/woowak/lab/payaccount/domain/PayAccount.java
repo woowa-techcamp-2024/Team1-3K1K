@@ -24,6 +24,10 @@ public class PayAccount {
 		this.balance = 0;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	public long getBalance() {
 		return this.balance;
 	}
