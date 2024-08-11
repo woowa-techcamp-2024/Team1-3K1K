@@ -40,10 +40,12 @@ class PayAccountTest {
 			long amount = 1000;
 
 			// when
-			payAccount.deposit(amount);
+			PayAccountHistory depositHistory = payAccount.deposit(amount);
 
 			// then
 			assertThat(payAccount.getBalance()).isEqualTo(amount);
+			assertThat(depositHistory.getAmount()).isEqualTo(amount);
+			assertThat(depositHistory.getType()).isEqualTo(AccountTransactionType.DEPOSIT);
 		}
 
 		@Test
@@ -88,10 +90,12 @@ class PayAccountTest {
 			long withdrawAmount = 100;
 
 			// when
-			payAccount.withdraw(withdrawAmount);
+			PayAccountHistory withdrawHistory = payAccount.withdraw(withdrawAmount);
 
 			// then
 			assertThat(payAccount.getBalance()).isEqualTo(originBalance - withdrawAmount);
+			assertThat(withdrawHistory.getAmount()).isEqualTo(withdrawAmount);
+			assertThat(withdrawHistory.getType()).isEqualTo(AccountTransactionType.WITHDRAW);
 		}
 
 		@Test
