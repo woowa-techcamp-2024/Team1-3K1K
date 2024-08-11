@@ -18,6 +18,8 @@ public class StoreValidator {
 	) {
 		validateName(name);
 		validateAddress(address);
+		validateMinOrderPrice(minOrderPrice);
+		validateUnitOrderPrice(minOrderPrice);
 	}
 
 	private static void validateName(final String name) {
@@ -33,6 +35,18 @@ public class StoreValidator {
 			return;
 		}
 		throw new StoreException("가게 주소는 송파구만 가능합니다.");
+	}
+
+	private static void validateMinOrderPrice(final Integer minOrderPrice) {
+		if (minOrderPrice < MIN_ORDER_PRICE) {
+			throw new StoreException("최소 주문 금액은 5,000원 이상이어야 합니다.");
+		}
+	}
+
+	private static void validateUnitOrderPrice(final Integer minOrderPrice) {
+		if (minOrderPrice % UNIT_OF_MIN_ORDER_PRICE != 0) {
+			throw new StoreException("최소 주문 금액은 1,000원 단위이어야 합니다.");
+		}
 	}
 
 }
