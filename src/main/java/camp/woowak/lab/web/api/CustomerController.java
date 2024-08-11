@@ -12,6 +12,7 @@ import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.web.dto.request.SignUpCustomerRequest;
 import camp.woowak.lab.web.dto.response.ApiResponse;
 import camp.woowak.lab.web.error.ErrorCode;
+import jakarta.validation.Valid;
 
 @RestController
 public class CustomerController {
@@ -22,7 +23,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/customers")
-	public ResponseEntity<?> signUpCustomer(@RequestBody SignUpCustomerRequest request) {
+	public ResponseEntity<?> signUp(@Valid @RequestBody SignUpCustomerRequest request) {
 		SignUpCustomerCommand command =
 			new SignUpCustomerCommand(request.name(), request.email(), request.password(), request.phone());
 		Long registeredId;
