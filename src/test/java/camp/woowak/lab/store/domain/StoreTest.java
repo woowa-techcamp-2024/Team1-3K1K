@@ -1,5 +1,6 @@
 package camp.woowak.lab.store.domain;
 
+import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -56,7 +57,8 @@ class StoreTest {
 				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
 					lessThanMinOrderPrice,
 					validStartTimeFixture, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_MIN_ORDER_PRICE.getMessage());
 			}
 
 			@Test
@@ -82,7 +84,8 @@ class StoreTest {
 				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
 					inValidUnitOrderPrice,
 					validStartTimeFixture, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_UNIT_OF_MIN_ORDER_PRICE.getMessage());
 			}
 		}
 
@@ -114,7 +117,8 @@ class StoreTest {
 				assertThatThrownBy(
 					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeSameWithStartTime))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME.getMessage());
 			}
 
 			@Test
@@ -127,7 +131,8 @@ class StoreTest {
 				assertThatThrownBy(
 					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeBeforeThanStartTime))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME.getMessage());
 			}
 
 			@Test
@@ -155,7 +160,8 @@ class StoreTest {
 				assertThatThrownBy(
 					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
 						startTimeWithSeconds, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -168,7 +174,8 @@ class StoreTest {
 				// when & then
 				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
 					startTimeWithNanoSeconds, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -181,7 +188,8 @@ class StoreTest {
 				// when & then
 				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
 					validStartTimeFixture, endTimeWithSeconds))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -194,7 +202,8 @@ class StoreTest {
 				// when & then
 				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
 					validStartTimeFixture, endTimeWithNanoSeconds))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 		}
@@ -226,7 +235,8 @@ class StoreTest {
 				assertThatThrownBy(() -> new Store(null, null, lessThanMinLengthName, validAddressFixture, null,
 					validMinOrderPriceFixture,
 					validStartTimeFixture, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_NAME_RANGE.getMessage());
 			}
 
 			@Test
@@ -240,7 +250,8 @@ class StoreTest {
 					() -> new Store(null, null, greaterThanMaxLengthName, validAddressFixture, null,
 						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_NAME_RANGE.getMessage());
 			}
 
 		}
@@ -270,7 +281,8 @@ class StoreTest {
 				assertThatThrownBy(
 					() -> new Store(null, null, validNameFixture, validAddress, null, validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
-					.isInstanceOf(StoreException.class);
+					.isInstanceOf(StoreException.class)
+					.hasMessage(INVALID_ADDRESS.getMessage());
 			}
 
 		}
