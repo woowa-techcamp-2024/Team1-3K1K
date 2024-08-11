@@ -32,15 +32,19 @@ public class PayAccount {
 		return this.balance;
 	}
 
-	public void withdraw(long amount) {
+	public PayAccountHistory withdraw(long amount) {
 		validateTransactionAmount(amount);
 		validateInsufficientBalance(amount);
 		this.balance -= amount;
+
+		return new PayAccountHistory(this, amount, AccountTransactionType.WITHDRAW);
 	}
 
-	public void deposit(long amount) {
+	public PayAccountHistory deposit(long amount) {
 		validateTransactionAmount(amount);
 		this.balance += amount;
+
+		return new PayAccountHistory(this, amount, AccountTransactionType.DEPOSIT);
 	}
 
 	private void validateTransactionAmount(long amount) {
