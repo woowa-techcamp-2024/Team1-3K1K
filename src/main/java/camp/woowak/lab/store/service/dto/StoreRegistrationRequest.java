@@ -3,6 +3,7 @@ package camp.woowak.lab.store.service.dto;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record StoreRegistrationRequest(
 
@@ -18,13 +19,13 @@ public record StoreRegistrationRequest(
 	@NotBlank
 	String storeCategoryName,
 
-	@NotBlank
+	@NotNull
 	Integer storeMinOrderPrice,
 
-	@NotBlank
+	@NotNull
 	LocalDateTime storeStarTime,
 
-	@NotBlank
+	@NotNull
 	LocalDateTime storeEndTime
 
 ) {
