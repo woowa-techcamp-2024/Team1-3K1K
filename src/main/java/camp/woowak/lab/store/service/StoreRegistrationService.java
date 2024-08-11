@@ -29,7 +29,7 @@ public class StoreRegistrationService {
 		storeRepository.save(store);
 	}
 
-	private static Store createStore(Vendor vendor, StoreCategory storeCategory, StoreRegistrationRequest request) {
+	private Store createStore(Vendor vendor, StoreCategory storeCategory, StoreRegistrationRequest request) {
 		return new Store(vendor, storeCategory, request.storeName(),
 			request.storeAddress(),
 			request.storePhoneNumber(),
