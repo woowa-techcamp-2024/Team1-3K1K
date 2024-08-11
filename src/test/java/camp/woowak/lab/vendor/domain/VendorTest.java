@@ -103,6 +103,14 @@ class VendorTest {
 		@DisplayName("비밀번호가")
 		class PasswordMust {
 			@Test
+			@DisplayName("[성공] 8자 이상부터 허용한다.")
+			void successWith8() {
+				Assertions.assertDoesNotThrow(
+					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "thisis8c",
+						"010-0000-0000", payAccount, passwordEncoder));
+			}
+
+			@Test
 			@DisplayName("[성공] 30자까지 허용한다.")
 			void successWith30() {
 				Assertions.assertDoesNotThrow(
@@ -124,6 +132,14 @@ class VendorTest {
 				Assertions.assertThrows(InvalidCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", " ", "010-0000-0000", payAccount,
 						passwordEncoder));
+			}
+
+			@Test
+			@DisplayName("[예외] 8자 미만이면 예외가 발생한다.")
+			void failWith7() {
+				Assertions.assertThrows(InvalidCreationException.class,
+					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "thisis7",
+						"010-0000-0000", payAccount, passwordEncoder));
 			}
 
 			@Test
