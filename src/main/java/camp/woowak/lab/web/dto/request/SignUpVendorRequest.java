@@ -4,13 +4,14 @@ import org.hibernate.validator.constraints.Length;
 
 import camp.woowak.lab.web.validation.annotation.Phone;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public record SignUpVendorRequest(
-	@Length(min = 1, max = 50)
+	@NotBlank @Length(min = 1, max = 50)
 	String name,
-	@Email
+	@NotBlank @Email
 	String email,
-	@Length(min = 8, max = 30)
+	@NotBlank @Length(min = 8, max = 30)
 	String password,
 	@Phone
 	String phone
