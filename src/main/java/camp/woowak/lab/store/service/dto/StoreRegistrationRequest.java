@@ -1,4 +1,4 @@
-package camp.woowak.lab.store.service;
+package camp.woowak.lab.store.service.dto;
 
 import java.time.LocalDateTime;
 

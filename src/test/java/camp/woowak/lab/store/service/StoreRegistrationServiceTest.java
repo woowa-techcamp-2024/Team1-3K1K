@@ -19,6 +19,7 @@ import camp.woowak.lab.store.domain.StoreCategory;
 import camp.woowak.lab.store.exception.StoreException;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
+import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
 
 @ExtendWith(MockitoExtension.class)
