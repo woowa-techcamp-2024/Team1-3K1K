@@ -17,6 +17,7 @@ public class StoreValidator {
 								final LocalDateTime startTime, final LocalDateTime endTime
 	) {
 		validateName(name);
+		validateAddress(address);
 	}
 
 	private static void validateName(final String name) {
@@ -24,6 +25,14 @@ public class StoreValidator {
 			return;
 		}
 		throw new StoreException("가게 이름은 2글자 ~ 10글자 이어야합니다.");
+	}
+
+	// TODO: 가게 위치 비즈니스 요구사항 구체화하면, 주소 검증 로직 수정 예정
+	private static void validateAddress(final String address) {
+		if (Address.DEFAULT_DISTRICT.equals(address)) {
+			return;
+		}
+		throw new StoreException("가게 주소는 송파구만 가능합니다.");
 	}
 
 }
