@@ -52,8 +52,8 @@ class CustomerControllerTest {
 	@Test
 	@DisplayName("구매자 회원가입 테스트 - 이름이 없는 경우")
 	void testSignUpCustomerWithoutName() throws Exception {
-		SignUpCustomerRequest request = new SignUpCustomerRequest("", "email@test.com", "password123", "01012345678");
 		// given
+		SignUpCustomerRequest request = new SignUpCustomerRequest("", "email@test.com", "password123", "010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -65,8 +65,8 @@ class CustomerControllerTest {
 	@Test
 	@DisplayName("구매자 회원가입 테스트 - 이메일이 없는 경우")
 	void testSignUpCustomerWithoutEmail() throws Exception {
-		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "", "password123", "01012345678");
 		// given
+		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "", "password123", "010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -78,8 +78,8 @@ class CustomerControllerTest {
 	@Test
 	@DisplayName("구매자 회원가입 테스트 - 비밀번호가 없는 경우")
 	void testSignUpCustomerWithoutPassword() throws Exception {
-		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "", "01012345678");
 		// given
+		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "", "010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -106,7 +106,7 @@ class CustomerControllerTest {
 	void testSignUpCustomerWithLongName() throws Exception {
 		// given
 		SignUpCustomerRequest request = new SignUpCustomerRequest("n".repeat(51), "email@test.com", "password123",
-			"01012345678");
+			"010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -120,7 +120,7 @@ class CustomerControllerTest {
 	void testSignUpCustomerWithLongEmail() throws Exception {
 		// given
 		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "e".repeat(90) + "@test.com", "password123",
-			"01012345678");
+			"010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -133,7 +133,7 @@ class CustomerControllerTest {
 	@DisplayName("구매자 회원가입 테스트 - 비밀번호가 20자 초과인 경우")
 	void testSignUpCustomerWithLongPassword() throws Exception {
 		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "p".repeat(21),
-			"01012345678");
+			"010-1234-5678");
 
 		mockMvc.perform(post("/customers")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -144,8 +144,8 @@ class CustomerControllerTest {
 	@Test
 	@DisplayName("구매자 회원가입 테스트 - 비밀번호가 8자 미만인 경우")
 	void testSignUpCustomerWithShortPassword() throws Exception {
-		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "pass", "01012345678");
 		// given
+		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "pass", "010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -173,7 +173,7 @@ class CustomerControllerTest {
 	void testSignUpCustomerWithInvalidEmail() throws Exception {
 		// given
 		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "invalid-email", "password123",
-			"01012345678");
+			"010-1234-5678");
 
 		// when & then
 		mockMvc.perform(post("/customers")
