@@ -55,37 +55,37 @@ public class Customer {
 
 	private void checkPhone(String phone) throws InvalidCreationException {
 		if (phone == null || phone.isBlank()) {
-			throw new InvalidCreationException("Vendor phone cannot be blank");
+			throw new InvalidCreationException("Customer phone cannot be blank");
 		}
 		if (phone.trim().length() > 30) {
-			throw new InvalidCreationException("Vendor phone cannot be longer than 30 characters");
+			throw new InvalidCreationException("Customer phone cannot be longer than 30 characters");
 		}
 	}
 
 	private void checkPassword(String password) throws InvalidCreationException {
 		if (password == null || password.isBlank()) {
-			throw new InvalidCreationException("Vendor password cannot be blank");
+			throw new InvalidCreationException("Customer password cannot be blank");
 		}
 		if (password.trim().length() > 30) {
-			throw new InvalidCreationException("Vendor password cannot be longer than 30 characters");
+			throw new InvalidCreationException("Customer password cannot be longer than 30 characters");
 		}
 	}
 
 	private void checkEmail(String email) throws InvalidCreationException {
 		if (email == null || email.isBlank()) {
-			throw new InvalidCreationException("Vendor email cannot be blank");
+			throw new InvalidCreationException("Customer email cannot be blank");
 		}
 		if (email.trim().length() > 100) {
-			throw new InvalidCreationException("Vendor email cannot be longer than 100 characters");
+			throw new InvalidCreationException("Customer email cannot be longer than 100 characters");
 		}
 	}
 
 	private void checkName(String name) throws InvalidCreationException {
 		if (name == null || name.isBlank()) {
-			throw new InvalidCreationException("Vendor name cannot be blank");
+			throw new InvalidCreationException("Customer name cannot be blank");
 		}
 		if (name.length() > 50) {
-			throw new InvalidCreationException("Vendor name cannot exceed 50 characters");
+			throw new InvalidCreationException("Customer name cannot exceed 50 characters");
 		}
 	}
 
