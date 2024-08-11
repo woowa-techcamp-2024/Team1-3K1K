@@ -199,6 +199,82 @@ class StoreTest {
 
 		}
 
+		@Nested
+		@DisplayName("가게 이름이")
+		class StoreName {
+
+			@Test
+			@DisplayName("[Success] 2자 ~ 10자까지 가능하다")
+			void validStoreName() {
+				// given
+				String lengthValidStoreName = validNameFixture;
+
+				// when & then
+				assertThatCode(() -> new Store(null, null, lengthValidStoreName, validAddressFixture, null,
+					validMinOrderPriceFixture,
+					validStartTimeFixture, validEndTimeFixture))
+					.doesNotThrowAnyException();
+			}
+
+			@Test
+			@DisplayName("[Exception] 2자 미만이면 StoreException 이 발생한다")
+			void lessThanMinLengthName() {
+				// given
+				String lessThanMinLengthName = "헤";
+
+				// when & then
+				assertThatThrownBy(() -> new Store(null, null, lessThanMinLengthName, validAddressFixture, null,
+					validMinOrderPriceFixture,
+					validStartTimeFixture, validEndTimeFixture))
+					.isInstanceOf(StoreException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 10자 초과면 StoreException 이 발생한다")
+			void greaterThanMaxLengthName() {
+				// given
+				String greaterThanMaxLengthName = "123456789가게";
+
+				// when & then
+				assertThatThrownBy(
+					() -> new Store(null, null, greaterThanMaxLengthName, validAddressFixture, null,
+						validMinOrderPriceFixture,
+						validStartTimeFixture, validEndTimeFixture))
+					.isInstanceOf(StoreException.class);
+			}
+
+		}
+
+		@Nested
+		@DisplayName("가게 주소가")
+		class StoreAddressTest {
+
+			@Test
+			@DisplayName("[Success] 송파구만 가능하다")
+			void onlySongPa() {
+				// given
+				String validAddress = "송파";
+				// when & then
+				assertThatCode(
+					() -> new Store(null, null, validNameFixture, validAddress, null, validMinOrderPriceFixture,
+						validStartTimeFixture, validEndTimeFixture))
+					.doesNotThrowAnyException();
+			}
+
+			@Test
+			@DisplayName("[Exception] 송파구가 아닌 주소는 StoreException 이 발생한다")
+			void notSongPa() {
+				// given
+				String validAddress = "강남";
+				// when & then
+				assertThatThrownBy(
+					() -> new Store(null, null, validNameFixture, validAddress, null, validMinOrderPriceFixture,
+						validStartTimeFixture, validEndTimeFixture))
+					.isInstanceOf(StoreException.class);
+			}
+
+		}
+
 	}
 
 }
