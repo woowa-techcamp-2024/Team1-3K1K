@@ -69,7 +69,8 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge").contentType(MediaType.APPLICATION_JSON_VALUE)
+			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.balance").value(amount + originBalance));
@@ -87,7 +88,8 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + notExistsId + "/charge").contentType(MediaType.APPLICATION_JSON_VALUE)
+			mvc.perform(post(BASE_URL + notExistsId + "/charge")
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command)))
 				.andExpect(status().isNotFound());
 		}
@@ -99,7 +101,8 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(null);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge").contentType(MediaType.APPLICATION_JSON_VALUE)
+			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command)))
 				.andExpect(status().isBadRequest());
 
@@ -114,7 +117,8 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge").contentType(MediaType.APPLICATION_JSON_VALUE)
+			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command)))
 				.andExpect(status().isBadRequest());
 
