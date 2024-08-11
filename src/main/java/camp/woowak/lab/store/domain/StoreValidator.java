@@ -1,5 +1,7 @@
 package camp.woowak.lab.store.domain;
 
+import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
+
 import java.time.LocalDateTime;
 
 import camp.woowak.lab.store.exception.StoreException;
@@ -27,7 +29,7 @@ public class StoreValidator {
 		if (MIN_NAME_LENGTH <= name.length() && name.length() <= MAX_NAME_LENGTH) {
 			return;
 		}
-		throw new StoreException("가게 이름은 2글자 ~ 10글자 이어야합니다.");
+		throw new StoreException(INVALID_NAME_RANGE);
 	}
 
 	// TODO: 가게 위치 비즈니스 요구사항 구체화하면, 주소 검증 로직 수정 예정
@@ -35,18 +37,18 @@ public class StoreValidator {
 		if (StoreAddress.DEFAULT_DISTRICT.equals(address)) {
 			return;
 		}
-		throw new StoreException("가게 주소는 송파구만 가능합니다.");
+		throw new StoreException(INVALID_ADDRESS);
 	}
 
 	private static void validateMinOrderPrice(final Integer minOrderPrice) {
 		if (minOrderPrice < MIN_ORDER_PRICE) {
-			throw new StoreException("최소 주문 금액은 5,000원 이상이어야 합니다.");
+			throw new StoreException(INVALID_MIN_ORDER_PRICE);
 		}
 	}
 
 	private static void validateUnitOrderPrice(final Integer minOrderPrice) {
 		if (minOrderPrice % UNIT_OF_MIN_ORDER_PRICE != 0) {
-			throw new StoreException("최소 주문 금액은 1,000원 단위이어야 합니다.");
+			throw new StoreException(INVALID_UNIT_OF_MIN_ORDER_PRICE);
 		}
 	}
 
@@ -54,19 +56,19 @@ public class StoreValidator {
 									 final LocalDateTime endTime
 	) {
 		if (isInvalidStoreTimeUnit(startTime)) {
-			throw new StoreException("가게 시작 시간은 분 단위까지 가능합니다");
+			throw new StoreException(INVALID_TIME_UNIT);
 		}
 
 		if (isInvalidStoreTimeUnit(endTime)) {
-			throw new StoreException("가게 종료 시간은 분 단위까지 가능합니다");
+			throw new StoreException(INVALID_TIME_UNIT);
 		}
 
 		if (endTime.isBefore(startTime)) {
-			throw new StoreException("가게 시작 시간은 종료 시간보다 이전이어야 합니다");
+			throw new StoreException(INVALID_TIME);
 		}
 
 		if (startTime.isEqual(endTime)) {
-			throw new StoreException("가게 시작 시간과 종료 시간이 일치합니다");
+			throw new StoreException(INVALID_TIME);
 		}
 	}
 

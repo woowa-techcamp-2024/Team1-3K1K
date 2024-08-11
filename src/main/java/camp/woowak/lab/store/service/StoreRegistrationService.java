@@ -1,5 +1,7 @@
 package camp.woowak.lab.store.service;
 
+import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,7 @@ public class StoreRegistrationService {
 
 	private StoreCategory findStoreCategoryByName(final String name) {
 		return storeCategoryRepository.findByName(name)
-			.orElseThrow(() -> new StoreException("존재하지 않는 가게 카테고리입니다."));
+			.orElseThrow(() -> new StoreException(INVALID_STORE_CATEGORY));
 	}
 
 }
