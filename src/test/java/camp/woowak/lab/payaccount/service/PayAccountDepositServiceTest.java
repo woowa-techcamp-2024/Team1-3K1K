@@ -17,7 +17,7 @@ import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
 
 @SpringBootTest
-@DisplayName("PayAccountWithdrawService 클래스")
+@DisplayName("PayAccountDepositService 클래스")
 class PayAccountDepositServiceTest {
 	@Autowired
 	private PayAccountRepository payAccountRepository;
@@ -37,10 +37,10 @@ class PayAccountDepositServiceTest {
 	}
 
 	@Nested
-	@DisplayName("withdrawAccount 메서드는")
+	@DisplayName("Deposit 메서드는")
 	class WithdrawAccount {
 		@Test
-		@DisplayName("AccountId와 Amount를 제공하면 잔고에서 출금된다.")
+		@DisplayName("AccountId와 Amount를 제공하면 잔고에 입금된다.")
 		void withdrawAccount() {
 			//given
 			long amount = 100L;
