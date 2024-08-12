@@ -31,7 +31,7 @@ public class Menu {
 	@Column(nullable = false)
 	private Integer price;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String imageUrl;
 
 }
