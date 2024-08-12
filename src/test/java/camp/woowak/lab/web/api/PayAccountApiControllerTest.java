@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
+import camp.woowak.lab.payaccount.service.PayAccountChargeService;
+import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
 import jakarta.persistence.EntityManager;
 
@@ -32,6 +34,8 @@ class PayAccountApiControllerTest {
 	private MockMvc mvc;
 	@Autowired
 	private PayAccountRepository payAccountRepository;
+	@Autowired
+	private PayAccountChargeService payAccountChargeService;
 
 	@Autowired
 	private EntityManager em;
@@ -61,6 +65,8 @@ class PayAccountApiControllerTest {
 	@Nested
 	@DisplayName("충전 요청은")
 	class PayAccountChargeAPITest {
+		private final long DAILY_LIMIT = 1_000_000L;
+
 		@Test
 		@DisplayName("존재하는 계정 ID에 정상범위의 금액을 입력하면 충전된다.")
 		void successTest() throws Exception {
@@ -76,6 +82,21 @@ class PayAccountApiControllerTest {
 				.andExpect(jsonPath("$.balance").value(amount + originBalance));
 
 			verificationPersistedBalance(payAccount.getId(), amount + originBalance);
+		}
+
+		@Test
+		@DisplayName("일일 한도(100만원) 이상인 경우, 400을 return한다.")
+		void dailyLimitExceededTest() throws Exception {
+			//given
+			long amount = 1000L;
+			payAccountChargeService.chargeAccount(new AccountTransactionCommand(payAccount.getId(), DAILY_LIMIT));
+			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
+
+			//when & then
+			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command)))
+				.andExpect(status().isBadRequest());
 		}
 
 		//TODO : 아직 API Response Format이 정해지지 않았으므로, 논의 후 추가
