@@ -1,4 +1,9 @@
 package camp.woowak.lab.vendor.exception;
 
-public class DuplicateEmailException extends DuplicateException {
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class DuplicateEmailException extends BadRequestException {
+	public DuplicateEmailException() {
+		super(VendorErrorCode.DUPLICATE_EMAIL);
+	}
 }
