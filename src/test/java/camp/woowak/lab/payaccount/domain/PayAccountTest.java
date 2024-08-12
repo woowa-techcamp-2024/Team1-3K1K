@@ -153,7 +153,7 @@ class PayAccountTest {
 			// then
 			assertThat(payAccount.getBalance()).isEqualTo(amount);
 			assertThat(depositHistory.getAmount()).isEqualTo(amount);
-			assertThat(depositHistory.getType()).isEqualTo(AccountTransactionType.DEPOSIT);
+			assertThat(depositHistory.getType()).isEqualTo(AccountTransactionType.CHARGE);
 		}
 
 		@Test
