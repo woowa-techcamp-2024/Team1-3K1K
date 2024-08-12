@@ -26,6 +26,11 @@ public class SignUpCustomerService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/**
+	 *
+	 * @throws InvalidCreationException 구매자 생성에 오류가 나는 경우
+	 * @throws DuplicateEmailException 이메일이 중복되는 경우
+	 */
 	@Transactional
 	public Long signUp(SignUpCustomerCommand cmd) throws InvalidCreationException, DuplicateEmailException {
 		PayAccount payAccount = new PayAccount();
