@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.InvalidTransactionAmountException;
 
@@ -132,6 +133,63 @@ class PayAccountTest {
 			assertThatThrownBy(() -> payAccount.withdraw(amount))
 				.isExactlyInstanceOf(InsufficientBalanceException.class);
 			assertThat(payAccount.getBalance()).isEqualTo(originBalance);
+		}
+	}
+
+	@Nested
+	@DisplayName("Charge 메서드는")
+	class ChargeTest {
+		private long dailyMaximumChargeAmount = 1_000_000L;
+
+		@Test
+		@DisplayName("충전한 만큼 잔고가 증가한다.")
+		void increaseBalanceByDepositedAmount() {
+			// given
+			long amount = 1000;
+
+			// when
+			PayAccountHistory depositHistory = payAccount.charge(amount);
+
+			// then
+			assertThat(payAccount.getBalance()).isEqualTo(amount);
+			assertThat(depositHistory.getAmount()).isEqualTo(amount);
+			assertThat(depositHistory.getType()).isEqualTo(AccountTransactionType.DEPOSIT);
+		}
+
+		@Test
+		@DisplayName("일일 한도를 초과한 경우, DailyLimitExceededException을 던진다.")
+		void dailyLimitExceededException() {
+			//given
+			payAccount.charge(dailyMaximumChargeAmount);
+			long amount = 1000L;
+
+			//when & then
+			assertThatThrownBy(() -> payAccount.charge(amount))
+				.isExactlyInstanceOf(DailyLimitExceededException.class);
+		}
+
+		@Test
+		@DisplayName("음수를 입금하려하면 exception을 던진다. 잔고는 유지된다.")
+		void throwExceptionForNegativeAmount() {
+			// given
+			long amount = -1000;
+
+			// when & then
+			assertThatThrownBy(() -> payAccount.charge(amount))
+				.isExactlyInstanceOf(InvalidTransactionAmountException.class);
+			assertThat(payAccount.getBalance()).isZero();
+		}
+
+		@Test
+		@DisplayName("0원을 입금하려면 exception을 던진다. 잔고는 유지된다.")
+		void throwExceptionForZeroAmount() {
+			// given
+			long amount = 0;
+
+			// when & then
+			assertThatThrownBy(() -> payAccount.charge(amount))
+				.isExactlyInstanceOf(InvalidTransactionAmountException.class);
+			assertThat(payAccount.getBalance()).isZero();
 		}
 	}
 }
