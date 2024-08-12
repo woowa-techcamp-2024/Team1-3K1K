@@ -7,15 +7,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import camp.woowak.lab.common.advice.DomainExceptionHandler;
+import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.InvalidTransactionAmountException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import lombok.extern.slf4j.Slf4j;
 
 //TODO : exception구체화 및 error code 정의
-@RestControllerAdvice(basePackageClasses = PayAccountApiController.class)
+@DomainExceptionHandler(basePackageClasses = PayAccountApiController.class)
 @Slf4j
 public class PayAccountApiControllerAdvice {
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -30,7 +31,8 @@ public class PayAccountApiControllerAdvice {
 		return ResponseEntity.badRequest().build();
 	}
 
-	@ExceptionHandler(value = {InsufficientBalanceException.class, InvalidTransactionAmountException.class})
+	@ExceptionHandler(value = {DailyLimitExceededException.class, InsufficientBalanceException.class,
+		InvalidTransactionAmountException.class})
 	public ResponseEntity<?> badRequestException(Exception e) {
 		log.warn("Bad Request", e);
 		return ResponseEntity.badRequest().build();
