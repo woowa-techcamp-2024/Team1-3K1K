@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import camp.woowak.lab.payaccount.service.PayAccountDepositService;
+import camp.woowak.lab.payaccount.service.PayAccountChargeService;
 import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
 import camp.woowak.lab.web.dto.response.payaccount.PayAccountChargeResponse;
@@ -18,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/account")
 @Slf4j
 public class PayAccountApiController {
-	private final PayAccountDepositService payAccountDepositService;
+	private final PayAccountChargeService payAccountChargeService;
 
-	public PayAccountApiController(PayAccountDepositService payAccountDepositService) {
-		this.payAccountDepositService = payAccountDepositService;
+	public PayAccountApiController(PayAccountChargeService payAccountChargeService) {
+		this.payAccountChargeService = payAccountChargeService;
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class PayAccountApiController {
 		log.info("Pay account charge request received. Account ID: {}, Charge Amount: {}", payAccountId,
 			request.amount());
 
-		long remainBalance = payAccountDepositService.depositAccount(command);
+		long remainBalance = payAccountChargeService.chargeAccount(command);
 		log.info("Charge successful. Account ID: {}, New Balance: {}", payAccountId, remainBalance);
 
 		return ResponseEntity.ok(new PayAccountChargeResponse(remainBalance));
