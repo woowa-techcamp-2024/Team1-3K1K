@@ -1,14 +1,20 @@
 package camp.woowak.lab.payaccount.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.ColumnDefault;
 
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.InvalidTransactionAmountException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class PayAccount {
@@ -19,6 +25,9 @@ public class PayAccount {
 	@Column(name = "balance", nullable = false)
 	@ColumnDefault("0")
 	private long balance;
+
+	@OneToMany(mappedBy = "payAccount", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	private List<PayAccountHistory> history = new ArrayList<>();
 
 	public PayAccount() {
 		this.balance = 0;
@@ -37,21 +46,28 @@ public class PayAccount {
 		validateInsufficientBalance(amount);
 		this.balance -= amount;
 
-		return new PayAccountHistory(this, amount, AccountTransactionType.WITHDRAW);
+		return issueAndSavePayAccountHistory(amount, AccountTransactionType.WITHDRAW);
 	}
 
 	public PayAccountHistory deposit(long amount) {
 		validateTransactionAmount(amount);
 		this.balance += amount;
 
-		return new PayAccountHistory(this, amount, AccountTransactionType.DEPOSIT);
+		return issueAndSavePayAccountHistory(amount, AccountTransactionType.DEPOSIT);
 	}
 
 	public PayAccountHistory charge(long amount) {
 		validateTransactionAmount(amount);
 		this.balance += amount;
 
-		return new PayAccountHistory(this, amount, AccountTransactionType.CHARGE);
+		return issueAndSavePayAccountHistory(amount, AccountTransactionType.CHARGE);
+	}
+
+	private PayAccountHistory issueAndSavePayAccountHistory(long amount, AccountTransactionType type) {
+		PayAccountHistory payAccountHistory = new PayAccountHistory(this, amount, type);
+		this.history.add(payAccountHistory);
+
+		return payAccountHistory;
 	}
 
 	private void validateTransactionAmount(long amount) {
