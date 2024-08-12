@@ -47,6 +47,13 @@ public class PayAccount {
 		return new PayAccountHistory(this, amount, AccountTransactionType.DEPOSIT);
 	}
 
+	public PayAccountHistory charge(long amount) {
+		validateTransactionAmount(amount);
+		this.balance += amount;
+
+		return new PayAccountHistory(this, amount, AccountTransactionType.CHARGE);
+	}
+
 	private void validateTransactionAmount(long amount) {
 		if (amount <= 0)
 			throw new InvalidTransactionAmountException("Transaction amount must be greater than zero.");
