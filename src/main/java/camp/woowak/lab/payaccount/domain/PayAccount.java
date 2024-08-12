@@ -1,10 +1,12 @@
 package camp.woowak.lab.payaccount.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.InvalidTransactionAmountException;
 import jakarta.persistence.CascadeType;
@@ -58,6 +60,7 @@ public class PayAccount {
 
 	public PayAccountHistory charge(long amount) {
 		validateTransactionAmount(amount);
+		validateDailyChargeLimit(amount);
 		this.balance += amount;
 
 		return issueAndSavePayAccountHistory(amount, AccountTransactionType.CHARGE);
@@ -68,6 +71,21 @@ public class PayAccount {
 		this.history.add(payAccountHistory);
 
 		return payAccountHistory;
+	}
+
+	private void validateDailyChargeLimit(long amount) {
+		LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+		LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+		long todayTotalCharge = history.stream()
+			.filter(h -> h.getType() == AccountTransactionType.CHARGE)
+			.filter(h -> h.getCreatedAt().isAfter(startOfDay) && h.getCreatedAt().isBefore(endOfDay))
+			.mapToLong(PayAccountHistory::getAmount)
+			.sum();
+
+		if (todayTotalCharge + amount > 1_000_000) {
+			throw new DailyLimitExceededException("Daily charge limit of " + 1_000_000 + " exceeded.");
+		}
 	}
 
 	private void validateTransactionAmount(long amount) {
