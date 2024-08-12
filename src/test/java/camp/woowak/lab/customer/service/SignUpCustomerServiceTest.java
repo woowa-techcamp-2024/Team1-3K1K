@@ -51,7 +51,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// when
 		SignUpCustomerCommand command =
 			new SignUpCustomerCommand("name", "email@example.com", "password", "01012345678");
-		Long id = service.signUp(command);
+		service.signUp(command);
 
 		// then
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
