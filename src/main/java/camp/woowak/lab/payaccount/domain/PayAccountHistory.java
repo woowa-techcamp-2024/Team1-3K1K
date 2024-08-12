@@ -35,7 +35,7 @@ public class PayAccountHistory {
 
 	@CreatedDate
 	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt;
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	public PayAccountHistory() {
 	}
@@ -56,5 +56,9 @@ public class PayAccountHistory {
 
 	public AccountTransactionType getType() {
 		return type;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 }
