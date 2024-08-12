@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
-import camp.woowak.lab.vendor.exception.InvalidCreationException;
+import camp.woowak.lab.vendor.exception.InvalidVendorCreationException;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
@@ -40,7 +40,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] null이면 예외가 발생한다.")
 			void failWithNull() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor(null, "validEmail@validEmail.com", "validPassword", "010-0000-0000", payAccount,
 						passwordEncoder));
 			}
@@ -48,7 +48,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 공란이면 예외가 발생한다.")
 			void failWithBlank() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor(" ", "validEmail@validEmail.com", "validPassword", "010-0000-0000", payAccount,
 						passwordEncoder));
 			}
@@ -56,7 +56,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 50자를 초과하면 예외가 발생한다.")
 			void failWith51() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeef", "validEmail@validEmail.com",
 						"validPassword", "010-0000-0000", payAccount, passwordEncoder));
 			}
@@ -77,7 +77,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] null이면 예외가 발생한다.")
 			void failWithNull() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", null, "validPassword", "010-0000-0000", payAccount,
 						passwordEncoder));
 			}
@@ -85,14 +85,14 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 공란이면 예외가 발생한다.")
 			void failWithBlank() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", " ", "validPassword", "010-0000-0000", payAccount, passwordEncoder));
 			}
 
 			@Test
 			@DisplayName("[예외] 100자를 초과하면 예외가 발생한다.")
 			void failWith101() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa",
 						"aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeaaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeea",
 						"validPassword", "010-0000-0000", payAccount, passwordEncoder));
@@ -121,7 +121,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] null이면 예외가 발생한다.")
 			void failWithNull() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", null, "010-0000-0000", payAccount,
 						passwordEncoder));
 			}
@@ -129,7 +129,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 공란이면 예외가 발생한다.")
 			void failWithBlank() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", " ", "010-0000-0000", payAccount,
 						passwordEncoder));
 			}
@@ -137,7 +137,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 8자 미만이면 예외가 발생한다.")
 			void failWith7() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "thisis7",
 						"010-0000-0000", payAccount, passwordEncoder));
 			}
@@ -145,7 +145,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 30자를 초과하면 예외가 발생한다.")
 			void failWith31() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "thisstringsizeisthirtyonesnvien",
 						"010-0000-0000", payAccount, passwordEncoder));
 			}
@@ -166,7 +166,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] null이면 예외가 발생한다.")
 			void failWithNull() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "validPassword", null,
 						payAccount, passwordEncoder));
 			}
@@ -174,7 +174,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 공란이면 예외가 발생한다.")
 			void failWithBlank() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "validPassword", " ",
 						payAccount, passwordEncoder));
 			}
@@ -182,7 +182,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] 30자를 초과하면 예외가 발생한다.")
 			void failWith31() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "validPassword",
 						"0000000000-0000000000-000000000",
 						payAccount, passwordEncoder));
@@ -203,7 +203,7 @@ class VendorTest {
 			@Test
 			@DisplayName("[예외] null이면 예외가 발생한다.")
 			void failWithNull() {
-				Assertions.assertThrows(InvalidCreationException.class,
+				Assertions.assertThrows(InvalidVendorCreationException.class,
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "validPassword", "010-0000-0000", null,
 						passwordEncoder));
 			}
