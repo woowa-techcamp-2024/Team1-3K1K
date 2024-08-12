@@ -1,8 +1,8 @@
 ---
 name: Report bug
 about: 오류가 발생한 영역에 대해 보고합니다 [Dev]
-title: "[BUG] "
-labels: bug
+title: "[오류] "
+labels: 🐞 BugFix
 assignees: ''
 
 ---
