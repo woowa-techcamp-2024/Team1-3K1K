@@ -9,9 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
-public class Menu {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class MenuCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,17 +24,12 @@ public class Menu {
 	@JoinColumn(name = "store_id", nullable = false)
 	private Store store;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "menu_category_id", nullable = false)
-	private MenuCategory menuCategory;
-
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = false)
-	private Integer price;
-
-	@Column(nullable = true)
-	private String imageUrl;
+	public MenuCategory(Store store, String name) {
+		this.store = store;
+		this.name = name;
+	}
 
 }
