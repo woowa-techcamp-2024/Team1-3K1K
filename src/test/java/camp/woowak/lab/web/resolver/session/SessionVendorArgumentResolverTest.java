@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import camp.woowak.lab.common.exception.UnauthorizedRequestException;
+import camp.woowak.lab.common.exception.UnauthorizedException;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
@@ -128,7 +128,7 @@ class SessionVendorArgumentResolverTest {
 				});
 
 			assertThrows(
-				UnauthorizedRequestException.class,
+				UnauthorizedException.class,
 				() -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 		}
 	}

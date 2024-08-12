@@ -5,7 +5,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import camp.woowak.lab.common.exception.UnauthorizedRequestException;
+import camp.woowak.lab.common.exception.UnauthorizedException;
+import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ public class SessionCustomerArgumentResolver extends LoginMemberArgumentResolver
 		HttpSession session = request.getSession(false);
 		if (parameterAnnotation.required() &&
 			(session == null || session.getAttribute(SessionConst.SESSION_CUSTOMER_KEY) == null)) {
-			throw new UnauthorizedRequestException("Required session is null");
+			throw new UnauthorizedException(AuthenticationErrorCode.UNAUTHORIZED);
 		}
 		return session == null ? null : session.getAttribute(SessionConst.SESSION_CUSTOMER_KEY);
 	}
