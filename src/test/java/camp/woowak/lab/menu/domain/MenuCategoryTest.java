@@ -34,6 +34,52 @@ class MenuCategoryTest {
 
 		}
 
+		@Nested
+		@DisplayName("이름이")
+		class MenuName {
+
+			@Test
+			@DisplayName("[Success] 10글자 이하만 가능하다")
+			void success() {
+				// given & when & then
+				assertThatCode(() -> new MenuCategory(storeFixture, "1234567890"))
+					.doesNotThrowAnyException();
+			}
+
+			@Test
+			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
+			void isNull() {
+				// given & when & then
+				assertThatCode(() -> new MenuCategory(storeFixture, null))
+					.isInstanceOf(InvalidMenuCategoryCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 빈 문자열이면 InvalidMenuCreationException 이 발생한다")
+			void isEmpty() {
+				// given & when & then
+				assertThatCode(() -> new MenuCategory(storeFixture, ""))
+					.isInstanceOf(InvalidMenuCategoryCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 공백 문자열이면 InvalidMenuCreationException 이 발생한다")
+			void isBlank() {
+				// given & when & then
+				assertThatCode(() -> new MenuCategory(storeFixture, "    "))
+					.isInstanceOf(InvalidMenuCategoryCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 10 글자를 초과하면 InvalidMenuCreationException 이 발생한다")
+			void greaterThanMaxNameLength() {
+				// given & when & then
+				assertThatCode(() -> new MenuCategory(storeFixture, "12345678901"))
+					.isInstanceOf(InvalidMenuCategoryCreationException.class);
+			}
+
+		}
+
 	}
 
 	private Store createValidStore() {
