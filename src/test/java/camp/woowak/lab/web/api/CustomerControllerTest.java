@@ -208,8 +208,8 @@ class CustomerControllerTest {
 		mockMvc.perform(post("/customers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getCode()))
-			.andExpect(jsonPath("$.message").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getMessage()));
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.errorCode").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getCode()))
+			.andExpect(jsonPath("$.detail").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getMessage()));
 	}
 }
