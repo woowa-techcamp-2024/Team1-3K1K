@@ -6,10 +6,21 @@ body:
       value: |
         This is text that will show up in the template!
   - type: textarea
-    id: improvements
+    id: background
     attributes:
-      label: Top 3 improvements
-      description: "What are the top 3 improvements we could make to this project?"
+      label: 배경
+      description: "발의한 배경에 대해 간략히 서술해주세요"
+      value: |
+        
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: subject
+    attributes:
+      label: 세부 주제
+      description: "논의하고 싶은 세부 주제를 작성해주세요."
       value: |
         1.
         2.
