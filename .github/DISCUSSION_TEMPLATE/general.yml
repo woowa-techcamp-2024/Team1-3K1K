@@ -11,8 +11,6 @@ body:
       label: 배경
       description: "발의한 배경에 대해 간략히 서술해주세요"
       value: |
-        
-        ...
       render: bash
     validations:
       required: true
@@ -25,7 +23,6 @@ body:
         1.
         2.
         3.
-        ...
       render: bash
     validations:
       required: true
