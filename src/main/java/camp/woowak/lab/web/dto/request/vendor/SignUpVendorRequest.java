@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.dto.request;
+package camp.woowak.lab.web.dto.request.vendor;
 
 import org.hibernate.validator.constraints.Length;
 
