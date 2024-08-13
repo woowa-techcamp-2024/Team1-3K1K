@@ -41,13 +41,6 @@ body:
         - Release cadence
     validations:
       required: true
-  - type: checkboxes
-    attributes:
-      label: Check that box!
-      options:
-        - label: This one!
-          required: true
-        - label: I won't stop you if you check this one, too
   - type: markdown
     attributes:
       value: |
