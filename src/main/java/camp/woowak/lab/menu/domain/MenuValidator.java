@@ -12,6 +12,7 @@ public class MenuValidator {
 		validateNotNull(store, menuCategory, name, price, imageUrl);
 		validateNotBlank(name, imageUrl);
 		validateNameLength(name);
+		validatePriceNegative(price);
 	}
 
 	private static void validateNotNull(final Object... targets) {
@@ -33,6 +34,12 @@ public class MenuValidator {
 	private static void validateNameLength(final String name) {
 		if (name.length() > MAX_NAME_LENGTH) {
 			throw new InvalidMenuCreationException("메뉴 이름은 " + MAX_NAME_LENGTH + "글자까지 가능합니다.");
+		}
+	}
+
+	private static void validatePriceNegative(final Integer price) {
+		if (price <= 0) {
+			throw new InvalidMenuCreationException("메뉴의 가격은 양수만 가능합니다");
 		}
 	}
 
