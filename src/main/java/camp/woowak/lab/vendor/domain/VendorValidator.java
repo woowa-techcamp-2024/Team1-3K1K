@@ -12,7 +12,7 @@ public final class VendorValidator {
 	private static final int MAX_PHONE_LENGTH = 30;
 
 	public static void validate(final String name, final String email, final String password, final String phone,
-		final PayAccount payAccount) throws InvalidVendorCreationException {
+								final PayAccount payAccount) throws InvalidVendorCreationException {
 		checkName(name);
 		checkEmail(email);
 		checkPassword(password);
