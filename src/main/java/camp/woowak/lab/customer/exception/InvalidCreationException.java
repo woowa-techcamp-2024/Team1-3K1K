@@ -4,7 +4,7 @@ import camp.woowak.lab.common.exception.BadRequestException;
 import camp.woowak.lab.common.exception.ErrorCode;
 
 public class InvalidCreationException extends BadRequestException {
-	public InvalidCreationException(ErrorCode errorCode) {
-		super(errorCode);
+	public InvalidCreationException(ErrorCode errorCode, String message) {
+		super(errorCode, message);
 	}
 }
