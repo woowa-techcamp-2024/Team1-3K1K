@@ -10,4 +10,4 @@ body:
     attributes:
       label: 논의 배경
       description: 이 논의를 시작하게 된 이유와 관련된 배경 정보를 입력하세요.
-      placeholder: 예: 문제의 원인, 관련된 이슈, 제안된 솔루션 등
+      placeholder: "예: 문제의 원인, 관련된 이슈, 제안된 솔루션 등"
