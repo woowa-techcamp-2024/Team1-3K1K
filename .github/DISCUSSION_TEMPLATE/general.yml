@@ -1,5 +1,5 @@
-title: "[논의]"
-labels: ["🙋‍♂️ Question"]
+title: "[Discussion] "
+labels: ["General Introduction"]
 body:
   - type: markdown
     attributes:
@@ -9,7 +9,7 @@ body:
     id: improvements
     attributes:
       label: Top 3 improvements
-      description: "논의하고 싶은 세부 주제를 입력해주세요."
+      description: "What are the top 3 improvements we could make to this project?"
       value: |
         1.
         2.
@@ -41,6 +41,13 @@ body:
         - Release cadence
     validations:
       required: true
+  - type: checkboxes
+    attributes:
+      label: Check that box!
+      options:
+        - label: This one!
+          required: true
+        - label: I won't stop you if you check this one, too
   - type: markdown
     attributes:
       value: |
