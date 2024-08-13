@@ -11,17 +11,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Orders")
+@Table(name = "ORDERS")
 public class Order {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer requester;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Store store;
-
 }

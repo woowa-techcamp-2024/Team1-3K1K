@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class PayAccount {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 }
