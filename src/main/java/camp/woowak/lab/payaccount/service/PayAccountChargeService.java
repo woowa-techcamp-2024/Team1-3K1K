@@ -19,6 +19,10 @@ public class PayAccountChargeService {
 		this.payAccountRepository = payAccountRepository;
 	}
 
+	/**
+	 * @throws camp.woowak.lab.payaccount.exception.NotFoundAccountException    계좌를 찾지 못함. 존재하지 않는 계좌
+	 * @throws camp.woowak.lab.payaccount.exception.DailyLimitExceededException 일일 충전 한도를 초과함
+	 */
 	@Transactional
 	public long chargeAccount(PayAccountChargeCommand command) {
 		PayAccount payAccount = payAccountRepository.findByCustomerIdForUpdate(command.customerId())
