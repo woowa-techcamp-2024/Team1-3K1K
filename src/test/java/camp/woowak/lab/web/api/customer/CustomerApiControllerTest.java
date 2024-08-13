@@ -21,9 +21,9 @@ import camp.woowak.lab.customer.exception.DuplicateEmailException;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
 import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
 
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(CustomerApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class CustomerControllerTest {
+class CustomerApiControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
