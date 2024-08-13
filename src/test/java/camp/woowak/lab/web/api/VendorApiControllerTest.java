@@ -14,21 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
-import camp.woowak.lab.web.dto.request.SignUpVendorRequest;
+import camp.woowak.lab.web.api.vendor.VendorApiController;
+import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
 
-@WebMvcTest(controllers = VendorController.class)
+@WebMvcTest(controllers = VendorApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class VendorControllerTest {
+class VendorApiControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@MockBean
@@ -56,7 +57,8 @@ class VendorControllerTest {
 
 			// then
 			actions.andExpect(status().isCreated())
-				.andExpect(MockMvcResultMatchers.header().string("location", "/vendors/" + fakeVendorId))
+				.andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
+				.andExpect(jsonPath("$.data.id").value(fakeVendorId))
 				.andDo(print());
 		}
 
@@ -365,7 +367,7 @@ class VendorControllerTest {
 		}
 
 		@Test
-		@DisplayName("[실패] 200 a1: 이미 가입된 이메일인 경우")
+		@DisplayName("[실패] 400 : 이미 가입된 이메일인 경우")
 		void failWithDuplicateEmail() throws Exception {
 			BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
 				.willThrow(DuplicateEmailException.class);
@@ -381,10 +383,11 @@ class VendorControllerTest {
 			);
 
 			// then
-			actions.andExpect(status().isOk())
-				.andExpect(jsonPath("$.code").value("a1"))
-				.andExpect(jsonPath("$.message").value("이미 가입된 이메일 입니다."))
-				.andExpect(jsonPath("$.data").isEmpty())
+			actions.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.type").value("about:blank"))
+				.andExpect(jsonPath("$.title").value("Bad Request"))
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.instance").value("/vendors"))
 				.andDo(print());
 		}
 	}
