@@ -10,6 +10,7 @@ public class MenuCategoryValidator {
 	public static void validate(final Store store, final String name) {
 		validateNotNull(store, name);
 		validateNotBlank(name);
+		validateNameLength(name);
 	}
 
 	private static void validateNotNull(final Object... targets) {
@@ -25,6 +26,12 @@ public class MenuCategoryValidator {
 			if (target.isBlank()) {
 				throw new InvalidMenuCategoryCreationException(target + "은 빈 문자열이거나 공백 문자열이 포함될 수 없습니다.");
 			}
+		}
+	}
+
+	private static void validateNameLength(final String name) {
+		if (name.length() > MAX_NAME_LENGTH) {
+			throw new InvalidMenuCategoryCreationException("메뉴 카테고리 이름은 " + MAX_NAME_LENGTH + "글자까지 가능합니다.");
 		}
 	}
 	
