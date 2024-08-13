@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.PayAccountChargeService;
-import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
+import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
 import jakarta.persistence.EntityManager;
 
@@ -91,7 +91,7 @@ class PayAccountApiControllerTest {
 		void dailyLimitExceededTest() throws Exception {
 			//given
 			long amount = 1000L;
-			payAccountChargeService.chargeAccount(new AccountTransactionCommand(payAccount.getId(), DAILY_LIMIT));
+			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(payAccount.getId(), DAILY_LIMIT));
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then

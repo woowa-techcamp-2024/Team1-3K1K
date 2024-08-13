@@ -15,7 +15,7 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
-import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
+import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
 
 @SpringBootTest
 @DisplayName("PayAccountChargeService 클래스")
@@ -45,7 +45,7 @@ class PayAccountChargeServiceTest {
 		void withdrawAccount() {
 			//given
 			long amount = 100L;
-			AccountTransactionCommand command = new AccountTransactionCommand(payAccount.getId(), amount);
+			PayAccountChargeCommand command = new PayAccountChargeCommand(payAccount.getId(), amount);
 
 			//when
 			long afterBalance = payAccountChargeService.chargeAccount(command);
@@ -61,7 +61,7 @@ class PayAccountChargeServiceTest {
 			//given
 			Long unknownAccountId = Long.MAX_VALUE;
 			long amount = 100L;
-			AccountTransactionCommand command = new AccountTransactionCommand(unknownAccountId, amount);
+			PayAccountChargeCommand command = new PayAccountChargeCommand(unknownAccountId, amount);
 
 			//when & then
 			assertThatThrownBy(() -> payAccountChargeService.chargeAccount(command))
@@ -75,8 +75,8 @@ class PayAccountChargeServiceTest {
 			//given
 			long dailyLimit = 1_000_000L;
 			long amount = 1000L;
-			payAccountChargeService.chargeAccount(new AccountTransactionCommand(payAccount.getId(), dailyLimit));
-			AccountTransactionCommand command = new AccountTransactionCommand(payAccount.getId(), amount);
+			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(payAccount.getId(), dailyLimit));
+			PayAccountChargeCommand command = new PayAccountChargeCommand(payAccount.getId(), amount);
 
 			//when & then
 			assertThatThrownBy(() -> payAccountChargeService.chargeAccount(command))

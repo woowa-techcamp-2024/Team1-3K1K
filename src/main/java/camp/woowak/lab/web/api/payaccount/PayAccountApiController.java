@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.payaccount.service.PayAccountChargeService;
-import camp.woowak.lab.payaccount.service.command.AccountTransactionCommand;
+import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
 import camp.woowak.lab.web.api.utils.APIResponse;
 import camp.woowak.lab.web.api.utils.APIUtils;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
@@ -36,7 +36,7 @@ public class PayAccountApiController {
 	public ResponseEntity<APIResponse<PayAccountChargeResponse>> payAccountCharge(
 		@PathVariable("payAccountId") Long payAccountId,
 		@Validated @RequestBody PayAccountChargeRequest request) {
-		AccountTransactionCommand command = new AccountTransactionCommand(payAccountId, request.amount());
+		PayAccountChargeCommand command = new PayAccountChargeCommand(payAccountId, request.amount());
 		log.info("Pay account charge request received. Account ID: {}, Charge Amount: {}", payAccountId,
 			request.amount());
 
