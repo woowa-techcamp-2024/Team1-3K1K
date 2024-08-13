@@ -35,6 +35,20 @@ class MenuTest {
 
 		}
 
+		@Nested
+		@DisplayName("메뉴카테고리가")
+		class MenuCategory {
+
+			@Test
+			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
+			void isNull() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, null, "1234", 1000, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+		}
+
 	}
 
 	private Store createValidStore() {
