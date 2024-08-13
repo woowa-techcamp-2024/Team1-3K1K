@@ -209,7 +209,7 @@ class CustomerControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isConflict())
-			.andExpect(jsonPath("$.errorCode").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getCode()))
-			.andExpect(jsonPath("$.detail").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getMessage()));
+			.andExpect(jsonPath("$.errorCode").value(CustomerErrorCode.DUPLICATE_EMAIL.getErrorCode()))
+			.andExpect(jsonPath("$.detail").value(CustomerErrorCode.DUPLICATE_EMAIL.getMessage()));
 	}
 }
