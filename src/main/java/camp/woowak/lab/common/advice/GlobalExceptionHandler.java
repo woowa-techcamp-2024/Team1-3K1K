@@ -17,6 +17,8 @@ public class GlobalExceptionHandler {
 			e.getMessage());
 		problemDetail.setProperty("errorCode", "9999");
 
+		log.error("[Unexpected Exception]", e);
+
 		return problemDetail;
 	}
 }
