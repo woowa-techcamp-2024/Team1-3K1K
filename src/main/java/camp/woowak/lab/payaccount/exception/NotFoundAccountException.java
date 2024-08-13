@@ -1,7 +1,9 @@
 package camp.woowak.lab.payaccount.exception;
 
-public class NotFoundAccountException extends RuntimeException {
-	public NotFoundAccountException(String message) {
-		super(message);
+import camp.woowak.lab.common.exception.NotFoundException;
+
+public class NotFoundAccountException extends NotFoundException {
+	public NotFoundAccountException() {
+		super(PayAccountErrorCode.ACCOUNT_NOT_FOUND);
 	}
 }

@@ -17,8 +17,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
+@Slf4j
 public class PayAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,17 +86,22 @@ public class PayAccount {
 			.sum();
 
 		if (todayTotalCharge + amount > 1_000_000) {
-			throw new DailyLimitExceededException("Daily charge limit of " + 1_000_000 + " exceeded.");
+			log.warn("Daily charge limit of {} exceeded.", 1_000_000);
+			throw new DailyLimitExceededException();
 		}
 	}
 
 	private void validateTransactionAmount(long amount) {
-		if (amount <= 0)
-			throw new InvalidTransactionAmountException("Transaction amount must be greater than zero.");
+		if (amount <= 0) {
+			log.warn("Transaction amount must be greater than zero.");
+			throw new InvalidTransactionAmountException();
+		}
 	}
 
 	private void validateInsufficientBalance(long amount) {
-		if (this.balance - amount < 0)
-			throw new InsufficientBalanceException("Insufficient balance for this transaction.");
+		if (this.balance - amount < 0) {
+			log.warn("Insufficient balance for this transaction.");
+			throw new InsufficientBalanceException();
+		}
 	}
 }

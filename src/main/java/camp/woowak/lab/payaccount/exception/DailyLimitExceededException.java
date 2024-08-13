@@ -1,7 +1,9 @@
 package camp.woowak.lab.payaccount.exception;
 
-public class DailyLimitExceededException extends RuntimeException {
-	public DailyLimitExceededException(String message) {
-		super(message);
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class DailyLimitExceededException extends BadRequestException {
+	public DailyLimitExceededException() {
+		super(PayAccountErrorCode.DAILY_LIMIT_EXCEED);
 	}
 }

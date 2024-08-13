@@ -1,7 +1,9 @@
 package camp.woowak.lab.payaccount.exception;
 
-public class InsufficientBalanceException extends RuntimeException {
-	public InsufficientBalanceException(String message) {
-		super(message);
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class InsufficientBalanceException extends BadRequestException {
+	public InsufficientBalanceException() {
+		super(PayAccountErrorCode.INSUFFICIENT_BALANCE);
 	}
 }

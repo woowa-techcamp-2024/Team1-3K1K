@@ -1,7 +1,9 @@
 package camp.woowak.lab.payaccount.exception;
 
-public class InvalidTransactionAmountException extends RuntimeException {
-	public InvalidTransactionAmountException(String message) {
-		super(message);
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class InvalidTransactionAmountException extends BadRequestException {
+	public InvalidTransactionAmountException() {
+		super(PayAccountErrorCode.INVALID_TRANSACTION_AMOUNT);
 	}
 }
