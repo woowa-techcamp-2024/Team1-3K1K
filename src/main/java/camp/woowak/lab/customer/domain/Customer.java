@@ -10,4 +10,11 @@ public class Customer {
     private Long id;
     @OneToOne(fetch = FetchType.LAZY)
     private PayAccount payAccount;
+
+    public Customer(PayAccount payAccount) {
+        this.payAccount = payAccount;
+    }
+    public Long getId(){
+        return id;
+    }
 }
