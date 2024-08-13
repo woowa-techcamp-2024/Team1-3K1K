@@ -1,6 +1,6 @@
-name: [논의]
-description: 논의를 시작할 때 참고할 정보를 입력하세요.
-title: [논의] 제목
+name: "[논의] "
+description: "논의를 시작할 때 참고할 정보를 입력하세요."
+title: "[논의] 제목"
 body:
   - type: markdown
     attributes:
