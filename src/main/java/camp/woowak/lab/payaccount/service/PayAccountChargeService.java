@@ -21,7 +21,7 @@ public class PayAccountChargeService {
 
 	@Transactional
 	public long chargeAccount(PayAccountChargeCommand command) {
-		PayAccount payAccount = payAccountRepository.findByIdForUpdate(command.payAccountId())
+		PayAccount payAccount = payAccountRepository.findByCustomerIdForUpdate(command.payAccountId())
 			.orElseThrow(() -> new NotFoundAccountException("Invalid account id with " + command.payAccountId()));
 
 		PayAccountHistory chargeHistory = payAccount.charge(command.amount());

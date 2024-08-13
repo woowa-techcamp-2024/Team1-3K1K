@@ -12,6 +12,6 @@ import jakarta.persistence.LockModeType;
 
 public interface PayAccountRepository extends JpaRepository<PayAccount, Long> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	@Query("SELECT pa FROM PayAccount pa where pa.id = :id")
-	Optional<PayAccount> findByIdForUpdate(@Param("id") Long id);
+	@Query("SELECT pa FROM PayAccount pa LEFT JOIN Customer c on pa where c.id = :customerId")
+	Optional<PayAccount> findByCustomerIdForUpdate(@Param("id") Long customerId);
 }
