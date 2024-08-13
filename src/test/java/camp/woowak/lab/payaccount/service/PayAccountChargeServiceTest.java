@@ -11,21 +11,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import camp.woowak.lab.customer.domain.Customer;
+import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @DisplayName("PayAccountChargeService 클래스")
+@Transactional
 class PayAccountChargeServiceTest {
 	@Autowired
 	private PayAccountRepository payAccountRepository;
+	@Autowired
+	private CustomerRepository customerRepository;
 
 	@Autowired
 	private PayAccountChargeService payAccountChargeService;
 
+	private Customer customer;
 	private PayAccount payAccount;
 	private final long originBalance = 1000L;
 
@@ -33,8 +40,10 @@ class PayAccountChargeServiceTest {
 	void setUp() throws Exception {
 		payAccount = new PayAccount();
 		payAccount.deposit(originBalance);
-		payAccountRepository.save(payAccount);
-		payAccountRepository.flush();
+		payAccountRepository.saveAndFlush(payAccount);
+
+		customer = new Customer(payAccount);
+		customerRepository.saveAndFlush(customer);
 	}
 
 	@Nested
@@ -45,7 +54,7 @@ class PayAccountChargeServiceTest {
 		void withdrawAccount() {
 			//given
 			long amount = 100L;
-			PayAccountChargeCommand command = new PayAccountChargeCommand(payAccount.getId(), amount);
+			PayAccountChargeCommand command = new PayAccountChargeCommand(customer.getId(), amount);
 
 			//when
 			long afterBalance = payAccountChargeService.chargeAccount(command);
@@ -75,8 +84,8 @@ class PayAccountChargeServiceTest {
 			//given
 			long dailyLimit = 1_000_000L;
 			long amount = 1000L;
-			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(payAccount.getId(), dailyLimit));
-			PayAccountChargeCommand command = new PayAccountChargeCommand(payAccount.getId(), amount);
+			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(customer.getId(), dailyLimit));
+			PayAccountChargeCommand command = new PayAccountChargeCommand(customer.getId(), amount);
 
 			//when & then
 			assertThatThrownBy(() -> payAccountChargeService.chargeAccount(command))
