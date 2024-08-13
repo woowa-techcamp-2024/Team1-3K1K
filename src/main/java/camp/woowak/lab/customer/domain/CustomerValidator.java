@@ -6,6 +6,9 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 
 public class CustomerValidator {
 
+	private CustomerValidator() {
+	}
+
 	public static void validateCreation(String name, String email, String password, String phone,
 		PayAccount payAccount) throws InvalidCreationException {
 		validateName(name);
