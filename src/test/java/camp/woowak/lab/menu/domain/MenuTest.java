@@ -95,6 +95,44 @@ class MenuTest {
 
 		}
 
+		@Nested
+		@DisplayName("메뉴 가격이")
+		class MenuPrice {
+
+			@Test
+			@DisplayName("[Success] 양수만 가능하다")
+			void success() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1, "image"))
+					.doesNotThrowAnyException();
+			}
+
+			@Test
+			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
+			void isNull() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", null, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 음수면 InvalidMenuCreationException 이 발생한다")
+			void isNegative() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", -1, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 0이면 InvalidMenuCreationException 이 발생한다")
+			void isZero() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 0, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+		}
+
 	}
 
 	private Store createValidStore() {
