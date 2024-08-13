@@ -9,6 +9,7 @@ public class MenuCategoryValidator {
 
 	public static void validate(final Store store, final String name) {
 		validateNotNull(store, name);
+		validateNotBlank(name);
 	}
 
 	private static void validateNotNull(final Object... targets) {
@@ -19,4 +20,12 @@ public class MenuCategoryValidator {
 		}
 	}
 
+	private static void validateNotBlank(final String... targets) {
+		for (String target : targets) {
+			if (target.isBlank()) {
+				throw new InvalidMenuCategoryCreationException(target + "은 빈 문자열이거나 공백 문자열이 포함될 수 없습니다.");
+			}
+		}
+	}
+	
 }
