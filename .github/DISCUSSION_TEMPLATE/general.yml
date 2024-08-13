@@ -1,15 +1,15 @@
-title: "[General] "
-labels: ["General Introduction"]
+title: "[논의] "
+labels: ["🙋‍♂️ Question"]
 body:
   - type: markdown
     attributes:
       value: |
-        This is text that will show up in the template!
+        논의하고 싶은 세부 주제에 대해 작성해주세요.
   - type: textarea
     id: improvements
     attributes:
-      label: Top 3 improvements
-      description: "What are the top 3 improvements we could make to this project?"
+      label: 세부 주제
+      description: "논의하고 싶은 세부 주제에 대해 작성해주세요."
       value: |
         1.
         2.
@@ -18,38 +18,3 @@ body:
       render: bash
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: |
-        ## Markdown header
-        And some more markdown
-  - type: input
-    id: has-id
-    attributes:
-      label: Suggestions
-      description: A description about suggestions to help you
-    validations:
-      required: true
-  - type: dropdown
-    id: download
-    attributes:
-      label: Which area of this project could be most improved?
-      options:
-        - Documentation
-        - Pull request review time
-        - Bug fix time
-        - Release cadence
-    validations:
-      required: true
-  - type: checkboxes
-    attributes:
-      label: Check that box!
-      options:
-        - label: This one!
-          required: true
-        - label: I won't stop you if you check this one, too
-  - type: markdown
-    attributes:
-      value: |
-        ### The thrilling conclusion
-        _to our template_
