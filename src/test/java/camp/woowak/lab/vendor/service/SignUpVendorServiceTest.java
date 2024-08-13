@@ -17,7 +17,6 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
-import camp.woowak.lab.vendor.exception.DuplicateException;
 import camp.woowak.lab.vendor.exception.InvalidCreationException;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
@@ -68,7 +67,7 @@ class SignUpVendorServiceTest implements VendorFixture {
 			new SignUpVendorCommand("vendorName", "vendorEmail@example.com", "password", "010-0000-0000");
 
 		// then
-		Assertions.assertThrows(DuplicateException.class, () -> service.signUp(command));
+		Assertions.assertThrows(DuplicateEmailException.class, () -> service.signUp(command));
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
 		then(vendorRepository).should().save(Mockito.any(Vendor.class));
 	}

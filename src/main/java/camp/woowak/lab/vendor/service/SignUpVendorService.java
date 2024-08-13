@@ -8,13 +8,12 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
-import camp.woowak.lab.vendor.exception.InvalidCreationException;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @Service
-@Transactional(rollbackFor = {InvalidCreationException.class, DuplicateEmailException.class})
+@Transactional
 public class SignUpVendorService {
 	private final VendorRepository vendorRepository;
 	private final PayAccountRepository payAccountRepository;
@@ -27,7 +26,7 @@ public class SignUpVendorService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public Long signUp(SignUpVendorCommand cmd) throws InvalidCreationException, DuplicateEmailException {
+	public Long signUp(SignUpVendorCommand cmd) {
 		PayAccount newPayAccount = new PayAccount();
 		payAccountRepository.save(newPayAccount);
 		Vendor newVendor =
