@@ -28,6 +28,7 @@ public class MenuCategory {
 	private String name;
 
 	public MenuCategory(Store store, String name) {
+		MenuCategoryValidator.validate(store, name);
 		this.store = store;
 		this.name = name;
 	}
