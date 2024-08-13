@@ -17,7 +17,6 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
-import camp.woowak.lab.vendor.exception.InvalidCreationException;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
@@ -36,7 +35,7 @@ class SignUpVendorServiceTest implements VendorFixture {
 
 	@Test
 	@DisplayName("[성공] Vendor가 저장된다.")
-	void success() throws InvalidCreationException, DuplicateEmailException {
+	void success() throws DuplicateEmailException {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		PayAccount payAccount = createPayAccount();
@@ -56,7 +55,7 @@ class SignUpVendorServiceTest implements VendorFixture {
 
 	@Test
 	@DisplayName("[예외] 가입된 이메일인 경우 예외 발생")
-	void failWithDuplicateEmail() throws InvalidCreationException, DuplicateEmailException {
+	void failWithDuplicateEmail() throws DuplicateEmailException {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(createPayAccount());
