@@ -20,7 +20,7 @@ public class SignUpCustomerService {
 	private final PasswordEncoder passwordEncoder;
 
 	public SignUpCustomerService(CustomerRepository customerRepository, PayAccountRepository payAccountRepository,
-								 PasswordEncoder passwordEncoder) {
+		PasswordEncoder passwordEncoder) {
 		this.customerRepository = customerRepository;
 		this.payAccountRepository = payAccountRepository;
 		this.passwordEncoder = passwordEncoder;
