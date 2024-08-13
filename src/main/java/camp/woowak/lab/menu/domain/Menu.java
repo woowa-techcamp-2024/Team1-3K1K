@@ -9,8 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Menu {
 
 	@Id
@@ -33,5 +36,14 @@ public class Menu {
 
 	@Column(nullable = false)
 	private String imageUrl;
+
+	public Menu(Store store, MenuCategory menuCategory, String name, Integer price, String imageUrl) {
+		MenuValidator.validate(store, menuCategory, name, price, imageUrl);
+		this.store = store;
+		this.menuCategory = menuCategory;
+		this.name = name;
+		this.price = price;
+		this.imageUrl = imageUrl;
+	}
 
 }
