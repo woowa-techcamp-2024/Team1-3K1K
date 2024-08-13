@@ -23,7 +23,7 @@ public record StoreRegistrationRequest(
 	Integer storeMinOrderPrice,
 
 	@NotNull(message = "가게 시작 시간은 필수값입니다.")
-	LocalDateTime storeStarTime,
+	LocalDateTime storeStartTime,
 
 	@NotNull(message = "가게 종료 시간은 필수값입니다.")
 	LocalDateTime storeEndTime

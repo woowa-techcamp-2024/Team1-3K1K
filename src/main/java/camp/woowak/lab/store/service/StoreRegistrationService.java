@@ -37,7 +37,7 @@ public class StoreRegistrationService {
 			request.storeAddress(),
 			request.storePhoneNumber(),
 			request.storeMinOrderPrice(),
-			request.storeStarTime(),
+			request.storeStartTime(),
 			request.storeEndTime());
 	}
 
