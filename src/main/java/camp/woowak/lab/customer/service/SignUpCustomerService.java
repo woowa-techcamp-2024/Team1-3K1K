@@ -32,7 +32,7 @@ public class SignUpCustomerService {
 	 * @throws DuplicateEmailException 이메일이 중복되는 경우
 	 */
 	@Transactional
-	public Long signUp(SignUpCustomerCommand cmd) throws InvalidCreationException, DuplicateEmailException {
+	public Long signUp(SignUpCustomerCommand cmd) {
 		PayAccount payAccount = new PayAccount();
 		payAccountRepository.save(payAccount);
 
