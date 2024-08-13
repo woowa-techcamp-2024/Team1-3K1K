@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
 		problemDetail.setProperty("errorCode", "9999");
 
 		log.error("[Unexpected Exception]", e);
+		// TODO: Notion Hook 등록
 
 		return problemDetail;
 	}
