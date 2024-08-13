@@ -31,11 +31,10 @@ public class Vendor {
 	}
 
 	/**
-	 *
 	 * @throws InvalidVendorCreationException 검증에 실패하면
 	 */
 	public Vendor(String name, String email, String password, String phone, PayAccount payAccount,
-		PasswordEncoder passwordEncoder) {
+				  PasswordEncoder passwordEncoder) {
 		VendorValidator.validate(name, email, password, phone, payAccount);
 		this.name = name;
 		this.email = email;
