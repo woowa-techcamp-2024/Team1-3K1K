@@ -2,6 +2,7 @@ package camp.woowak.lab.web.api;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Optional;
@@ -18,12 +19,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.exception.PayAccountErrorCode;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.PayAccountChargeService;
 import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
@@ -112,11 +116,14 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL)
+			ResultActions actions = mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command))
 					.session(session))
+				.andDo(print())
 				.andExpect(status().isBadRequest());
+
+			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.DAILY_LIMIT_EXCEED);
 		}
 
 		//TODO : 아직 API Response Format이 정해지지 않았으므로, 논의 후 추가
@@ -131,11 +138,13 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL)
+			ResultActions actions = mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command))
 					.session(notExistsSession))
 				.andExpect(status().isNotFound());
+
+			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.ACCOUNT_NOT_FOUND);
 		}
 
 		@Test
@@ -145,7 +154,7 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(null);
 
 			//when & then
-			mvc.perform(post(BASE_URL)
+			ResultActions actions = mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command))
 					.session(session))
@@ -162,13 +171,21 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL)
+			ResultActions actions = mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
 					.content(objectMapper.writeValueAsBytes(command))
 					.session(session))
 				.andExpect(status().isBadRequest());
 
+			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.INVALID_TRANSACTION_AMOUNT);
 			verificationPersistedBalance(payAccount.getId(), originBalance);
 		}
+	}
+
+	private ResultActions validateErrorResponseWithErrorCode(ResultActions actions, ErrorCode errorCode) throws
+		Exception {
+		return actions.andExpect(jsonPath("$.status").value(errorCode.getStatus()))
+			.andExpect(jsonPath("$.detail").value(errorCode.getMessage()))
+			.andExpect(jsonPath("$.errorCode").value(errorCode.getErrorCode()));
 	}
 }
