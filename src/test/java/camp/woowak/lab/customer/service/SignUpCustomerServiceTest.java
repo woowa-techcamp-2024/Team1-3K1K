@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
-import camp.woowak.lab.customer.exception.DuplicateException;
 import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
@@ -52,7 +51,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// when
 		SignUpCustomerCommand command =
 			new SignUpCustomerCommand("name", "email@example.com", "password", "01012345678");
-		Long id = service.signUp(command);
+		service.signUp(command);
 
 		// then
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
@@ -72,7 +71,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 			new SignUpCustomerCommand("name", "email@example.com", "password", "01012345678");
 
 		// then
-		Assertions.assertThrows(DuplicateException.class, () -> service.signUp(command));
+		Assertions.assertThrows(DuplicateEmailException.class, () -> service.signUp(command));
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
 		then(customerRepository).should().save(Mockito.any(Customer.class));
 	}

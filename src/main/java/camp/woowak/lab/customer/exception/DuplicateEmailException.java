@@ -1,4 +1,9 @@
 package camp.woowak.lab.customer.exception;
 
-public class DuplicateEmailException extends DuplicateException {
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class DuplicateEmailException extends BadRequestException {
+	public DuplicateEmailException() {
+		super(CustomerErrorCode.DUPLICATE_EMAIL);
+	}
 }

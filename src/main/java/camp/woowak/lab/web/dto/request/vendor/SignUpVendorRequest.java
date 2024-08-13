@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.dto.request;
+package camp.woowak.lab.web.dto.request.vendor;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -6,13 +6,12 @@ import camp.woowak.lab.web.validation.annotation.Phone;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record SignUpCustomerRequest(
-	@Length(min = 1, max = 50)
+public record SignUpVendorRequest(
+	@NotBlank @Length(min = 1, max = 50)
 	String name,
-	@NotBlank
-	@Email
+	@NotBlank @Email
 	String email,
-	@Length(min = 8, max = 20)
+	@NotBlank @Length(min = 8, max = 30)
 	String password,
 	@Phone
 	String phone

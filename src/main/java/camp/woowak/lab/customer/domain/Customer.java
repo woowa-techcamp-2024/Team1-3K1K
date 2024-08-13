@@ -33,60 +33,13 @@ public class Customer {
 	}
 
 	public Customer(String name, String email, String password, String phone, PayAccount payAccount,
-					PasswordEncoder passwordEncoder) throws
+		PasswordEncoder passwordEncoder) throws
 		InvalidCreationException {
-		checkName(name);
-		checkEmail(email);
-		checkPassword(password);
-		checkPhone(phone);
-		checkPayAccount(payAccount);
+		CustomerValidator.validateCreation(name, email, password, phone, payAccount);
 		this.name = name;
 		this.email = email;
 		this.password = passwordEncoder.encode(password);
 		this.phone = phone;
 		this.payAccount = payAccount;
 	}
-
-	private void checkPayAccount(PayAccount payAccount) throws InvalidCreationException {
-		if (payAccount == null) {
-			throw new InvalidCreationException("Pay account cannot be null");
-		}
-	}
-
-	private void checkPhone(String phone) throws InvalidCreationException {
-		if (phone == null || phone.isBlank()) {
-			throw new InvalidCreationException("Customer phone cannot be blank");
-		}
-		if (phone.trim().length() > 30) {
-			throw new InvalidCreationException("Customer phone cannot be longer than 30 characters");
-		}
-	}
-
-	private void checkPassword(String password) throws InvalidCreationException {
-		if (password == null || password.isBlank()) {
-			throw new InvalidCreationException("Customer password cannot be blank");
-		}
-		if (password.trim().length() > 30) {
-			throw new InvalidCreationException("Customer password cannot be longer than 30 characters");
-		}
-	}
-
-	private void checkEmail(String email) throws InvalidCreationException {
-		if (email == null || email.isBlank()) {
-			throw new InvalidCreationException("Customer email cannot be blank");
-		}
-		if (email.trim().length() > 100) {
-			throw new InvalidCreationException("Customer email cannot be longer than 100 characters");
-		}
-	}
-
-	private void checkName(String name) throws InvalidCreationException {
-		if (name == null || name.isBlank()) {
-			throw new InvalidCreationException("Customer name cannot be blank");
-		}
-		if (name.length() > 50) {
-			throw new InvalidCreationException("Customer name cannot exceed 50 characters");
-		}
-	}
-
 }

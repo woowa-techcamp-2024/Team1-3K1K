@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.api;
+package camp.woowak.lab.web.api.customer;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -16,26 +16,20 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import camp.woowak.lab.customer.exception.AuthenticationException;
+import camp.woowak.lab.customer.exception.CustomerErrorCode;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
-import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
-import camp.woowak.lab.web.dto.request.SignInCustomerRequest;
-import camp.woowak.lab.web.dto.request.SignUpCustomerRequest;
-import camp.woowak.lab.web.error.ErrorCode;
+import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
 
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(CustomerApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class CustomerControllerTest {
+class CustomerApiControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@MockBean
 	private SignUpCustomerService signUpCustomerService;
-
-	@MockBean
-	private SignInCustomerService signInCustomerService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -214,37 +208,8 @@ class CustomerControllerTest {
 		mockMvc.perform(post("/customers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getCode()))
-			.andExpect(jsonPath("$.message").value(ErrorCode.AUTH_DUPLICATE_EMAIL.getMessage()));
-	}
-
-	@Test
-	@DisplayName("구매자 로그인 테스트 - 성공")
-	void testSignInCustomer() throws Exception {
-		// given
-		SignInCustomerRequest request = new SignInCustomerRequest("customer@email.com", "password123");
-		willDoNothing().given(signInCustomerService).signIn(any());
-
-		// when & then
-		mockMvc.perform(post("/customers/sign-in")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("구매자 로그인 테스트 - 로그인 실패 시")
-	void testSignInCustomerFail() throws Exception {
-		// given
-		SignInCustomerRequest request = new SignInCustomerRequest
-			("Invalid@email.com", "InvalidPassword123");
-		willThrow(new AuthenticationException("Invalid email or password")).given(signInCustomerService).signIn(any());
-
-		// when & then
-		mockMvc.perform(post("/customers/sign-in")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.errorCode").value(CustomerErrorCode.DUPLICATE_EMAIL.getErrorCode()))
+			.andExpect(jsonPath("$.detail").value(CustomerErrorCode.DUPLICATE_EMAIL.getMessage()));
 	}
 }
