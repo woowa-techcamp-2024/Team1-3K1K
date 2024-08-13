@@ -21,11 +21,11 @@ public class PayAccountChargeService {
 
 	@Transactional
 	public long chargeAccount(PayAccountChargeCommand command) {
-		PayAccount payAccount = payAccountRepository.findByCustomerIdForUpdate(command.payAccountId())
-			.orElseThrow(() -> new NotFoundAccountException("Invalid account id with " + command.payAccountId()));
+		PayAccount payAccount = payAccountRepository.findByCustomerIdForUpdate(command.customerId())
+			.orElseThrow(() -> new NotFoundAccountException("Invalid account id with " + command.customerId()));
 
 		PayAccountHistory chargeHistory = payAccount.charge(command.amount());
-		log.info("A Charge of {} has been completed from Account ID {}", command.amount(), command.payAccountId());
+		log.info("A Charge of {} has been completed from Account ID {}", command.amount(), payAccount.getId());
 
 		return payAccount.getBalance();
 	}
