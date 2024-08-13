@@ -126,7 +126,6 @@ class PayAccountApiControllerTest {
 			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.DAILY_LIMIT_EXCEED);
 		}
 
-		//TODO : 아직 API Response Format이 정해지지 않았으므로, 논의 후 추가
 		@Test
 		@DisplayName("존재하지 않는 계정 ID를 입력하면 404를 return한다.")
 		void notExistsAccountIdTest() throws Exception {
