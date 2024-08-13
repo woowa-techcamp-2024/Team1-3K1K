@@ -11,6 +11,7 @@ public class MenuValidator {
 								final Integer price, final String imageUrl) {
 		validateNotNull(store, menuCategory, name, price, imageUrl);
 		validateNotBlank(name, imageUrl);
+		validateNameLength(name);
 	}
 
 	private static void validateNotNull(final Object... targets) {
@@ -26,6 +27,12 @@ public class MenuValidator {
 			if (target.isBlank()) {
 				throw new InvalidMenuCreationException(target + "은 빈 문자열이거나 공백 문자열이 포함될 수 없습니다.");
 			}
+		}
+	}
+
+	private static void validateNameLength(final String name) {
+		if (name.length() > MAX_NAME_LENGTH) {
+			throw new InvalidMenuCreationException("메뉴 이름은 " + MAX_NAME_LENGTH + "글자까지 가능합니다.");
 		}
 	}
 
