@@ -1,6 +1,6 @@
 package camp.woowak.lab.payaccount.service.command;
 
 public record PayAccountChargeCommand(
-	Long payAccountId,
+	Long customerId,
 	long amount) {
 }
