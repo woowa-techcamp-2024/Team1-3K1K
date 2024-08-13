@@ -133,6 +133,36 @@ class MenuTest {
 
 		}
 
+		@Nested
+		@DisplayName("메뉴 사진 url 이")
+		class MenuDescription {
+
+			@Test
+			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
+			void isNull() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 빈 문자열이면 InvalidMenuCreationException 이 발생한다")
+			void isEmpty() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 공백 문자열이면 InvalidMenuCreationException 이 발생한다")
+			void isBlank() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+		}
+
 	}
 
 	private Store createValidStore() {
