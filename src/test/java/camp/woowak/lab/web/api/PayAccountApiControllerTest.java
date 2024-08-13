@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,35 +16,39 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.customer.domain.Customer;
+import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.PayAccountChargeService;
 import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
+import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
-import jakarta.persistence.EntityManager;
+import camp.woowak.lab.web.resolver.session.SessionConst;
 
 @AutoConfigureMockMvc
 @SpringBootTest
 @DisplayName("PayAccountApiController 클래스")
 class PayAccountApiControllerTest {
-	private final String BASE_URL = "/account/";
 	@Autowired
 	private MockMvc mvc;
 	@Autowired
 	private PayAccountRepository payAccountRepository;
 	@Autowired
-	private PayAccountChargeService payAccountChargeService;
-
+	private CustomerRepository customerRepository;
 	@Autowired
-	private EntityManager em;
+	private PayAccountChargeService payAccountChargeService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	private MockHttpSession session;
+	private Customer customer;
 	private PayAccount payAccount;
 	private long originBalance;
 
@@ -52,8 +57,18 @@ class PayAccountApiControllerTest {
 		originBalance = 1000L;
 		payAccount = new PayAccount();
 		payAccount.deposit(originBalance);
-		payAccountRepository.save(payAccount);
-		em.detach(payAccount);
+		payAccountRepository.saveAndFlush(payAccount);
+
+		customer = new Customer(payAccount);
+		customerRepository.saveAndFlush(customer);
+
+		session = new MockHttpSession();
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(customer.getId()));
+	}
+
+	@AfterEach
+	void clearSession() throws Exception {
+		session.clearAttributes();
 	}
 
 	private void verificationPersistedBalance(Long payAccountId, long amount) {
@@ -67,6 +82,7 @@ class PayAccountApiControllerTest {
 	@DisplayName("충전 요청은")
 	class PayAccountChargeAPITest {
 		private final long DAILY_LIMIT = 1_000_000L;
+		private final String BASE_URL = "/account/charge";
 
 		@Test
 		@DisplayName("존재하는 계정 ID에 정상범위의 금액을 입력하면 충전된다.")
@@ -76,9 +92,10 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+			mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command)))
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
 				.andExpect(jsonPath("$.data.balance").value(amount + originBalance));
@@ -91,13 +108,14 @@ class PayAccountApiControllerTest {
 		void dailyLimitExceededTest() throws Exception {
 			//given
 			long amount = 1000L;
-			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(payAccount.getId(), DAILY_LIMIT));
+			payAccountChargeService.chargeAccount(new PayAccountChargeCommand(customer.getId(), DAILY_LIMIT));
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+			mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command)))
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isBadRequest());
 		}
 
@@ -108,12 +126,15 @@ class PayAccountApiControllerTest {
 			//given
 			long amount = 1000L;
 			Long notExistsId = Long.MAX_VALUE;
+			MockHttpSession notExistsSession = new MockHttpSession();
+			notExistsSession.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(notExistsId));
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + notExistsId + "/charge")
+			mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command)))
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(notExistsSession))
 				.andExpect(status().isNotFound());
 		}
 
@@ -124,9 +145,10 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(null);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+			mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command)))
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isBadRequest());
 
 			verificationPersistedBalance(payAccount.getId(), originBalance);
@@ -140,9 +162,10 @@ class PayAccountApiControllerTest {
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
-			mvc.perform(post(BASE_URL + payAccount.getId() + "/charge")
+			mvc.perform(post(BASE_URL)
 					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command)))
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isBadRequest());
 
 			verificationPersistedBalance(payAccount.getId(), originBalance);
