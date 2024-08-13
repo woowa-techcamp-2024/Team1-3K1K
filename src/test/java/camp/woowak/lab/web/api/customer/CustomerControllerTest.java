@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.api;
+package camp.woowak.lab.web.api.customer;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -16,10 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.customer.exception.CustomerErrorCode;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
-import camp.woowak.lab.web.dto.request.SignUpCustomerRequest;
-import camp.woowak.lab.web.error.ErrorCode;
+import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
 
 @WebMvcTest(CustomerController.class)
 @MockBean(JpaMetamodelMappingContext.class)

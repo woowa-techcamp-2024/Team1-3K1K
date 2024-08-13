@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.api;
+package camp.woowak.lab.web.api.customer;
 
 import java.net.URI;
 
