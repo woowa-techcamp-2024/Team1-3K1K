@@ -21,10 +21,7 @@ public class StoreApiController {
 	private final StoreRegistrationService storeRegistrationService;
 	private final VendorRepository vendorRepository;
 
-	// TODO:
-	//  1. 인증/인가에 대한 스펙이 정의되어야, Vendor Resolver 로직을 결정할 수 있음
-	//  2. SSR, CSR 에 대해 통일해야, API 반환타입을 fix 할 수 있음
-	//  3. API 공통 응답 명세에 대한 논의 진행 필요
+	// TODO: 서비스 메서드 코드 스타일 통일하면서 dtoResponse 반환하도록 수정할 예정
 	@PostMapping("/stores")
 	public ResponseEntity<Void> storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
 												  final @Valid @RequestBody StoreRegistrationRequest request
