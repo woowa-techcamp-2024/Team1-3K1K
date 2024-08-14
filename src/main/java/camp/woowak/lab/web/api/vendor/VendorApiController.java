@@ -15,6 +15,7 @@ import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
+import camp.woowak.lab.web.dto.response.vendor.SignInVendorResponse;
 import camp.woowak.lab.web.dto.response.vendor.SignUpVendorResponse;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
@@ -42,10 +43,10 @@ public class VendorApiController {
 
 	@PostMapping("/vendors/login")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public Void login(@Valid @RequestBody SignInVendorRequest request, HttpSession session) {
+	public SignInVendorResponse login(@Valid @RequestBody SignInVendorRequest request, HttpSession session) {
 		SignInVendorCommand command = new SignInVendorCommand(request.email(), request.password());
 		UUID vendorId = signInVendorService.signIn(command);
 		session.setAttribute(SessionConst.SESSION_VENDOR_KEY, new LoginVendor(vendorId));
-		return null;
+		return new SignInVendorResponse("success");
 	}
 }
