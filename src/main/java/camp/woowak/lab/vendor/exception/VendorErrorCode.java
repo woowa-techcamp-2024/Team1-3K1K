@@ -15,7 +15,8 @@ public enum VendorErrorCode implements ErrorCode {
 	INVALID_NAME_RANGE(HttpStatus.BAD_REQUEST, "v1_8", "이름은 50자를 넘을 수 없습니다."),
 	INVALID_PAY_ACCOUNT_EMPTY(HttpStatus.BAD_REQUEST, "v_1_9", "포인트 계좌가 입력되지 않았습니다."),
 	DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "v_2", "이미 가입된 이메일입니다."),
-	NOT_FOUND_VENDOR(HttpStatus.BAD_REQUEST, "v3", "존재하지 않는 점주입니다.");
+	NOT_FOUND_VENDOR(HttpStatus.BAD_REQUEST, "v3", "존재하지 않는 점주입니다."),
+	WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "v4_1", "잘못된 비밀번호입니다.");
 
 	private final int status;
 	private final String errorCode;
