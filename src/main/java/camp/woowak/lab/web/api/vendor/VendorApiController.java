@@ -11,6 +11,7 @@ import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
 import camp.woowak.lab.web.api.utils.APIResponse;
 import camp.woowak.lab.web.api.utils.APIUtils;
+import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
 import camp.woowak.lab.web.dto.response.vendor.SignUpVendorResponse;
 import jakarta.validation.Valid;
@@ -31,5 +32,11 @@ public class VendorApiController {
 			new SignUpVendorCommand(request.name(), request.email(), request.password(), request.phone());
 		Long registeredId = signUpVendorService.signUp(command);
 		return APIUtils.of(HttpStatus.CREATED, new SignUpVendorResponse(registeredId));
+	}
+
+	@PostMapping("/vendor/login")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public SignUpVendorResponse login(@Valid @RequestBody SignInVendorRequest request) {
+		return null;
 	}
 }
