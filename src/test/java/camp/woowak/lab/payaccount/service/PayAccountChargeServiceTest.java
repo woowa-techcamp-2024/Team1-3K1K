@@ -18,6 +18,7 @@ import camp.woowak.lab.payaccount.exception.DailyLimitExceededException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -28,6 +29,8 @@ class PayAccountChargeServiceTest {
 	private PayAccountRepository payAccountRepository;
 	@Autowired
 	private CustomerRepository customerRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private PayAccountChargeService payAccountChargeService;
@@ -42,7 +45,7 @@ class PayAccountChargeServiceTest {
 		payAccount.deposit(originBalance);
 		payAccountRepository.saveAndFlush(payAccount);
 
-		customer = new Customer(payAccount);
+		customer = new Customer("name1", "email1@gmail.com", "password1", "010-1111-2222", payAccount, passwordEncoder);
 		customerRepository.saveAndFlush(customer);
 	}
 

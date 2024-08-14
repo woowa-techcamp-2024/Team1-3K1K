@@ -32,12 +32,15 @@ import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.payaccount.service.PayAccountChargeService;
 import camp.woowak.lab.payaccount.service.command.PayAccountChargeCommand;
 import camp.woowak.lab.web.authentication.LoginCustomer;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 import camp.woowak.lab.web.dto.request.payaccount.PayAccountChargeRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
+import jakarta.transaction.Transactional;
 
 @AutoConfigureMockMvc
 @SpringBootTest
 @DisplayName("PayAccountApiController 클래스")
+@Transactional
 class PayAccountApiControllerTest {
 	@Autowired
 	private MockMvc mvc;
@@ -47,6 +50,8 @@ class PayAccountApiControllerTest {
 	private CustomerRepository customerRepository;
 	@Autowired
 	private PayAccountChargeService payAccountChargeService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -63,7 +68,7 @@ class PayAccountApiControllerTest {
 		payAccount.deposit(originBalance);
 		payAccountRepository.saveAndFlush(payAccount);
 
-		customer = new Customer(payAccount);
+		customer = new Customer("name1", "email1@gmail.com", "password1", "010-1111-2222", payAccount, passwordEncoder);
 		customerRepository.saveAndFlush(customer);
 
 		session = new MockHttpSession();
@@ -97,9 +102,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			mvc.perform(post(BASE_URL)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command))
-					.session(session))
+							.contentType(MediaType.APPLICATION_JSON_VALUE)
+							.content(objectMapper.writeValueAsBytes(command))
+							.session(session))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
 				.andExpect(jsonPath("$.data.balance").value(amount + originBalance));
@@ -117,9 +122,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command))
-					.session(session))
+													.contentType(MediaType.APPLICATION_JSON_VALUE)
+													.content(objectMapper.writeValueAsBytes(command))
+													.session(session))
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 
@@ -138,9 +143,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command))
-					.session(notExistsSession))
+													.contentType(MediaType.APPLICATION_JSON_VALUE)
+													.content(objectMapper.writeValueAsBytes(command))
+													.session(notExistsSession))
 				.andExpect(status().isNotFound());
 
 			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.ACCOUNT_NOT_FOUND);
@@ -154,9 +159,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command))
-					.session(session))
+													.contentType(MediaType.APPLICATION_JSON_VALUE)
+													.content(objectMapper.writeValueAsBytes(command))
+													.session(session))
 				.andExpect(status().isBadRequest());
 
 			verificationPersistedBalance(payAccount.getId(), originBalance);
@@ -171,9 +176,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)
-					.content(objectMapper.writeValueAsBytes(command))
-					.session(session))
+													.contentType(MediaType.APPLICATION_JSON_VALUE)
+													.content(objectMapper.writeValueAsBytes(command))
+													.session(session))
 				.andExpect(status().isBadRequest());
 
 			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.INVALID_TRANSACTION_AMOUNT);
