@@ -10,16 +10,16 @@ public record StoreMenuRegistrationRequest(
 ) {
 
 	public record MenuLineItem(
-		@NotBlank
+		@NotBlank(message = "메뉴 이름은 필수값입니다.")
 		String name,
 
-		@NotBlank
+		@NotBlank(message = "사진은 필수값입니다.")
 		String imageUrl,
 
-		@NotBlank
+		@NotBlank(message = "메뉴 카테고리 이름은 필수값입니다.")
 		String categoryName,
 
-		@NotNull
+		@NotNull(message = "메뉴 가격은 필수값입니다.")
 		Integer price
 	) {
 	}
