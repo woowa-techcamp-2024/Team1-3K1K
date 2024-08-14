@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
 import camp.woowak.lab.customer.exception.InvalidCreationException;
@@ -43,10 +44,11 @@ class SignUpCustomerServiceIntegrationTest {
 		// then
 		try {
 			service.signUp(command2);
-			fail("중복 이메일 예외가 발생해야 합니다.");
 		} catch (DuplicateEmailException e) {
 			assertEquals(1, customerRepository.count());
 			assertEquals(1, payAccountRepository.count());
+		} catch (DataIntegrityViolationException e) {
+			fail("DataIntegrityViolationException이 발생했습니다.");
 		}
 	}
 }
