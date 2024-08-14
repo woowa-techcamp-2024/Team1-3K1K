@@ -17,12 +17,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
+import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreAddress;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.store.service.dto.StoreMenuRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class StoreMenuRegistrationServiceTest {
@@ -47,7 +51,7 @@ class StoreMenuRegistrationServiceTest {
 	@DisplayName("[Success] 메뉴 등록 성공")
 	void storeMenuRegistrationSuccess() {
 		// given
-		Vendor owner = new Vendor();
+		Vendor owner = createVendor();
 		List<StoreMenuRegistrationRequest.MenuLineItem> menuItems = List.of(
 			new StoreMenuRegistrationRequest.MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
 		);
@@ -70,7 +74,7 @@ class StoreMenuRegistrationServiceTest {
 	@DisplayName("[Exception] 존재하지 않는 가게")
 	void storeMenuRegistrationStoreNotFound() {
 		// given
-		Vendor owner = new Vendor();
+		Vendor owner = createVendor();
 		List<StoreMenuRegistrationRequest.MenuLineItem> menuItems = List.of(
 			new StoreMenuRegistrationRequest.MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
 		);
@@ -98,5 +102,12 @@ class StoreMenuRegistrationServiceTest {
 
 	private MenuCategory createValidMenuCategory() {
 		return new MenuCategory(storeFixture, "1234567890");
+	}
+
+	private Vendor createVendor() {
+		PayAccount payAccount = new TestPayAccount(1L);
+		PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+		return new Vendor("vendorName", "vendorEmail@example.com", "vendorPassword", "010-0000-0000", payAccount,
+			passwordEncoder);
 	}
 }

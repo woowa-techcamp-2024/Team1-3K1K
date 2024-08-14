@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreAddress;
 import camp.woowak.lab.store.domain.StoreCategory;
@@ -19,6 +21,8 @@ import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @DataJpaTest
 class MenuCategoryRepositoryTest {
@@ -35,6 +39,9 @@ class MenuCategoryRepositoryTest {
 	@Autowired
 	StoreCategoryRepository storeCategoryRepository;
 
+	@Autowired
+	PayAccountRepository payAccountRepository;
+
 	@Nested
 	@DisplayName("가게와 메뉴카테고리 이름으로 메뉴카테고리를 조회하는 기능은")
 	class FindByStoreAndNameTest {
@@ -43,7 +50,9 @@ class MenuCategoryRepositoryTest {
 		@DisplayName("[Success] 가게와 메뉴카테고리 이름이 있으면 조회를 성공한다")
 		void success() {
 			// given
-			Vendor vendor = new Vendor();
+			PayAccount payAccount = payAccountRepository.save(new PayAccount());
+
+			Vendor vendor = createVendor(payAccount);
 			String categoryName = "돈가스";
 			StoreCategory storeCategory = new StoreCategory(categoryName);
 
@@ -77,8 +86,9 @@ class MenuCategoryRepositoryTest {
 			// given
 			String categoryName = "돈가스";
 			String notExistCategoryName = "xxx";
+			PayAccount payAccount = payAccountRepository.save(new PayAccount());
 
-			Vendor vendor = new Vendor();
+			Vendor vendor = createVendor(payAccount);
 			vendorRepository.saveAndFlush(vendor);
 
 			StoreCategory storeCategory = new StoreCategory(categoryName);
@@ -118,6 +128,12 @@ class MenuCategoryRepositoryTest {
 			validStartTimeFixture,
 			validEndTimeFixture
 		);
+	}
+
+	private Vendor createVendor(PayAccount payAccount) {
+		PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+		return new Vendor("vendorName", "vendorEmail@example.com", "vendorPassword", "010-0000-0000", payAccount,
+			passwordEncoder);
 	}
 
 }
