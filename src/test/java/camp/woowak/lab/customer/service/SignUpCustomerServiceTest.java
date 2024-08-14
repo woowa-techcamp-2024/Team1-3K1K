@@ -2,6 +2,8 @@ package camp.woowak.lab.customer.service;
 
 import static org.mockito.BDDMockito.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,6 @@ import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.fixture.CustomerFixture;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
-import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,9 +45,10 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		PayAccount payAccount = createPayAccount();
-		Customer customer = createCustomer(payAccount, new NoOpPasswordEncoder());
+		Customer customerMock = Mockito.mock(Customer.class);
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(payAccount);
-		given(customerRepository.save(Mockito.any(Customer.class))).willReturn(customer);
+		given(customerRepository.save(Mockito.any(Customer.class))).willReturn(customerMock);
+		when(customerMock.getId()).thenReturn(UUID.randomUUID());
 
 		// when
 		SignUpCustomerCommand command =

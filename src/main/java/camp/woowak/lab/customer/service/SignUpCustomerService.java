@@ -12,7 +12,9 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class SignUpCustomerService {
 	private final CustomerRepository customerRepository;
@@ -20,7 +22,7 @@ public class SignUpCustomerService {
 	private final PasswordEncoder passwordEncoder;
 
 	public SignUpCustomerService(CustomerRepository customerRepository, PayAccountRepository payAccountRepository,
-								 PasswordEncoder passwordEncoder) {
+		PasswordEncoder passwordEncoder) {
 		this.customerRepository = customerRepository;
 		this.payAccountRepository = payAccountRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -31,8 +33,8 @@ public class SignUpCustomerService {
 	 * @throws InvalidCreationException 구매자 생성에 오류가 나는 경우
 	 * @throws DuplicateEmailException 이메일이 중복되는 경우
 	 */
-	@Transactional
-	public Long signUp(SignUpCustomerCommand cmd) {
+	@Transactional()
+	public String signUp(SignUpCustomerCommand cmd) {
 		PayAccount payAccount = new PayAccount();
 		payAccountRepository.save(payAccount);
 
@@ -40,10 +42,10 @@ public class SignUpCustomerService {
 			passwordEncoder);
 
 		try {
-			customerRepository.save(newCustomer);
+			return customerRepository.saveAndFlush(newCustomer).getId().toString();
 		} catch (DataIntegrityViolationException e) {
+			log.error("데이터 무결성 위반");
 			throw new DuplicateEmailException();
 		}
-		return newCustomer.getId();
 	}
 }
