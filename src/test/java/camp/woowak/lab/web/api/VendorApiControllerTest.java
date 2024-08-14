@@ -451,7 +451,7 @@ class VendorApiControllerTest {
 			);
 
 			// then
-			actions.andExpect(status().isNoContent())
+			actions.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
 				.andDo(print());
 		}
@@ -473,7 +473,7 @@ class VendorApiControllerTest {
 			);
 
 			// then
-			actions.andExpect(status().isNoContent())
+			actions.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
 				.andDo(print());
 		}
