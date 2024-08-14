@@ -1,16 +1,14 @@
 package camp.woowak.lab.web.authentication;
 
-import java.util.UUID;
-
 public class LoginCustomer implements LoginMember {
-	private final UUID id;
+	private final Long id;
 
-	public LoginCustomer(UUID id) {
+	public LoginCustomer(Long id) {
 		this.id = id;
 	}
 
 	@Override
-	public UUID getId() {
+	public Long getId() {
 		return id;
 	}
 }
