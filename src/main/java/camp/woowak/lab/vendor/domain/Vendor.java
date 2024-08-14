@@ -48,4 +48,8 @@ public class Vendor {
 	public UUID getId() {
 		return id;
 	}
+
+	public boolean matches(String password, PasswordEncoder passwordEncoder) {
+		return passwordEncoder.matches(this.password, password);
+	}
 }
