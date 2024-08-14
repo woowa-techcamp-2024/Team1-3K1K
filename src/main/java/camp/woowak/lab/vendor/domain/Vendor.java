@@ -50,6 +50,6 @@ public class Vendor {
 	}
 
 	public boolean matches(String password, PasswordEncoder passwordEncoder) {
-		return passwordEncoder.matches(this.password, password);
+		return passwordEncoder.matches(password, this.password);
 	}
 }
