@@ -29,13 +29,13 @@ public class SignUpVendorService {
 	public String signUp(SignUpVendorCommand cmd) {
 		PayAccount newPayAccount = new PayAccount();
 		payAccountRepository.save(newPayAccount);
-		Vendor newVendor =
-			new Vendor(cmd.name(), cmd.email(), cmd.password(), cmd.phone(), newPayAccount, passwordEncoder);
+		Vendor savedVendor;
 		try {
-			vendorRepository.save(newVendor);
+			savedVendor = vendorRepository.save(
+				new Vendor(cmd.name(), cmd.email(), cmd.password(), cmd.phone(), newPayAccount, passwordEncoder));
 		} catch (DataIntegrityViolationException e) {
 			throw new DuplicateEmailException();
 		}
-		return newVendor.getId().toString();
+		return savedVendor.getId().toString();
 	}
 }

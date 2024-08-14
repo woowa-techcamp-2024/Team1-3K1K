@@ -2,6 +2,8 @@ package camp.woowak.lab.vendor.service;
 
 import static org.mockito.BDDMockito.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,9 +39,10 @@ class SignUpVendorServiceTest implements VendorFixture {
 	@DisplayName("[성공] Vendor가 저장된다.")
 	void success() throws DuplicateEmailException {
 		// given
-		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		PayAccount payAccount = createPayAccount();
-		Vendor vendor = createVendor(payAccount, new NoOpPasswordEncoder());
+		UUID fakeVendorId = UUID.randomUUID();
+		Vendor vendor = createSavedVendor(fakeVendorId, payAccount, new NoOpPasswordEncoder());
+		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(payAccount);
 		given(vendorRepository.save(Mockito.any(Vendor.class))).willReturn(vendor);
 
