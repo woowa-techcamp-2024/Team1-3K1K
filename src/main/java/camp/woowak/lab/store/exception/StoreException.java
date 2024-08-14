@@ -15,6 +15,7 @@ public class StoreException extends RuntimeException {
 	@Getter
 	public enum ErrorCode {
 
+		NULL_EXIST("NULL 값이 존재합니다."),
 		INVALID_NAME_RANGE("가게 이름은 2글자 ~ 10글자 이어야합니다."),
 
 		INVALID_ADDRESS("가게 주소는 송파구만 가능합니다."),
