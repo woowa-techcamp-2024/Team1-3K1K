@@ -3,7 +3,6 @@ package camp.woowak.lab.web.api.vendor;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,8 +12,6 @@ import camp.woowak.lab.vendor.service.SignInVendorService;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignInVendorCommand;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
-import camp.woowak.lab.web.api.utils.APIResponse;
-import camp.woowak.lab.web.api.utils.APIUtils;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
@@ -35,12 +32,12 @@ public class VendorApiController {
 
 	@PostMapping("/vendors")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<APIResponse<SignUpVendorResponse>> signUpVendor(
-		@Valid @RequestBody SignUpVendorRequest request) {
+	public SignUpVendorResponse signUpVendor(@Valid @RequestBody SignUpVendorRequest request) {
+
 		SignUpVendorCommand command =
 			new SignUpVendorCommand(request.name(), request.email(), request.password(), request.phone());
 		String registeredId = signUpVendorService.signUp(command);
-		return APIUtils.of(HttpStatus.CREATED, new SignUpVendorResponse(registeredId));
+		return new SignUpVendorResponse(registeredId);
 	}
 
 	@PostMapping("/vendors/login")
