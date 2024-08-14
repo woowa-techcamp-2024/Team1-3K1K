@@ -12,7 +12,6 @@ import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 public class SessionCustomerArgumentResolver extends LoginMemberArgumentResolver {
@@ -24,7 +23,7 @@ public class SessionCustomerArgumentResolver extends LoginMemberArgumentResolver
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		AuthenticationPrincipal parameterAnnotation = parameter.getParameterAnnotation(AuthenticationPrincipal.class);
 		if (parameterAnnotation == null) {
 			return null;

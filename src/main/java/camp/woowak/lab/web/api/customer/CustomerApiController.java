@@ -25,7 +25,7 @@ public class CustomerApiController {
 
 	@PostMapping("/customers")
 	public ResponseEntity<APIResponse<SignUpCustomerResponse>> signUp(@Valid @RequestBody SignUpCustomerRequest request,
-		HttpServletResponse response) {
+																	  HttpServletResponse response) {
 		SignUpCustomerCommand command =
 			new SignUpCustomerCommand(request.name(), request.email(), request.password(), request.phone());
 
