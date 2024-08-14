@@ -9,8 +9,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.menu.exception.InvalidMenuCategoryCreationException;
+import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreAddress;
+import camp.woowak.lab.store.domain.StoreCategory;
+import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 class MenuCategoryTest {
 
@@ -90,9 +96,23 @@ class MenuCategoryTest {
 		String validPhoneNumberFixture = "02-1234-5678";
 		Integer validMinOrderPriceFixture = 5000;
 
-		return new Store(null, null, validNameFixture, validAddressFixture, validPhoneNumberFixture,
+		return new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture,
+			validPhoneNumberFixture,
 			validMinOrderPriceFixture,
 			validStartDateFixture, validEndDateFixture);
+	}
+
+	private Vendor createVendor() {
+		PayAccount payAccount = new TestPayAccount(1L);
+		PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+
+		return new Vendor("vendor",
+			"validEmail@validEmail.com",
+			"validPassword", "010-0000-0000", payAccount, passwordEncoder);
+	}
+
+	private StoreCategory createStoreCategory() {
+		return new StoreCategory("양식");
 	}
 
 }

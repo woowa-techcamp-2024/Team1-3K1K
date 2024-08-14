@@ -10,7 +10,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.infra.date.DateTimeProvider;
+import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 class StoreTest {
 
@@ -41,9 +46,10 @@ class StoreTest {
 				int validMinOrderPrice = 5000;
 
 				// when & then
-				assertThatCode(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
-					validMinOrderPrice,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatCode(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPrice,
+						validStartTimeFixture, validEndTimeFixture))
 					.doesNotThrowAnyException();
 			}
 
@@ -54,9 +60,10 @@ class StoreTest {
 				int lessThanMinOrderPrice = 4999;
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
-					lessThanMinOrderPrice,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						lessThanMinOrderPrice,
+						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_MIN_ORDER_PRICE.getMessage());
 			}
@@ -68,9 +75,10 @@ class StoreTest {
 				int validMinOrderPrice = 10000;
 
 				// when & then
-				assertThatCode(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
-					validMinOrderPrice,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatCode(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPrice,
+						validStartTimeFixture, validEndTimeFixture))
 					.doesNotThrowAnyException();
 			}
 
@@ -81,9 +89,10 @@ class StoreTest {
 				int inValidUnitOrderPrice = 5001;
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null,
-					inValidUnitOrderPrice,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						inValidUnitOrderPrice,
+						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_UNIT_OF_MIN_ORDER_PRICE.getMessage());
 			}
@@ -102,7 +111,8 @@ class StoreTest {
 
 				// when & then
 				assertThatCode(
-					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPriceFixture,
 						validStartTime, validEndTime))
 					.doesNotThrowAnyException();
 			}
@@ -115,7 +125,8 @@ class StoreTest {
 
 				// when & then
 				assertThatThrownBy(
-					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeSameWithStartTime))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME.getMessage());
@@ -129,7 +140,8 @@ class StoreTest {
 
 				// when & then
 				assertThatThrownBy(
-					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeBeforeThanStartTime))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME.getMessage());
@@ -144,7 +156,8 @@ class StoreTest {
 
 				// when & then
 				assertThatCode(
-					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPriceFixture,
 						validStartTimeUnitMinute, validEndTimeUnitMinute))
 					.doesNotThrowAnyException();
 			}
@@ -158,7 +171,8 @@ class StoreTest {
 
 				// when & then
 				assertThatThrownBy(
-					() -> new Store(null, null, validNameFixture, validAddressFixture, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						validMinOrderPriceFixture,
 						startTimeWithSeconds, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME_UNIT.getMessage());
@@ -172,8 +186,10 @@ class StoreTest {
 				LocalDateTime startTimeWithNanoSeconds = inValidUnitDateTimeProvider.now();
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
-					startTimeWithNanoSeconds, validEndTimeFixture))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						5000,
+						startTimeWithNanoSeconds, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
@@ -186,8 +202,10 @@ class StoreTest {
 				LocalDateTime endTimeWithSeconds = inValidUnitDateTimeProvider.now();
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
-					validStartTimeFixture, endTimeWithSeconds))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						5000,
+						validStartTimeFixture, endTimeWithSeconds))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
@@ -200,8 +218,10 @@ class StoreTest {
 				LocalDateTime endTimeWithNanoSeconds = inValidUnitDateTimeProvider.now();
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, validNameFixture, validAddressFixture, null, 5000,
-					validStartTimeFixture, endTimeWithNanoSeconds))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddressFixture, null,
+						5000,
+						validStartTimeFixture, endTimeWithNanoSeconds))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
@@ -219,9 +239,11 @@ class StoreTest {
 				String lengthValidStoreName = validNameFixture;
 
 				// when & then
-				assertThatCode(() -> new Store(null, null, lengthValidStoreName, validAddressFixture, null,
-					validMinOrderPriceFixture,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatCode(
+					() -> new Store(createVendor(), createStoreCategory(), lengthValidStoreName, validAddressFixture,
+						null,
+						validMinOrderPriceFixture,
+						validStartTimeFixture, validEndTimeFixture))
 					.doesNotThrowAnyException();
 			}
 
@@ -232,9 +254,11 @@ class StoreTest {
 				String lessThanMinLengthName = "헤";
 
 				// when & then
-				assertThatThrownBy(() -> new Store(null, null, lessThanMinLengthName, validAddressFixture, null,
-					validMinOrderPriceFixture,
-					validStartTimeFixture, validEndTimeFixture))
+				assertThatThrownBy(
+					() -> new Store(createVendor(), createStoreCategory(), lessThanMinLengthName, validAddressFixture,
+						null,
+						validMinOrderPriceFixture,
+						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_NAME_RANGE.getMessage());
 			}
@@ -247,7 +271,8 @@ class StoreTest {
 
 				// when & then
 				assertThatThrownBy(
-					() -> new Store(null, null, greaterThanMaxLengthName, validAddressFixture, null,
+					() -> new Store(createVendor(), createStoreCategory(), greaterThanMaxLengthName,
+						validAddressFixture, null,
 						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
@@ -267,7 +292,8 @@ class StoreTest {
 				String validAddress = "송파";
 				// when & then
 				assertThatCode(
-					() -> new Store(null, null, validNameFixture, validAddress, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddress, null,
+						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.doesNotThrowAnyException();
 			}
@@ -279,7 +305,8 @@ class StoreTest {
 				String validAddress = "강남";
 				// when & then
 				assertThatThrownBy(
-					() -> new Store(null, null, validNameFixture, validAddress, null, validMinOrderPriceFixture,
+					() -> new Store(createVendor(), createStoreCategory(), validNameFixture, validAddress, null,
+						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(StoreException.class)
 					.hasMessage(INVALID_ADDRESS.getMessage());
@@ -287,6 +314,19 @@ class StoreTest {
 
 		}
 
+	}
+
+	private Vendor createVendor() {
+		PayAccount payAccount = new TestPayAccount(1L);
+		PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+
+		return new Vendor("vendor",
+			"validEmail@validEmail.com",
+			"validPassword", "010-0000-0000", payAccount, passwordEncoder);
+	}
+
+	private StoreCategory createStoreCategory() {
+		return new StoreCategory("양식");
 	}
 
 }
