@@ -22,6 +22,9 @@ public class SignInVendorService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/**
+	 * @throws PasswordMismatchException 비밀번호가 일치하지 않으면
+	 */
 	public UUID signIn(SignInVendorCommand cmd) {
 		Vendor findVendor = repository.findByEmailOrThrow(cmd.email());
 		if (!findVendor.matches(cmd.password(), passwordEncoder)) {
