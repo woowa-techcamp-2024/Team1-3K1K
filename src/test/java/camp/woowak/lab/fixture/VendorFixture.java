@@ -14,8 +14,8 @@ public interface VendorFixture {
 
 	default Vendor createSavedVendor(UUID id, PayAccount payAccount, PasswordEncoder passwordEncoder) {
 		return new TestVendor(
-			id, new Vendor("vendorName", "vendorEmail@example.com", "vendorPassword", "010-0000-0000", payAccount,
-			passwordEncoder));
+			id, "vendorName", "vendorEmail@example.com", "vendorPassword", "010-0000-0000", payAccount,
+			passwordEncoder);
 	}
 
 	default Vendor createVendor(PayAccount payAccount, PasswordEncoder passwordEncoder) {
