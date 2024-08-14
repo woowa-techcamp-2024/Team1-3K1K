@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,18 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
+import camp.woowak.lab.vendor.exception.NotFoundVendorException;
+import camp.woowak.lab.vendor.exception.PasswordMismatchException;
+import camp.woowak.lab.vendor.service.SignInVendorService;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
+import camp.woowak.lab.vendor.service.command.SignInVendorCommand;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
 import camp.woowak.lab.web.api.vendor.VendorApiController;
+import camp.woowak.lab.web.authentication.LoginVendor;
+import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
+import camp.woowak.lab.web.resolver.session.SessionConst;
+import jakarta.servlet.http.HttpSession;
 
 @WebMvcTest(controllers = VendorApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -34,6 +43,8 @@ class VendorApiControllerTest {
 	private MockMvc mockMvc;
 	@MockBean
 	private SignUpVendorService signUpVendorService;
+	@MockBean
+	private SignInVendorService signInVendorService;
 
 	@Nested
 	@DisplayName("판매자 회원가입: POST /vendors")
@@ -388,6 +399,82 @@ class VendorApiControllerTest {
 				.andExpect(jsonPath("$.title").value("Bad Request"))
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.instance").value("/vendors"))
+				.andDo(print());
+		}
+	}
+
+	@Nested
+	@DisplayName("판매자 로그인: POST /vendors/login")
+	class SignInVendor {
+		@Test
+		@DisplayName("[성공] 204")
+		void success() throws Exception {
+			UUID fakeVendorId = UUID.randomUUID();
+			BDDMockito.given(signInVendorService.signIn(BDDMockito.any(SignInVendorCommand.class)))
+				.willReturn(fakeVendorId);
+
+			// when
+			ResultActions actions = mockMvc.perform(
+				post("/vendors/login")
+					.content(new ObjectMapper().writeValueAsString(
+						new SignInVendorRequest("validEmail@validEmail.com", "validPassword")))
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON)
+			);
+
+			// then
+			actions.andExpect(status().isNoContent())
+				.andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
+				.andExpect(result -> {
+					HttpSession session = result.getRequest().getSession();
+					LoginVendor loginVendor = (LoginVendor)session.getAttribute(SessionConst.SESSION_VENDOR_KEY);
+					Assertions.assertNotNull(loginVendor);
+					Assertions.assertEquals(loginVendor.getId(), fakeVendorId);
+				})
+				.andDo(print());
+		}
+
+		@Test
+		@DisplayName("[실패] 400 : 존재하지 않는 판매자 이메일")
+		void failWithNotFoundVendor() throws Exception {
+			UUID fakeVendorId = UUID.randomUUID();
+			BDDMockito.given(signInVendorService.signIn(BDDMockito.any(SignInVendorCommand.class)))
+				.willThrow(NotFoundVendorException.class);
+
+			// when
+			ResultActions actions = mockMvc.perform(
+				post("/vendors/login")
+					.content(new ObjectMapper().writeValueAsString(
+						new SignInVendorRequest("notFound@validEmail.com", "validPassword")))
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON)
+			);
+
+			// then
+			actions.andExpect(status().isNoContent())
+				.andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+				.andDo(print());
+		}
+
+		@Test
+		@DisplayName("[실패] 400 : 잘못된 비밀번호")
+		void failWithPasswordMismatch() throws Exception {
+			UUID fakeVendorId = UUID.randomUUID();
+			BDDMockito.given(signInVendorService.signIn(BDDMockito.any(SignInVendorCommand.class)))
+				.willThrow(PasswordMismatchException.class);
+
+			// when
+			ResultActions actions = mockMvc.perform(
+				post("/vendors/login")
+					.content(new ObjectMapper().writeValueAsString(
+						new SignInVendorRequest("validEmail@validEmail.com", "wrongPassword")))
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON)
+			);
+
+			// then
+			actions.andExpect(status().isNoContent())
+				.andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
 				.andDo(print());
 		}
 	}
