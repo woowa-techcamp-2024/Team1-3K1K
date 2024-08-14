@@ -40,8 +40,8 @@ public class StoreMenuRegistrationService {
 		menuRepository.saveAll(menus);
 	}
 
-	private Store findStoreBy(final Long ownerId) {
-		return storeRepository.findByOwnerId(ownerId)
+	private Store findStoreBy(final Long storeId) {
+		return storeRepository.findById(storeId)
 			.orElseThrow(() -> new NotFoundStoreException("존재하지 않는 가게입니다."));
 	}
 
