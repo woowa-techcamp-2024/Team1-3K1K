@@ -21,7 +21,7 @@ public class SessionVendorArgumentResolver extends LoginMemberArgumentResolver {
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		AuthenticationPrincipal parameterAnnotation = parameter.getParameterAnnotation(AuthenticationPrincipal.class);
 		if (parameterAnnotation == null) {
 			return null;
