@@ -1,14 +1,16 @@
 package camp.woowak.lab.web.authentication;
 
-public class LoginVendor implements LoginMember {
-	private final Long id;
+import java.util.UUID;
 
-	public LoginVendor(Long id) {
+public class LoginVendor implements LoginMember {
+	private final UUID id;
+
+	public LoginVendor(UUID id) {
 		this.id = id;
 	}
 
 	@Override
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 }
