@@ -32,8 +32,9 @@ public class StoreMenuRegistrationService {
 	private final MenuCategoryRepository menuCategoryRepository;
 
 	public void storeMenuRegistration(final Vendor owner, final StoreMenuRegistrationRequest request) {
-		Store store = findStoreBy(owner.getId());
-
+		Store store = findStoreBy(request.storeId());
+		store.validateOwner(owner);
+		
 		List<StoreMenuRegistrationRequest.MenuLineItem> menuLineItems = request.menuItems();
 		List<Menu> menus = createMenus(store, menuLineItems);
 
