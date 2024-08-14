@@ -27,8 +27,7 @@ public class PayAccountChargeService {
 	public long chargeAccount(PayAccountChargeCommand command) {
 		PayAccount payAccount = payAccountRepository.findByCustomerIdForUpdate(command.customerId())
 			.orElseThrow(() -> {
-				log.warn("Invalid account id with {}", command.customerId());
-				throw new NotFoundAccountException();
+				throw new NotFoundAccountException("Invalid account id with " + command.customerId());
 			});
 
 		PayAccountHistory chargeHistory = payAccount.charge(command.amount());
