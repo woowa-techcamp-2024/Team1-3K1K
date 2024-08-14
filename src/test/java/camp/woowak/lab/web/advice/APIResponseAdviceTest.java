@@ -11,13 +11,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import camp.woowak.lab.web.api.utils.APIResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,6 +88,88 @@ class APIResponseAdviceTest {
 			assertThat(result).isFalse();
 		}
 
+	}
+
+	@Nested
+	@DisplayName("beforeBodyWrite 메서드는")
+	class BeforeBodyWrite {
+		@Test
+		@DisplayName("body가 null일 때 'No content' 메시지를 포함한 APIResponse를 반환해야 한다")
+		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNull() {
+			// Given
+			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
+
+			// When
+			when(response.getServletResponse()).thenReturn(servletResponse);
+			Object result = apiResponseAdvice.beforeBodyWrite(null, methodParameter, MediaType.APPLICATION_JSON,
+				MappingJackson2HttpMessageConverter.class, request, response);
+
+			// Then
+			assertThat(result).isInstanceOf(APIResponse.class);
+			APIResponse<?> apiResponse = (APIResponse<?>)result;
+			assertThat(apiResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+			assertThat(apiResponse.getData()).isEqualTo("No content");
+		}
+
+		@Test
+		@DisplayName("body가 APIResponse가 아닐 때 해당 body를 포함한 새로운 APIResponse를 반환해야 한다")
+		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNotAPIResponse() {
+			// Given
+			String body = "Test Body";
+			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
+
+			// When
+			when(response.getServletResponse()).thenReturn(servletResponse);
+			Object result = apiResponseAdvice.beforeBodyWrite(body, methodParameter, MediaType.APPLICATION_JSON,
+				MappingJackson2HttpMessageConverter.class, request, response);
+
+			// Then
+			assertThat(result).isInstanceOf(APIResponse.class);
+			APIResponse<?> apiResponse = (APIResponse<?>)result;
+			assertThat(apiResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+			assertThat(apiResponse.getData()).isEqualTo(body);
+		}
+
+		@Test
+		@DisplayName("beforeBodyWrite 메서드는 ResponseStatus 어노테이션이 있을 때 해당 상태를 사용해야 한다")
+		void beforeBodyWrite_ShouldUseResponseStatusAnnotation_WhenPresent() {
+			// Given
+			String body = "Test Body";
+			ResponseStatus responseStatus = mock(ResponseStatus.class);
+			given(methodParameter.hasMethodAnnotation(ResponseStatus.class)).willReturn(true);
+			given(methodParameter.getMethodAnnotation(ResponseStatus.class)).willReturn(responseStatus);
+			given(responseStatus.value()).willReturn(HttpStatus.CREATED);
+
+			// When
+			Object result = apiResponseAdvice.beforeBodyWrite(body, methodParameter, MediaType.APPLICATION_JSON,
+				MappingJackson2HttpMessageConverter.class, request, response);
+
+			// Then
+			assertThat(result).isInstanceOf(APIResponse.class);
+			APIResponse<?> apiResponse = (APIResponse<?>)result;
+			assertThat(apiResponse.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+			assertThat(apiResponse.getData()).isEqualTo(body);
+		}
+
+		@Test
+		@DisplayName("beforeBodyWrite 메서드는 ResponseStatus 어노테이션이 없을 때 응답의 상태 코드를 사용해야 한다")
+		void beforeBodyWrite_ShouldUseResponseStatus_WhenNoAnnotationPresent() {
+			// Given
+			String body = "Test Body";
+			given(methodParameter.hasMethodAnnotation(ResponseStatus.class)).willReturn(false);
+			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
+
+			// When
+			when(response.getServletResponse()).thenReturn(servletResponse);
+			Object result = apiResponseAdvice.beforeBodyWrite(body, methodParameter, MediaType.APPLICATION_JSON,
+				MappingJackson2HttpMessageConverter.class, request, response);
+
+			// Then
+			assertThat(result).isInstanceOf(APIResponse.class);
+			APIResponse<?> apiResponse = (APIResponse<?>)result;
+			assertThat(apiResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+			assertThat(apiResponse.getData()).isEqualTo(body);
+		}
 	}
 
 }
