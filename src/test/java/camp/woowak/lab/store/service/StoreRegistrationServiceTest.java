@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.infra.date.DateTimeProvider;
+import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreCategory;
 import camp.woowak.lab.store.exception.StoreException;
@@ -22,6 +24,8 @@ import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
+import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class StoreRegistrationServiceTest {
@@ -45,7 +49,7 @@ class StoreRegistrationServiceTest {
 	@DisplayName("[Success] 가게가 저장된다.")
 	void successfulRegistration() {
 		// given
-		Vendor vendor = new Vendor();
+		Vendor vendor = createVendor();
 		String storeCategoryName = "한식";
 		StoreRegistrationRequest request = createStoreRegistrationRequest(storeCategoryName);
 		StoreCategory mockStoreCategory = new StoreCategory(storeCategoryName);
@@ -65,7 +69,7 @@ class StoreRegistrationServiceTest {
 	@DisplayName("[Exception] 유효하지 않은 가게 카테고리면 예외가 발생한다.")
 	void notExistStoreCategoryName() {
 		// given
-		Vendor vendor = new Vendor();
+		Vendor vendor = createVendor();
 		String invalidCategoryName = "존재하지 않는 카테고리";
 		StoreRegistrationRequest request = createStoreRegistrationRequest(invalidCategoryName);
 
@@ -83,6 +87,13 @@ class StoreRegistrationServiceTest {
 	private StoreRegistrationRequest createStoreRegistrationRequest(String storeCategory) {
 		return new StoreRegistrationRequest("3K1K가게", "송파", "02-0000-0000",
 			storeCategory, 5000, validStartTimeFixture, validEndTimeFixture);
+	}
+
+	private Vendor createVendor() {
+		PayAccount payAccount = new TestPayAccount(1L);
+		PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+		return new Vendor("vendorName", "vendorEmail@example.com", "vendorPassword", "010-0000-0000", payAccount,
+			passwordEncoder);
 	}
 
 }
