@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -76,7 +77,7 @@ class StoreApiControllerTest {
 	void storeRegistrationSuccess() throws Exception {
 		// given
 		Vendor vendor = createVendor();
-		LoginVendor loginVendor = new LoginVendor(5L);
+		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		StoreRegistrationRequest request = new StoreRegistrationRequest(
 			"Store Name",
 			"Store Address",
@@ -109,7 +110,7 @@ class StoreApiControllerTest {
 	void storeRegistrationFailure() throws Exception {
 		// given
 		Vendor vendor = createVendor();
-		LoginVendor loginVendor = new LoginVendor(5L);
+		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		StoreRegistrationRequest request = new StoreRegistrationRequest(
 			"Store Name",
 			"Invalid Category",
