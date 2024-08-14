@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Random;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,9 +41,9 @@ class VendorApiControllerTest {
 		@Test
 		@DisplayName("[성공] 201")
 		void success() throws Exception {
-			long fakeVendorId = new Random().nextLong(1000L);
+			UUID fakeVendorId = UUID.randomUUID();
 			BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-				.willReturn(fakeVendorId);
+				.willReturn(fakeVendorId.toString());
 
 			// when
 			ResultActions actions = mockMvc.perform(
@@ -58,7 +58,7 @@ class VendorApiControllerTest {
 			// then
 			actions.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
-				.andExpect(jsonPath("$.data.id").value(fakeVendorId))
+				.andExpect(jsonPath("$.data.id").value(fakeVendorId.toString()))
 				.andDo(print());
 		}
 
@@ -71,9 +71,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("비어있는 경우")
 				void failWithEmptyName() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -97,9 +97,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("공란인 경우")
 				void failWithBlankName() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -127,9 +127,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("비어있는 경우")
 				void failWithEmptyEmail() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -152,9 +152,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("공란인 경우")
 				void failWithBlankEmail() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -181,9 +181,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("비어있는 경우")
 				void failWithEmptyPassword() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -207,9 +207,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("공란인 경우")
 				void failWithBlankPassword() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -233,9 +233,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("8자 미만인 경우")
 				void failWith7Password() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -259,9 +259,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("30자 초과인 경우")
 				void failWith31Password() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -290,9 +290,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("비어있는 경우")
 				void failWithEmptyPhone() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -316,9 +316,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("공란인 경우")
 				void failWithBlankPhone() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
@@ -341,9 +341,9 @@ class VendorApiControllerTest {
 				@Test
 				@DisplayName("잘못된 형식인 경우")
 				void failWithInvalidPhone() throws Exception {
-					long fakeVendorId = new Random().nextLong(1000L);
+					UUID fakeVendorId = UUID.randomUUID();
 					BDDMockito.given(signUpVendorService.signUp(BDDMockito.any(SignUpVendorCommand.class)))
-						.willReturn(fakeVendorId);
+						.willReturn(fakeVendorId.toString());
 
 					// when
 					ResultActions actions = mockMvc.perform(
