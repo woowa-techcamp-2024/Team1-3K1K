@@ -26,7 +26,7 @@ public class SignUpVendorService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public Long signUp(SignUpVendorCommand cmd) {
+	public String signUp(SignUpVendorCommand cmd) {
 		PayAccount newPayAccount = new PayAccount();
 		payAccountRepository.save(newPayAccount);
 		Vendor newVendor =
@@ -36,6 +36,6 @@ public class SignUpVendorService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DuplicateEmailException();
 		}
-		return newVendor.getId();
+		return newVendor.getId().toString();
 	}
 }

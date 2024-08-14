@@ -30,7 +30,7 @@ public class VendorApiController {
 		@Valid @RequestBody SignUpVendorRequest request) {
 		SignUpVendorCommand command =
 			new SignUpVendorCommand(request.name(), request.email(), request.password(), request.phone());
-		Long registeredId = signUpVendorService.signUp(command);
+		String registeredId = signUpVendorService.signUp(command);
 		return APIUtils.of(HttpStatus.CREATED, new SignUpVendorResponse(registeredId));
 	}
 

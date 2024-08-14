@@ -1,5 +1,7 @@
 package camp.woowak.lab.vendor.domain;
 
+import java.util.UUID;
+
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.vendor.exception.InvalidVendorCreationException;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
@@ -14,8 +16,8 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Vendor {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 	@Column(nullable = false, length = 50)
 	private String name;
 	@Column(unique = true, nullable = false, length = 100)
@@ -43,7 +45,7 @@ public class Vendor {
 		this.payAccount = payAccount;
 	}
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 }
