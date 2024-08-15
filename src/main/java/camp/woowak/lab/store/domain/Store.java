@@ -69,4 +69,12 @@ public class Store {
 		}
 	}
 
+	public boolean isOpen() {
+		LocalDateTime openTime = storeTime.getStartTime();
+		LocalDateTime closeTime = storeTime.getEndTime();
+
+		LocalDateTime now = LocalDateTime.now();
+
+		return (now.isEqual(openTime) || now.isAfter(openTime)) && now.isBefore(closeTime);
+	}
 }
