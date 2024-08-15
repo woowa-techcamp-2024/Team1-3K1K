@@ -86,22 +86,19 @@ public class PayAccount {
 			.sum();
 
 		if (todayTotalCharge + amount > 1_000_000) {
-			log.warn("Daily charge limit of {} exceeded.", 1_000_000);
-			throw new DailyLimitExceededException();
+			throw new DailyLimitExceededException("Daily charge limit of " + 1_000_000 + " exceeded.");
 		}
 	}
 
 	private void validateTransactionAmount(long amount) {
 		if (amount <= 0) {
-			log.warn("Transaction amount must be greater than zero.");
-			throw new InvalidTransactionAmountException();
+			throw new InvalidTransactionAmountException("Transaction amount must be greater than zero.");
 		}
 	}
 
 	private void validateInsufficientBalance(long amount) {
 		if (this.balance - amount < 0) {
-			log.warn("Insufficient balance for this transaction.");
-			throw new InsufficientBalanceException();
+			throw new InsufficientBalanceException("Insufficient balance for this transaction.");
 		}
 	}
 }
