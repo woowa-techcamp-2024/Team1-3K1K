@@ -30,13 +30,15 @@ public class StoreRegistrationService {
 	 * @throws NotFoundVendorException UUID 에 대한 가게 점주가 존재하지 않을 시
 	 */
 	@Transactional
-	public void storeRegistration(final StoreRegistrationCommand command) {
+	public Long storeRegistration(final StoreRegistrationCommand command) {
 		final Vendor vendor = findVendor(command.vendorId());
 
 		final StoreCategory storeCategory = findStoreCategoryByName(command.storeCategoryName());
 		final Store store = createStore(vendor, storeCategory, command);
 
 		storeRepository.save(store);
+
+		return store.getId();
 	}
 
 	private Vendor findVendor(final UUID vendorId) {

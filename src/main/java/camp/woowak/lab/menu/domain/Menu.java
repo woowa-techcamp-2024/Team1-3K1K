@@ -46,4 +46,8 @@ public class Menu {
 		this.imageUrl = imageUrl;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
 }

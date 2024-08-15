@@ -43,7 +43,7 @@ public class StoreMenuRegistrationService {
 	 *
 	 */
 	@Transactional
-	public void storeMenuRegistration(final StoreMenuRegistrationCommand command) {
+	public List<Long> storeMenuRegistration(final StoreMenuRegistrationCommand command) {
 		Vendor owner = findVendor(command.vendorId());
 
 		Store store = findStoreBy(command.storeId());
@@ -52,7 +52,11 @@ public class StoreMenuRegistrationService {
 		List<MenuLineItem> menuLineItems = command.menuItems();
 		List<Menu> menus = createMenus(store, menuLineItems);
 
-		menuRepository.saveAll(menus);
+		List<Menu> menuIds = menuRepository.saveAll(menus);
+
+		return menuIds.stream()
+			.map(Menu::getId)
+			.toList();
 	}
 
 	private Vendor findVendor(final UUID vendorId) {
