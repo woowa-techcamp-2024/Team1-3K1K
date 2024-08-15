@@ -1,13 +1,11 @@
 package camp.woowak.lab.store.service;
 
-import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreCategory;
-import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
@@ -22,7 +20,8 @@ public class StoreRegistrationService {
 	private final StoreCategoryRepository storeCategoryRepository;
 
 	/**
-	 * @throws StoreException Store 객체 검증 실패, 존재하지 않는 이름의 가게 카테고리
+	 * @throws camp.woowak.lab.store.exception.InvalidStoreCreationException Store 객체 검증 실패
+	 * @throws NotFoundStoreCategoryException 존재하지 않는 이름의 가게 카테고리
 	 */
 	@Transactional
 	public void storeRegistration(final Vendor vendor, final StoreRegistrationRequest request) {
