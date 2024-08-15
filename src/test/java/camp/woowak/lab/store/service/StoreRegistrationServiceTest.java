@@ -4,6 +4,7 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,13 +22,17 @@ import camp.woowak.lab.store.domain.StoreCategory;
 import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
-import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
+import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class StoreRegistrationServiceTest {
+
+	@Mock
+	private VendorRepository vendorRepository;
 
 	@Mock
 	private StoreRepository storeRepository;
@@ -49,16 +54,19 @@ class StoreRegistrationServiceTest {
 	void successfulRegistration() {
 		// given
 		Vendor vendor = createVendor();
+		UUID id = UUID.randomUUID();
+
 		String storeCategoryName = "한식";
-		StoreRegistrationRequest request = createStoreRegistrationRequest(storeCategoryName);
+		StoreRegistrationCommand request = createStoreRegistrationRequest(id, storeCategoryName);
 		StoreCategory mockStoreCategory = new StoreCategory(storeCategoryName);
 
+		when(vendorRepository.findById(id)).thenReturn(Optional.of(vendor));
 		when(storeCategoryRepository.findByName(storeCategoryName)).thenReturn(Optional.of(mockStoreCategory));
 		when(storeRepository.save(any(Store.class)))
 			.thenAnswer(invocation -> invocation.getArgument(0));
 
 		// when
-		storeRegistrationService.storeRegistration(vendor, request);
+		storeRegistrationService.storeRegistration(request);
 
 		// then
 		then(storeRepository).should().save(any(Store.class));
@@ -69,21 +77,24 @@ class StoreRegistrationServiceTest {
 	void notExistStoreCategoryName() {
 		// given
 		Vendor vendor = createVendor();
-		String invalidCategoryName = "존재하지 않는 카테고리";
-		StoreRegistrationRequest request = createStoreRegistrationRequest(invalidCategoryName);
+		UUID id = UUID.randomUUID();
 
+		String invalidCategoryName = "존재하지 않는 카테고리";
+		StoreRegistrationCommand request = createStoreRegistrationRequest(id, invalidCategoryName);
+
+		when(vendorRepository.findById(id)).thenReturn(Optional.of(vendor));
 		given(storeCategoryRepository.findByName(invalidCategoryName))
 			.willReturn(Optional.empty());
 
 		// when & then
-		Assertions.assertThatThrownBy(() -> storeRegistrationService.storeRegistration(vendor, request))
+		Assertions.assertThatThrownBy(() -> storeRegistrationService.storeRegistration(request))
 			.isInstanceOf(NotFoundStoreCategoryException.class);
 
 		then(storeRepository).shouldHaveNoInteractions();
 	}
 
-	private StoreRegistrationRequest createStoreRegistrationRequest(String storeCategory) {
-		return new StoreRegistrationRequest("3K1K가게", "송파", "02-0000-0000",
+	private StoreRegistrationCommand createStoreRegistrationRequest(UUID id, String storeCategory) {
+		return new StoreRegistrationCommand(id, "3K1K가게", "송파", "02-0000-0000",
 			storeCategory, 5000, validStartTimeFixture, validEndTimeFixture);
 	}
 

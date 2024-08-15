@@ -27,6 +27,7 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
 import camp.woowak.lab.store.service.StoreRegistrationService;
+import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
@@ -100,7 +101,7 @@ class StoreApiControllerTest {
 				.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
 			.andExpect(status().isOk());
 
-		verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+		verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 	}
 
 	@Disabled
@@ -121,7 +122,7 @@ class StoreApiControllerTest {
 		);
 
 		doThrow(new NotFoundStoreCategoryException("invalid category"))
-			.when(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			.when(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 
 		// when & then
 		mockMvc.perform(post("/stores")
@@ -131,7 +132,7 @@ class StoreApiControllerTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(content().string("fail"));
 
-		verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+		verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 	}
 
 	private Vendor createVendor() {
