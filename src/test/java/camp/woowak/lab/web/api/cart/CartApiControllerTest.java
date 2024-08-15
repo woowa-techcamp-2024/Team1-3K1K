@@ -19,7 +19,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.exception.CartErrorCode;
+import camp.woowak.lab.cart.repository.CartRepository;
+import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
 import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
@@ -66,27 +69,36 @@ class CartApiControllerTest {
 	private CustomerRepository customerRepository;
 	@Autowired
 	private ObjectMapper mapper;
+	@Autowired
+	private CartRepository cartRepository;
+
+	private MockHttpSession session;
+	private Customer customer;
+	private Vendor vendor;
+	private Store store;
+	private static final LocalDateTime startTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
+	private static final LocalDateTime endTime = LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0);
+
+	@BeforeEach
+	void setUp() throws Exception {
+		customer = createCustomer();
+		vendor = createVendor();
+		store = createStore(vendor, "중화반점", 8000, startTime, endTime);
+
+		session = new MockHttpSession();
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(customer.getId()));
+	}
 
 	@Nested
 	@DisplayName("addMenu 메서드는")
 	class AddMenu {
 		private final String BASE_URL = "/cart";
-		private Customer customer;
-		private Vendor vendor;
 		private Menu menu;
 		private static final int minOrderPrice = 8000;
-		private static final LocalDateTime startTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
-		private static final LocalDateTime endTime = LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0);
-		private MockHttpSession session;
 
 		@BeforeEach
 		void setUp() throws Exception {
-			customer = createCustomer();
-			vendor = createVendor();
-			Store store = createStore(vendor, "중화반점", 8000, startTime, endTime);
 			menu = createMenu(store, "짜장면", 90000);
-			session = new MockHttpSession();
-			session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(customer.getId()));
 		}
 
 		@Test
@@ -173,10 +185,57 @@ class CartApiControllerTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("getCartTotalPrice 메서드는")
+	class GetCartTotalPrice {
+		private final String BASE_URL = "/cart/price";
+
+		@Test
+		@DisplayName("장바구니가 비어있으면 0원을 return한다.")
+		void getTotalPriceWithEmptyList() throws Exception {
+			//given
+
+			//when & then
+			mvc.perform(get(BASE_URL)
+					.session(session))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.totalPrice").value(0));
+		}
+
+		@Test
+		@DisplayName("현재 장바구니에 담긴 모든 메뉴의 총 금액을 return 받는다.")
+		void getTotalPriceTest() throws Exception {
+			//given
+			Cart cart = new Cart(customer.getId().toString());
+
+			int price1 = 1000;
+			Menu menu1 = createMenu(store, "짜장면1", price1);
+			cart.addMenu(menu1);
+
+			int price2 = 2000;
+			Menu menu2 = createMenu(store, "짬뽕1", price2);
+			cart.addMenu(menu2);
+
+			int price3 = Integer.MAX_VALUE;
+			Menu menu3 = createMenu(store, "황제정식", price3);
+			cart.addMenu(menu3);
+			cartRepository.save(cart);
+
+			CartTotalPriceCommand command = new CartTotalPriceCommand(customer.getId().toString());
+
+			//when & then
+			mvc.perform(get(BASE_URL)
+					.session(session))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.totalPrice").value(
+					(long)menu1.getPrice() + (long)menu2.getPrice() + (long)menu3.getPrice()));
+		}
+	}
+
 	private Menu createMenu(Store store, String name, int price) {
 		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
 		menuCategoryRepository.saveAndFlush(menuCategory);
-		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
+		Menu menu1 = new Menu(store, menuCategory, name, price, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;
