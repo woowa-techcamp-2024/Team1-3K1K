@@ -1,6 +1,8 @@
 package camp.woowak.lab.payaccount.service.command;
 
+import java.util.UUID;
+
 public record PayAccountChargeCommand(
-	Long customerId,
+	UUID customerId,
 	long amount) {
 }

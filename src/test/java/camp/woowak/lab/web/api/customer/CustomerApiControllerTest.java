@@ -5,6 +5,8 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +40,10 @@ class CustomerApiControllerTest {
 	@DisplayName("구매자 회원가입 테스트 - 성공")
 	void testSignUpCustomer() throws Exception {
 		// given
+		String customerId = UUID.randomUUID().toString();
 		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "password123",
 			"010-1234-5678");
-		given(signUpCustomerService.signUp(any())).willReturn(1L);
+		given(signUpCustomerService.signUp(any())).willReturn(customerId);
 
 		// when & then
 		mockMvc.perform(post("/customers")

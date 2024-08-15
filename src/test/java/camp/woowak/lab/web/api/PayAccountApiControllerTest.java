@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,9 +103,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			mvc.perform(post(BASE_URL)
-							.contentType(MediaType.APPLICATION_JSON_VALUE)
-							.content(objectMapper.writeValueAsBytes(command))
-							.session(session))
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
 				.andExpect(jsonPath("$.data.balance").value(amount + originBalance));
@@ -122,9 +123,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-													.contentType(MediaType.APPLICATION_JSON_VALUE)
-													.content(objectMapper.writeValueAsBytes(command))
-													.session(session))
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 
@@ -136,16 +137,16 @@ class PayAccountApiControllerTest {
 		void notExistsAccountIdTest() throws Exception {
 			//given
 			long amount = 1000L;
-			Long notExistsId = Long.MAX_VALUE;
+			UUID notExistsId = UUID.randomUUID();
 			MockHttpSession notExistsSession = new MockHttpSession();
 			notExistsSession.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(notExistsId));
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-													.contentType(MediaType.APPLICATION_JSON_VALUE)
-													.content(objectMapper.writeValueAsBytes(command))
-													.session(notExistsSession))
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(notExistsSession))
 				.andExpect(status().isNotFound());
 
 			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.ACCOUNT_NOT_FOUND);
@@ -159,9 +160,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-													.contentType(MediaType.APPLICATION_JSON_VALUE)
-													.content(objectMapper.writeValueAsBytes(command))
-													.session(session))
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isBadRequest());
 
 			verificationPersistedBalance(payAccount.getId(), originBalance);
@@ -176,9 +177,9 @@ class PayAccountApiControllerTest {
 
 			//when & then
 			ResultActions actions = mvc.perform(post(BASE_URL)
-													.contentType(MediaType.APPLICATION_JSON_VALUE)
-													.content(objectMapper.writeValueAsBytes(command))
-													.session(session))
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.content(objectMapper.writeValueAsBytes(command))
+					.session(session))
 				.andExpect(status().isBadRequest());
 
 			validateErrorResponseWithErrorCode(actions, PayAccountErrorCode.INVALID_TRANSACTION_AMOUNT);

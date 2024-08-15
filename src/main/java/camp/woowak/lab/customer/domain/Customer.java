@@ -1,5 +1,7 @@
 package camp.woowak.lab.customer.domain;
 
+import java.util.UUID;
+
 import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
@@ -10,14 +12,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "Customers")
 public class Customer {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 	@Column(nullable = false, length = 50)
 	private String name;
 	@Column(unique = true, nullable = false, length = 100)
