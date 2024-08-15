@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import camp.woowak.lab.menu.domain.Menu;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-	@Query("SELECT m from Menu m join fetch Store s on m.store = s where m.id = :id")
+	@Query("SELECT m FROM Menu m JOIN FETCH m.store WHERE m.id = :id")
 	Optional<Menu> findByIdWithStore(@Param("id") Long id);
 }
