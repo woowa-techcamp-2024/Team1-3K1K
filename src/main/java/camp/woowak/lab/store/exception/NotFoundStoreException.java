@@ -1,10 +1,13 @@
 package camp.woowak.lab.store.exception;
 
-// TODO: 404Exception 상속하도록 수정
-public class NotFoundStoreException extends RuntimeException {
+import static camp.woowak.lab.store.exception.StoreErrorCode.*;
+
+import camp.woowak.lab.common.exception.NotFoundException;
+
+public class NotFoundStoreException extends NotFoundException {
 
 	public NotFoundStoreException(String message) {
-		super(message);
+		super(NOT_FOUND_STORE, message);
 	}
 
 }

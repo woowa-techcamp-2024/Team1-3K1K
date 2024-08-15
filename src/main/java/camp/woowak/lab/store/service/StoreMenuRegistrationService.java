@@ -1,19 +1,27 @@
 package camp.woowak.lab.store.service;
 
+import static camp.woowak.lab.menu.exception.MenuErrorCode.*;
+
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.exception.InvalidMenuCreationException;
 import camp.woowak.lab.menu.exception.NotFoundMenuCategoryException;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
-import camp.woowak.lab.store.service.dto.StoreMenuRegistrationRequest;
+import camp.woowak.lab.store.service.command.MenuLineItem;
+import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.vendor.exception.NotFoundVendorException;
+import camp.woowak.lab.vendor.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,18 +35,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StoreMenuRegistrationService {
 
+	private final VendorRepository vendorRepository;
 	private final StoreRepository storeRepository;
 	private final MenuRepository menuRepository;
 	private final MenuCategoryRepository menuCategoryRepository;
 
-	public void storeMenuRegistration(final Vendor owner, final StoreMenuRegistrationRequest request) {
-		Store store = findStoreBy(request.storeId());
+	/**
+	 * @throws NotFoundVendorException UUID 기준 가게 점주가 존재하지 않을 때 발생
+	 * @throws NotFoundStoreException 가게 ID 기준 가게가 존재하지 않을 때 발생
+	 * @throws NotFoundMenuCategoryException 가게와 메뉴카테고리 이름으로 메뉴카테고리를 찾지 못할 때 발생
+	 * @throws InvalidMenuCreationException 메뉴 객체 생성 검증 실패 시 발생
+	 */
+	@Transactional
+	public List<Long> storeMenuRegistration(final StoreMenuRegistrationCommand command) {
+		Vendor owner = findVendor(command.vendorId());
+
+		Store store = findStoreBy(command.storeId());
 		store.validateOwner(owner);
-		
-		List<StoreMenuRegistrationRequest.MenuLineItem> menuLineItems = request.menuItems();
+
+		List<MenuLineItem> menuLineItems = command.menuItems();
 		List<Menu> menus = createMenus(store, menuLineItems);
 
-		menuRepository.saveAll(menus);
+		List<Menu> menuIds = menuRepository.saveAll(menus);
+
+		return menuIds.stream()
+			.map(Menu::getId)
+			.toList();
+	}
+
+	private Vendor findVendor(final UUID vendorId) {
+		return vendorRepository.findById(vendorId)
+			.orElseThrow(NotFoundVendorException::new);
 	}
 
 	private Store findStoreBy(final Long storeId) {
@@ -47,21 +74,22 @@ public class StoreMenuRegistrationService {
 	}
 
 	private List<Menu> createMenus(final Store store,
-								   final List<StoreMenuRegistrationRequest.MenuLineItem> menuLineItems
+								   final List<MenuLineItem> menuLineItems
 	) {
 		return menuLineItems.stream()
 			.map(menuLineItem -> createMenu(store, menuLineItem))
 			.toList();
 	}
 
-	private Menu createMenu(final Store store, final StoreMenuRegistrationRequest.MenuLineItem menuLineItem) {
+	private Menu createMenu(final Store store, final MenuLineItem menuLineItem) {
 		MenuCategory menuCategory = findMenuCategoryBy(store, menuLineItem.categoryName());
 		return new Menu(store, menuCategory, menuLineItem.name(), menuLineItem.price(), menuLineItem.imageUrl());
 	}
 
 	private MenuCategory findMenuCategoryBy(final Store store, final String manuCategoryName) {
 		return menuCategoryRepository.findByStoreIdAndName(store.getId(), manuCategoryName)
-			.orElseThrow(() -> new NotFoundMenuCategoryException(store + ", " + manuCategoryName + " 의 메뉴카테고리가 없습니다."));
+			.orElseThrow(() -> new NotFoundMenuCategoryException(NOT_FOUND_MENU_CATEGORY,
+				store + ", " + manuCategoryName + " 의 메뉴카테고리가 없습니다."));
 	}
 
 }
