@@ -31,7 +31,7 @@ public class SignUpVendorService {
 		payAccountRepository.save(newPayAccount);
 		Vendor savedVendor;
 		try {
-			savedVendor = vendorRepository.save(
+			savedVendor = vendorRepository.saveAndFlush(
 				new Vendor(cmd.name(), cmd.email(), cmd.password(), cmd.phone(), newPayAccount, passwordEncoder));
 		} catch (DataIntegrityViolationException e) {
 			throw new DuplicateEmailException();
