@@ -1,6 +1,5 @@
 package camp.woowak.lab.web.api.store;
 
-import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,9 +31,10 @@ import camp.woowak.lab.menu.service.MenuCategoryRegistrationService;
 import camp.woowak.lab.menu.service.command.MenuCategoryRegistrationCommand;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
-import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
+import camp.woowak.lab.store.service.StoreMenuRegistrationService;
 import camp.woowak.lab.store.service.StoreRegistrationService;
-import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
+import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
@@ -42,6 +42,7 @@ import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
+import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
 
@@ -54,6 +55,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private StoreRegistrationService storeRegistrationService;
+
+	@MockBean
+	private StoreMenuRegistrationService storeMenuRegistrationService;
 
 	@MockBean
 	private MenuCategoryRegistrationService menuCategoryRegistrationService;
@@ -115,7 +119,7 @@ class StoreApiControllerTest {
 					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
 				.andExpect(status().isOk());
 
-			verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 		}
 
 		@Disabled
@@ -135,9 +139,8 @@ class StoreApiControllerTest {
 				validEndTimeFixture
 			);
 
-			doThrow(new StoreException(INVALID_STORE_CATEGORY))
-				.when(storeRegistrationService)
-				.storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			doThrow(new NotFoundStoreCategoryException("invalid category"))
+				.when(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 
 			// when & then
 			mockMvc.perform(post("/stores")
@@ -147,7 +150,7 @@ class StoreApiControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().string("fail"));
 
-			verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 		}
 	}
 

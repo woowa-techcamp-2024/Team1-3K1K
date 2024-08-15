@@ -1,10 +1,12 @@
 package camp.woowak.lab.menu.exception;
 
-// TODO: extends CustomException
-public class InvalidMenuCreationException extends RuntimeException {
+import camp.woowak.lab.common.exception.BadRequestException;
+import camp.woowak.lab.common.exception.ErrorCode;
 
-	public InvalidMenuCreationException(String message) {
-		super(message);
+public class InvalidMenuCreationException extends BadRequestException {
+
+	public InvalidMenuCreationException(ErrorCode errorCode, String message) {
+		super(errorCode, message);
 	}
 
 }
