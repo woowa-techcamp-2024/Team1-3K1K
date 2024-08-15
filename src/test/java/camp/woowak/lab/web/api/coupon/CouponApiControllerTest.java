@@ -38,6 +38,9 @@ class CouponApiControllerTest {
 	@Test
 	@DisplayName("쿠폰 등록 테스트 - 성공")
 	void testCreateCoupon() throws Exception {
+		// given
+		given(createCouponService.createCoupon(any(CreateCouponCommand.class))).willReturn(1L);
+
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
