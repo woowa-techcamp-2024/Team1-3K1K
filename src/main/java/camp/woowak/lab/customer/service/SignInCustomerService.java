@@ -26,7 +26,7 @@ public class SignInCustomerService {
 	public UUID signIn(SignInCustomerCommand cmd) {
 		Customer byEmail = customerRepository.findByEmail(cmd.email())
 			.orElseThrow(() -> new CustomerAuthenticationException("email not found"));
-		if (byEmail.validatePassword(cmd.password(), passwordEncoder)) {
+		if (!byEmail.validatePassword(cmd.password(), passwordEncoder)) {
 			throw new CustomerAuthenticationException("password not matched");
 		}
 
