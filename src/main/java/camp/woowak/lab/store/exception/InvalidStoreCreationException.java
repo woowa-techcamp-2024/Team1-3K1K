@@ -5,12 +5,8 @@ import camp.woowak.lab.common.exception.ErrorCode;
 
 public class InvalidStoreCreationException extends BadRequestException {
 
-	public InvalidStoreCreationException(ErrorCode errorCode) {
-		super(errorCode);
-	}
-
 	public InvalidStoreCreationException(ErrorCode errorCode, String message) {
 		super(errorCode, message);
 	}
-	
+
 }
