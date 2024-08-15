@@ -22,6 +22,9 @@ public class Coupon {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false, length = 100)
+	private String title;
+
 	@Column(nullable = false)
 	private int discountAmount;
 
@@ -35,8 +38,9 @@ public class Coupon {
 	protected Coupon() {
 	}
 
-	public Coupon(int discountAmount, int quantity, LocalDateTime expiredAt) {
-		validate(discountAmount, quantity, expiredAt);
+	public Coupon(String title, int discountAmount, int quantity, LocalDateTime expiredAt) {
+		validate(title, discountAmount, quantity, expiredAt);
+		this.title = title;
 		this.discountAmount = discountAmount;
 		this.quantity = quantity;
 		this.expiredAt = expiredAt;
