@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
-import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -28,7 +27,7 @@ class SignUpCustomerServiceIntegrationTest {
 
 	@Test
 	@DisplayName("이메일 중복 시 롤백 테스트")
-	void testRollbackOnDuplicateEmail() throws InvalidCreationException, DuplicateEmailException {
+	void testRollbackOnDuplicateEmail() {
 		// given
 		SignUpCustomerCommand command1 = new SignUpCustomerCommand("name1", "email@example.com", "password",
 			"010-1234-5678");

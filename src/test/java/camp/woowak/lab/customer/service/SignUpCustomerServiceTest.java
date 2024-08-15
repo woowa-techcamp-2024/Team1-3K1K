@@ -41,7 +41,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 
 	@Test
 	@DisplayName("구매자 회원가입 테스트")
-	void testSignUp() throws InvalidCreationException, DuplicateEmailException {
+	void testSignUp() {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		PayAccount payAccount = createPayAccount();
