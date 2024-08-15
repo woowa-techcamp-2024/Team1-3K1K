@@ -1,6 +1,7 @@
 package camp.woowak.lab.common.exception;
 
 public class UnauthorizedException extends HttpStatusException {
+	@Deprecated
 	public UnauthorizedException(ErrorCode errorCode) {
 		super(errorCode);
 	}

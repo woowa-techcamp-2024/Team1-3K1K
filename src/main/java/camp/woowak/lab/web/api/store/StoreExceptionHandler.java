@@ -17,5 +17,4 @@ public class StoreExceptionHandler {
 		log.warn(exception.getMessage(), exception);
 		return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
 	}
-
 }
