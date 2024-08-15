@@ -136,7 +136,7 @@ class PayAccountApiControllerTest {
 		void notExistsAccountIdTest() throws Exception {
 			//given
 			long amount = 1000L;
-			Long notExistsId = Long.MAX_VALUE;
+			UUID notExistsId = UUID.randomUUID();
 			MockHttpSession notExistsSession = new MockHttpSession();
 			notExistsSession.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(notExistsId));
 			PayAccountChargeRequest command = new PayAccountChargeRequest(amount);

@@ -3,6 +3,7 @@ package camp.woowak.lab.payaccount.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +72,7 @@ class PayAccountChargeServiceTest {
 		@DisplayName("없는 AccountId를 호출하면 NotFoundAccountException을 던진다. 잔고는 유지된다.")
 		void withdrawAccountNotFound() {
 			//given
-			Long unknownAccountId = Long.MAX_VALUE;
+			UUID unknownAccountId = UUID.randomUUID();
 			long amount = 100L;
 			PayAccountChargeCommand command = new PayAccountChargeCommand(unknownAccountId, amount);
 
