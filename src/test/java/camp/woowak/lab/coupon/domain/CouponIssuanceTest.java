@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.coupon.exception.ExpiredCouponException;
+import camp.woowak.lab.coupon.exception.InvalidICreationIssuanceException;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.fixture.CouponFixture;
 import camp.woowak.lab.fixture.CustomerFixture;
@@ -55,7 +56,7 @@ class CouponIssuanceTest implements CouponFixture, CustomerFixture {
 		Customer customer = createCustomer(createPayAccount(), passwordEncoder);
 
 		// when & then
-		assertThrows(NullPointerException.class, () -> new CouponIssuance(coupon, customer));
+		assertThrows(InvalidICreationIssuanceException.class, () -> new CouponIssuance(coupon, customer));
 	}
 
 	@Test
@@ -66,7 +67,7 @@ class CouponIssuanceTest implements CouponFixture, CustomerFixture {
 		Customer customer = null;
 
 		// when & then
-		assertThrows(NullPointerException.class, () -> new CouponIssuance(coupon, customer));
+		assertThrows(InvalidICreationIssuanceException.class, () -> new CouponIssuance(coupon, customer));
 	}
 
 	@Test
