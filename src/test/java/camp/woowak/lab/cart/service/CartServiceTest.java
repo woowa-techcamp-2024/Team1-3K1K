@@ -73,7 +73,7 @@ class CartServiceTest {
 
 		store = createStore(vendor, "중화반점", minOrderPrice, startTime, endTime);
 
-		menu = createMenu(store, "짜장면", 90000, 10);
+		menu = createMenu(store, "짜장면", 90000);
 	}
 
 	@Nested
