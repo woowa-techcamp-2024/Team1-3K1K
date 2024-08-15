@@ -2,6 +2,7 @@ package camp.woowak.lab.web.api.store;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,10 +16,12 @@ import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
+import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreMenuRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.dto.response.store.MenuCategoryRegistrationResponse;
+import camp.woowak.lab.web.dto.response.store.StoreInfoResponse;
 import camp.woowak.lab.web.dto.response.store.StoreMenuRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.StoreRegistrationResponse;
 import jakarta.validation.Valid;
@@ -31,6 +34,12 @@ public class StoreApiController {
 	private final StoreRegistrationService storeRegistrationService;
 	private final StoreMenuRegistrationService storeMenuRegistrationService;
 	private final MenuCategoryRegistrationService menuCategoryRegistrationService;
+	private final StoreDao storeDao;
+
+	@GetMapping("/stores")
+	public StoreInfoResponse getStoreInfos() {
+		return storeDao.findAllStoreList();
+	}
 
 	@PostMapping("/stores")
 	public StoreRegistrationResponse storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
