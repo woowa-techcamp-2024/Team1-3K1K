@@ -27,4 +27,9 @@ public class InMemoryCartRepository implements CartRepository {
 
 		return cart;
 	}
+
+	@Override
+	public void delete(Cart cart) {
+		cartMap.remove(cart.getCustomerId());
+	}
 }
