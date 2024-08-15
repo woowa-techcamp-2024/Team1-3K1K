@@ -16,7 +16,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
-import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.fixture.CustomerFixture;
@@ -47,7 +46,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		PayAccount payAccount = createPayAccount();
 		Customer customerMock = Mockito.mock(Customer.class);
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(payAccount);
-		given(customerRepository.save(Mockito.any(Customer.class))).willReturn(customerMock);
+		given(customerRepository.saveAndFlush(Mockito.any(Customer.class))).willReturn(customerMock);
 		when(customerMock.getId()).thenReturn(UUID.randomUUID());
 
 		// when
@@ -57,7 +56,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 
 		// then
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(customerRepository).should().save(Mockito.any(Customer.class));
+		then(customerRepository).should().saveAndFlush(Mockito.any(Customer.class));
 	}
 
 	@Test
@@ -66,7 +65,8 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(createPayAccount());
-		when(customerRepository.save(Mockito.any(Customer.class))).thenThrow(DataIntegrityViolationException.class);
+		when(customerRepository.saveAndFlush(Mockito.any(Customer.class))).thenThrow(
+			DataIntegrityViolationException.class);
 
 		// when
 		SignUpCustomerCommand command =
@@ -75,6 +75,6 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// then
 		Assertions.assertThrows(DuplicateEmailException.class, () -> service.signUp(command));
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(customerRepository).should().save(Mockito.any(Customer.class));
+		then(customerRepository).should().saveAndFlush(Mockito.any(Customer.class));
 	}
 }
