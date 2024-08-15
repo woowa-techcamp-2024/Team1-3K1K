@@ -32,6 +32,8 @@ public class Cart {
 		Store store = menu.getStore();
 		validateOtherStore(store.getId());
 		validateStoreOpenTime(store);
+
+		this.menuList.add(menu);
 	}
 
 	private void validateStoreOpenTime(Store store) {
