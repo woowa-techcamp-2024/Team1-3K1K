@@ -23,6 +23,9 @@ public class SignInCustomerService {
 		if (byEmail == null) {
 			throw new CustomerAuthenticationException("invalid email");
 		} else if (!passwordEncoder.matches(cmd.password(), byEmail.getPassword())) {
+	/**
+	 * @throws CustomerAuthenticationException 이메일이 존재하지 않거나 비밀번호가 일치하지 않으면
+	 */
 			throw new CustomerAuthenticationException("password not matched");
 		}
 	}
