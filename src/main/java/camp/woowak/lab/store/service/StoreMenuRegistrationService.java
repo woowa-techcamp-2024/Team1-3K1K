@@ -1,5 +1,7 @@
 package camp.woowak.lab.store.service;
 
+import static camp.woowak.lab.menu.exception.MenuErrorCode.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.exception.InvalidMenuCreationException;
 import camp.woowak.lab.menu.exception.NotFoundMenuCategoryException;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
@@ -38,9 +41,10 @@ public class StoreMenuRegistrationService {
 	private final MenuCategoryRepository menuCategoryRepository;
 
 	/**
-	 *
+	 * @throws NotFoundVendorException UUID 기준 가게 점주가 존재하지 않을 때 발생
+	 * @throws NotFoundStoreException 가게 ID 기준 가게가 존재하지 않을 때 발생
 	 * @throws NotFoundMenuCategoryException 가게와 메뉴카테고리 이름으로 메뉴카테고리를 찾지 못할 때 발생
-	 *
+	 * @throws InvalidMenuCreationException 메뉴 객체 생성 검증 실패 시 발생
 	 */
 	@Transactional
 	public List<Long> storeMenuRegistration(final StoreMenuRegistrationCommand command) {
@@ -84,7 +88,8 @@ public class StoreMenuRegistrationService {
 
 	private MenuCategory findMenuCategoryBy(final Store store, final String manuCategoryName) {
 		return menuCategoryRepository.findByStoreIdAndName(store.getId(), manuCategoryName)
-			.orElseThrow(() -> new NotFoundMenuCategoryException(store + ", " + manuCategoryName + " 의 메뉴카테고리가 없습니다."));
+			.orElseThrow(() -> new NotFoundMenuCategoryException(NOT_FOUND_MENU_CATEGORY,
+				store + ", " + manuCategoryName + " 의 메뉴카테고리가 없습니다."));
 	}
 
 }
