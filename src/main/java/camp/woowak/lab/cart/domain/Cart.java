@@ -15,8 +15,8 @@ import lombok.Getter;
 
 @Getter
 public class Cart {
-	private String customerId;
-	private List<Menu> menuList;
+	private final String customerId;
+	private final List<Menu> menuList;
 
 	/**
 	 * 생성될 때 무조건 cart가 비어있도록 구현
