@@ -32,7 +32,7 @@ public class SessionVendorArgumentResolver extends LoginMemberArgumentResolver {
 		HttpSession session = request.getSession(false);
 		if (parameterAnnotation.required() &&
 			(session == null || session.getAttribute(SessionConst.SESSION_VENDOR_KEY) == null)) {
-			throw new UnauthorizedException(AuthenticationErrorCode.UNAUTHORIZED);
+			throw new UnauthorizedException(AuthenticationErrorCode.UNAUTHORIZED, "Vendor가 세션에 저장되어 있지 않습니다.");
 		}
 		return session == null ? null : session.getAttribute(SessionConst.SESSION_VENDOR_KEY);
 	}
