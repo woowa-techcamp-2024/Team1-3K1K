@@ -41,8 +41,8 @@ import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
-import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
+import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
 
@@ -119,9 +119,7 @@ class StoreApiControllerTest {
 					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
 				.andExpect(status().isOk());
 
-		verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
-	}
-			verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 		}
 
 		@Disabled
@@ -141,11 +139,8 @@ class StoreApiControllerTest {
 				validEndTimeFixture
 			);
 
-		doThrow(new NotFoundStoreCategoryException("invalid category"))
-			.when(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
-			doThrow(new StoreException(INVALID_STORE_CATEGORY))
-				.when(storeRegistrationService)
-				.storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			doThrow(new NotFoundStoreCategoryException("invalid category"))
+				.when(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 
 			// when & then
 			mockMvc.perform(post("/stores")
@@ -155,8 +150,7 @@ class StoreApiControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().string("fail"));
 
-		verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
-			verify(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
+			verify(storeRegistrationService).storeRegistration(any(StoreRegistrationCommand.class));
 		}
 	}
 
