@@ -43,17 +43,17 @@ class SignUpVendorServiceTest implements VendorFixture {
 		UUID fakeVendorId = UUID.randomUUID();
 		Vendor vendor = createSavedVendor(fakeVendorId, payAccount, new NoOpPasswordEncoder());
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
-		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(payAccount);
-		given(vendorRepository.save(Mockito.any(Vendor.class))).willReturn(vendor);
 
 		// when
+		when(payAccountRepository.save(Mockito.any(PayAccount.class))).thenReturn(payAccount);
+		when(vendorRepository.saveAndFlush(Mockito.any(Vendor.class))).thenReturn(vendor);
+
+		// then
 		SignUpVendorCommand command =
 			new SignUpVendorCommand("vendorName", "vendorEmail@example.com", "password", "010-0000-0000");
 		service.signUp(command);
-
-		// then
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(vendorRepository).should().save(Mockito.any(Vendor.class));
+		then(vendorRepository).should().saveAndFlush(Mockito.any(Vendor.class));
 	}
 
 	@Test
@@ -61,16 +61,16 @@ class SignUpVendorServiceTest implements VendorFixture {
 	void failWithDuplicateEmail() throws DuplicateEmailException {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
-		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(createPayAccount());
 
 		// when
-		when(vendorRepository.save(Mockito.any(Vendor.class))).thenThrow(DataIntegrityViolationException.class);
-		SignUpVendorCommand command =
-			new SignUpVendorCommand("vendorName", "vendorEmail@example.com", "password", "010-0000-0000");
+		when(payAccountRepository.save(Mockito.any(PayAccount.class))).thenReturn(createPayAccount());
+		when(vendorRepository.saveAndFlush(Mockito.any(Vendor.class))).thenThrow(DataIntegrityViolationException.class);
 
 		// then
+		SignUpVendorCommand command =
+			new SignUpVendorCommand("vendorName", "vendorEmail@example.com", "password", "010-0000-0000");
 		Assertions.assertThrows(DuplicateEmailException.class, () -> service.signUp(command));
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(vendorRepository).should().save(Mockito.any(Vendor.class));
+		then(vendorRepository).should().saveAndFlush(Mockito.any(Vendor.class));
 	}
 }
