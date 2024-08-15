@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import camp.woowak.lab.menu.domain.Menu;
+import lombok.Getter;
 
+@Getter
 public class Cart {
 	private Long customerId;
 	private List<Menu> menuList;
