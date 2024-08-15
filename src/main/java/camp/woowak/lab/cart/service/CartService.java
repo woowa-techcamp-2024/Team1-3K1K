@@ -6,6 +6,7 @@ import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
+import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 
@@ -32,6 +33,11 @@ public class CartService {
 
 		customerCart.addMenu(menu);
 		cartRepository.save(customerCart);
+	}
+
+	public long getTotalPrice(CartTotalPriceCommand command) {
+		return getCart(command.customerId())
+			.getTotalPrice();
 	}
 
 	private Cart getCart(String customerId) {
