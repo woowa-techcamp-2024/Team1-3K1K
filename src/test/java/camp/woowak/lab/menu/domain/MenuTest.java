@@ -35,7 +35,7 @@ class MenuTest {
 			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
 			void isNull() {
 				// given & when & then
-				assertThatCode(() -> new Menu(null, menuCategoryFixture, "1234", 1000, "image"))
+				assertThatCode(() -> new Menu(null, menuCategoryFixture, "1234", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -49,7 +49,7 @@ class MenuTest {
 			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
 			void isNull() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, null, "1234", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, null, "1234", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -63,7 +63,7 @@ class MenuTest {
 			@DisplayName("[Success] 10글자 이하만 가능하다")
 			void success() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1000, 50L, "image"))
 					.doesNotThrowAnyException();
 			}
 
@@ -71,7 +71,7 @@ class MenuTest {
 			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
 			void isNull() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -79,7 +79,7 @@ class MenuTest {
 			@DisplayName("[Exception] 빈 문자열이면 InvalidMenuCreationException 이 발생한다")
 			void isEmpty() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -87,7 +87,7 @@ class MenuTest {
 			@DisplayName("[Exception] 공백 문자열이면 InvalidMenuCreationException 이 발생한다")
 			void isBlank() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -95,7 +95,7 @@ class MenuTest {
 			@DisplayName("[Exception] 10 글자를 초과하면 InvalidMenuCreationException 이 발생한다")
 			void greaterThanMaxNameLength() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "12345678901", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "12345678901", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -109,7 +109,7 @@ class MenuTest {
 			@DisplayName("[Success] 양수만 가능하다")
 			void success() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1, 50L, "image"))
 					.doesNotThrowAnyException();
 			}
 
@@ -117,7 +117,7 @@ class MenuTest {
 			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
 			void isNull() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", null, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", null, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -125,7 +125,7 @@ class MenuTest {
 			@DisplayName("[Exception] 음수면 InvalidMenuCreationException 이 발생한다")
 			void isNegative() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", -1, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", -1, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -133,7 +133,7 @@ class MenuTest {
 			@DisplayName("[Exception] 0이면 InvalidMenuCreationException 이 발생한다")
 			void isZero() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 0, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 0, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -147,7 +147,7 @@ class MenuTest {
 			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
 			void isNull() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -155,7 +155,7 @@ class MenuTest {
 			@DisplayName("[Exception] 빈 문자열이면 InvalidMenuCreationException 이 발생한다")
 			void isEmpty() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
@@ -163,10 +163,38 @@ class MenuTest {
 			@DisplayName("[Exception] 공백 문자열이면 InvalidMenuCreationException 이 발생한다")
 			void isBlank() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, 50L, "image"))
 					.isInstanceOf(InvalidMenuCreationException.class);
 			}
 
+		}
+
+		@Nested
+		@DisplayName("음식 상품 재고 개수가")
+		class StockCount {
+			@Test
+			@DisplayName("[Exception] Null 이면 InvalidMenuCreationException 이 발생한다")
+			void isNull() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, null, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 음수면 InvalidMenuCreationException 이 발생한다")
+			void isEmpty() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, -1L, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
+
+			@Test
+			@DisplayName("[Exception] 0개면 InvalidMenuCreationException 이 발생한다")
+			void isBlank() {
+				// given & when & then
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, 0L, "image"))
+					.isInstanceOf(InvalidMenuCreationException.class);
+			}
 		}
 
 	}
