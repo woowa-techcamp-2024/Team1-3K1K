@@ -42,6 +42,8 @@ public class CouponIssuance {
 
 	public CouponIssuance(Coupon coupon, Customer customer) {
 		CouponIssuanceValidator.validate(customer, coupon);
+		// coupon 수량 감소
+		coupon.decreaseQuantity();
 		this.coupon = coupon;
 		this.customer = customer;
 		this.issuedAt = LocalDateTime.now();
