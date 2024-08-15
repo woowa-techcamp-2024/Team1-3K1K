@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.exception.DuplicateMenuCategoryException;
@@ -15,6 +16,7 @@ import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
 
 @Service
+@Transactional
 public class MenuCategoryRegistrationService {
 	private final StoreRepository storeRepository;
 	private final MenuCategoryRepository menuCategoryRepository;
