@@ -36,7 +36,7 @@ class CouponApiControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 성공")
+	@DisplayName("쿠폰 등록 테스트 - 성공")
 	void testCreateCoupon() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -49,7 +49,7 @@ class CouponApiControllerTest {
 	}
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 잘못된 제목 입력 시 실패")
+	@DisplayName("쿠폰 등록 테스트 - 잘못된 제목 입력 시 실패")
 	void testCreateCouponFailWithInvalidTitle() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +61,7 @@ class CouponApiControllerTest {
 	}
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 잘못된 할인 금액 입력 시 실패")
+	@DisplayName("쿠폰 등록 테스트 - 잘못된 할인 금액 입력 시 실패")
 	void testCreateCouponFailWithInvalidDiscountAmount() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ class CouponApiControllerTest {
 	}
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 잘못된 수량 입력 시 실패")
+	@DisplayName("쿠폰 등록 테스트 - 잘못된 수량 입력 시 실패")
 	void testCreateCouponFailWithInvalidQuantity() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ class CouponApiControllerTest {
 	}
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 잘못된 만료일 입력 시 실패")
+	@DisplayName("쿠폰 등록 테스트 - 잘못된 만료일 입력 시 실패")
 	void testCreateCouponFailWithInvalidExpiredAt() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ class CouponApiControllerTest {
 	}
 
 	@Test
-	@DisplayName("쿠폰 발급 테스트 - 중복된 제목 입력 시 실패")
+	@DisplayName("쿠폰 등록 테스트 - 중복된 제목 입력 시 실패")
 	void testCreateCouponFailWithDuplicateTitle() throws Exception {
 		// given
 		CreateCouponRequest request = new CreateCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().plusDays(7));
@@ -113,4 +113,5 @@ class CouponApiControllerTest {
 			.andDo(print())
 			.andExpect(status().isConflict());
 	}
+
 }
