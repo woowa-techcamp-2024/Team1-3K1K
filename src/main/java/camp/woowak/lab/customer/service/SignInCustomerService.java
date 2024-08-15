@@ -1,5 +1,7 @@
 package camp.woowak.lab.customer.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import camp.woowak.lab.customer.domain.Customer;
@@ -18,15 +20,16 @@ public class SignInCustomerService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public void signIn(SignInCustomerCommand cmd) {
-		Customer byEmail = customerRepository.findByEmail(cmd.email());
-		if (byEmail == null) {
-			throw new CustomerAuthenticationException("invalid email");
-		} else if (!passwordEncoder.matches(cmd.password(), byEmail.getPassword())) {
 	/**
 	 * @throws CustomerAuthenticationException 이메일이 존재하지 않거나 비밀번호가 일치하지 않으면
 	 */
+	public UUID signIn(SignInCustomerCommand cmd) {
+		Customer byEmail = customerRepository.findByEmail(cmd.email())
+			.orElseThrow(() -> new CustomerAuthenticationException("email not found"));
+		if (byEmail.validatePassword(cmd.password(), passwordEncoder)) {
 			throw new CustomerAuthenticationException("password not matched");
 		}
+
+		return byEmail.getId();
 	}
 }
