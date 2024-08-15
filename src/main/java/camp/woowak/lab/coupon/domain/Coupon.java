@@ -16,7 +16,9 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "Coupons")
+@Table(name = "Coupons", uniqueConstraints = {
+	@jakarta.persistence.UniqueConstraint(name = "UK_Coupons_title", columnNames = {"title"})
+})
 public class Coupon {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
