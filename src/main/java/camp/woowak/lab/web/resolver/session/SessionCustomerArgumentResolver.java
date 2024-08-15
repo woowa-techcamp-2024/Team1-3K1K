@@ -1,6 +1,7 @@
 package camp.woowak.lab.web.resolver.session;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -12,6 +13,7 @@ import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+@Component
 public class SessionCustomerArgumentResolver extends LoginMemberArgumentResolver {
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -21,7 +23,7 @@ public class SessionCustomerArgumentResolver extends LoginMemberArgumentResolver
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		AuthenticationPrincipal parameterAnnotation = parameter.getParameterAnnotation(AuthenticationPrincipal.class);
 		if (parameterAnnotation == null) {
 			return null;

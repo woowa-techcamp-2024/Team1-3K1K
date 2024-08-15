@@ -10,7 +10,7 @@ public class APIResponse<T> {
 	private final T data;
 	private final int status;
 
-	APIResponse(final HttpStatus status, final T data) {
+	public APIResponse(final HttpStatus status, final T data) {
 		this.data = data;
 		this.status = status.value();
 	}
