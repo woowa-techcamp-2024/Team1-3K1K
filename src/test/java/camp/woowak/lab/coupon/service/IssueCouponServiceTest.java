@@ -54,7 +54,7 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		Customer fakeCustomer = createCustomer(fakeCustomerId);
 		CouponIssuance fakeCouponIssuance = createCouponIssuance(fakeCouponId, fakeCoupon, fakeCustomer);
 		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
-		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
+		given(couponRepository.findByIdWithPessimisticLock(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
 		given(couponIssuanceRepository.save(any(CouponIssuance.class))).willReturn(fakeCouponIssuance);
 
 		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
@@ -65,7 +65,7 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		// then
 		assertEquals(fakeCouponIssuanceId, saveId);
 		verify(customerRepository).findById(fakeCustomerId);
-		verify(couponRepository).findById(fakeCouponId);
+		verify(couponRepository).findByIdWithPessimisticLock(fakeCouponId);
 		verify(couponIssuanceRepository).save(any(CouponIssuance.class));
 	}
 
@@ -94,14 +94,14 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		Long fakeCouponId = 1L;
 		Customer fakeCustomer = createCustomer(fakeCustomerId);
 		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
-		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.empty());
+		given(couponRepository.findByIdWithPessimisticLock(fakeCouponId)).willReturn(Optional.empty());
 
 		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
 
 		// when & then
 		assertThrows(InvalidICreationIssuanceException.class, () -> issueCouponService.issueCoupon(cmd));
 		verify(customerRepository).findById(fakeCustomerId);
-		verify(couponRepository).findById(fakeCouponId);
+		verify(couponRepository).findByIdWithPessimisticLock(fakeCouponId);
 		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
 	}
 
@@ -116,14 +116,14 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		fakeCoupon.setExpiredAt(LocalDateTime.now().minusDays(1));
 		Customer fakeCustomer = createCustomer(fakeCustomerId);
 		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
-		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
+		given(couponRepository.findByIdWithPessimisticLock(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
 
 		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
 
 		// when & then
 		assertThrows(ExpiredCouponException.class, () -> issueCouponService.issueCoupon(cmd));
 		verify(customerRepository).findById(fakeCustomerId);
-		verify(couponRepository).findById(fakeCouponId);
+		verify(couponRepository).findByIdWithPessimisticLock(fakeCouponId);
 		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
 	}
 
@@ -138,15 +138,13 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		Customer fakeCustomer = createCustomer(fakeCustomerId);
 		fakeCoupon.setQuantity(0); // 수량 부족 시나리오 적용
 		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
-		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
-		given(couponIssuanceRepository.save(any(CouponIssuance.class))).willThrow(
-			new InsufficientCouponQuantityException("the quantity of coupon is insufficient"));
+		given(couponRepository.findByIdWithPessimisticLock(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
 		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
 
 		// when & then
 		assertThrows(InsufficientCouponQuantityException.class, () -> issueCouponService.issueCoupon(cmd));
 		verify(customerRepository).findById(fakeCustomerId);
-		verify(couponRepository).findById(fakeCouponId);
-		verify(couponIssuanceRepository).save(any(CouponIssuance.class));
+		verify(couponRepository).findByIdWithPessimisticLock(fakeCouponId);
+		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
 	}
 }
