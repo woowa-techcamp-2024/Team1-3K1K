@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.store.service.StoreRegistrationService;
+import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
-import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
@@ -26,9 +26,22 @@ public class StoreApiController {
 	public ResponseEntity<Void> storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
 												  final @Valid @RequestBody StoreRegistrationRequest request
 	) {
-		Vendor vendor = vendorRepository.findById(loginVendor.getId()).orElseThrow();
-		storeRegistrationService.storeRegistration(vendor, request);
+		StoreRegistrationCommand command = mapBy(loginVendor, request);
+
+		storeRegistrationService.storeRegistration(command);
 		return ResponseEntity.ok().build();
+	}
+
+	private StoreRegistrationCommand mapBy(LoginVendor loginVendor, StoreRegistrationRequest request) {
+		return new StoreRegistrationCommand(
+			loginVendor.getId(),
+			request.storeName(),
+			request.storeAddress(),
+			request.storePhoneNumber(),
+			request.storeCategoryName(),
+			request.storeMinOrderPrice(),
+			request.storeStartTime(),
+			request.storeEndTime());
 	}
 
 }
