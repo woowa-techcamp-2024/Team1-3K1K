@@ -18,6 +18,7 @@ import camp.woowak.lab.cart.exception.OtherStoreMenuException;
 import camp.woowak.lab.cart.exception.StoreNotOpenException;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
+import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.menu.domain.Menu;
@@ -144,10 +145,56 @@ class CartServiceTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("getTotalPrice 메서드")
+	class GetTotalPrice {
+		@Nested
+		@DisplayName("totalPrice 메서드는")
+		class GetTotalPriceTest {
+			@Test
+			@DisplayName("장바구니가 비어있으면 0원을 return한다.")
+			void getTotalPriceWithEmptyList() {
+				//given
+				CartTotalPriceCommand command = new CartTotalPriceCommand(customer.getId().toString());
+
+				//when
+				long totalPrice = cartService.getTotalPrice(command);
+
+				//then
+				assertThat(totalPrice).isEqualTo(0);
+			}
+
+			@Test
+			@DisplayName("현재 장바구니에 담긴 모든 메뉴의 총 금액을 return 받는다.")
+			void getTotalPriceTest() {
+				//given
+				int price1 = 1000;
+				Menu menu1 = createMenu(store, "짜장면1", price1);
+				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu1.getId()));
+
+				int price2 = 2000;
+				Menu menu2 = createMenu(store, "짬뽕1", price2);
+				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu2.getId()));
+
+				int price3 = Integer.MAX_VALUE;
+				Menu menu3 = createMenu(store, "황제정식", price3);
+				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu3.getId()));
+
+				CartTotalPriceCommand command = new CartTotalPriceCommand(customer.getId().toString());
+
+				//when
+				long totalPrice = cartService.getTotalPrice(command);
+
+				//then
+				assertThat(totalPrice).isEqualTo((long)price1 + (long)price2 + (long)price3);
+			}
+		}
+	}
+
 	private Menu createMenu(Store store, String name, int price) {
 		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
 		menuCategoryRepository.saveAndFlush(menuCategory);
-		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
+		Menu menu1 = new Menu(store, menuCategory, name, price, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;
