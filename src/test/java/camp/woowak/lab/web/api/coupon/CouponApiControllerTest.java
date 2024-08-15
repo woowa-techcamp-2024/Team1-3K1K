@@ -21,6 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
+import camp.woowak.lab.coupon.exception.ExpiredCouponException;
+import camp.woowak.lab.coupon.exception.InsufficientCouponQuantityException;
+import camp.woowak.lab.coupon.exception.InvalidICreationIssuanceException;
 import camp.woowak.lab.coupon.service.CreateCouponService;
 import camp.woowak.lab.coupon.service.IssueCouponService;
 import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
@@ -146,5 +149,79 @@ class CouponApiControllerTest {
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isCreated());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 세션 없이 요청 시 실패")
+	void testIssueCouponFailWithoutSession() throws Exception {
+		// given
+		Long couponId = 1L;
+
+		// when & then
+		mockMvc.perform(post("/coupons/" + couponId + "/issue")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 존재하지 않는 쿠폰 or 구매자 ID 입력 시 실패")
+	void testIssueCouponFailWithNotExistsId() throws Exception {
+		// given
+		UUID customerId = UUID.randomUUID();
+		LoginCustomer loginCustomer = new LoginCustomer(customerId);
+
+		MockHttpSession session = new MockHttpSession();
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
+		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+			.willThrow(new InvalidICreationIssuanceException("존재하지 않는 쿠폰 or 구매자 ID 입력입니다."));
+		// when & then
+		mockMvc.perform(post("/coupons/999/issue")
+				.session(session)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 쿠폰 만료 실패")
+	void testIssueCouponFailWithExpiredCoupon() throws Exception {
+		// given
+		UUID customerId = UUID.randomUUID();
+		LoginCustomer loginCustomer = new LoginCustomer(customerId);
+
+		MockHttpSession session = new MockHttpSession();
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
+		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+			.willThrow(new ExpiredCouponException("쿠폰이 만료되었습니다."));
+		// when & then
+		mockMvc.perform(post("/coupons/999/issue")
+				.session(session)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isConflict());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 수량 부족 실패")
+	void testIssueCouponFailWithInsufficientQuantity() throws Exception {
+		// given
+		UUID customerId = UUID.randomUUID();
+		LoginCustomer loginCustomer = new LoginCustomer(customerId);
+
+		MockHttpSession session = new MockHttpSession();
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
+		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+			.willThrow(new InsufficientCouponQuantityException("수량이 부족합니다."));
+		// when & then
+		mockMvc.perform(post("/coupons/999/issue")
+				.session(session) // 세션 설정
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isConflict());
 	}
 }
