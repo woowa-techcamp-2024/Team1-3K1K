@@ -16,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.coupon.domain.Coupon;
 import camp.woowak.lab.coupon.domain.CouponIssuance;
+import camp.woowak.lab.coupon.domain.TestCoupon;
+import camp.woowak.lab.coupon.exception.ExpiredCouponException;
+import camp.woowak.lab.coupon.exception.InvalidICreationIssuanceException;
 import camp.woowak.lab.coupon.repository.CouponIssuanceRepository;
 import camp.woowak.lab.coupon.repository.CouponRepository;
 import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
@@ -63,5 +66,63 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		verify(customerRepository).findById(fakeCustomerId);
 		verify(couponRepository).findById(fakeCouponId);
 		verify(couponIssuanceRepository).save(any(CouponIssuance.class));
+	}
+
+	@Test
+	@DisplayName("Coupon 발급 테스트 - 존재하지 않는 Customer")
+	void testIssueCouponFailWithNotExistCustomer() {
+		// given
+		UUID fakeCustomerId = UUID.randomUUID();
+		Long fakeCouponId = 1L;
+		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.empty());
+
+		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
+
+		// when & then
+		assertThrows(InvalidICreationIssuanceException.class, () -> issueCouponService.issueCoupon(cmd));
+		verify(customerRepository).findById(fakeCustomerId);
+		verify(couponRepository, never()).findById(fakeCouponId);
+		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
+	}
+
+	@Test
+	@DisplayName("Coupon 발급 테스트 - 존재하지 않는 Coupon")
+	void testIssueCouponFailWithNotExistCoupon() {
+		// given
+		UUID fakeCustomerId = UUID.randomUUID();
+		Long fakeCouponId = 1L;
+		Customer fakeCustomer = createCustomer(fakeCustomerId);
+		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
+		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.empty());
+
+		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
+
+		// when & then
+		assertThrows(InvalidICreationIssuanceException.class, () -> issueCouponService.issueCoupon(cmd));
+		verify(customerRepository).findById(fakeCustomerId);
+		verify(couponRepository).findById(fakeCouponId);
+		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
+	}
+
+	@Test
+	@DisplayName("Coupon 발급 테스트 - 만료된 Coupon")
+	void testIssueCouponFailWithExpiredCoupon() {
+		// given
+		UUID fakeCustomerId = UUID.randomUUID();
+		Long fakeCouponId = 1L;
+		TestCoupon fakeCoupon = (TestCoupon)createCoupon(fakeCouponId, "할인 쿠폰", 1000, 100,
+			LocalDateTime.now().plusDays(7));
+		fakeCoupon.setExpiredAt(LocalDateTime.now().minusDays(1));
+		Customer fakeCustomer = createCustomer(fakeCustomerId);
+		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
+		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
+
+		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
+
+		// when & then
+		assertThrows(ExpiredCouponException.class, () -> issueCouponService.issueCoupon(cmd));
+		verify(customerRepository).findById(fakeCustomerId);
+		verify(couponRepository).findById(fakeCouponId);
+		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
 	}
 }
