@@ -147,7 +147,7 @@ class CartServiceTest {
 	private Menu createMenu(Store store, String name, int price) {
 		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
 		menuCategoryRepository.saveAndFlush(menuCategory);
-		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
+		Menu menu1 = new Menu(store, menuCategory, name, price, 50L, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;

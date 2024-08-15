@@ -176,10 +176,10 @@ class CartApiControllerTest {
 	private Menu createMenu(Store store, String name, int price) {
 		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
 		menuCategoryRepository.saveAndFlush(menuCategory);
-		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
-		menuRepository.saveAndFlush(menu1);
+		Menu menu = new Menu(store, menuCategory, name, price, 50L, "imageUrl");
+		menuRepository.saveAndFlush(menu);
 
-		return menu1;
+		return menu;
 	}
 
 	private Store createStore(Vendor vendor, String name, int minOrderPrice, LocalDateTime startTime,
