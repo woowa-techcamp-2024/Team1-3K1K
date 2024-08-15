@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.exception.DuplicateMenuCategoryException;
+import camp.woowak.lab.menu.exception.UnauthorizedMenuCategoryCreationException;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.service.command.MenuCategoryRegistrationCommand;
 import camp.woowak.lab.store.domain.Store;
@@ -27,14 +28,17 @@ public class MenuCategoryRegistrationService {
 	public Long register(MenuCategoryRegistrationCommand cmd) {
 		Optional<Store> findStore = storeRepository.findById(cmd.storeId());
 		if (findStore.isEmpty()) {
-			throw new NotFoundStoreException("등록되지 않는 Store에는 메뉴 카테고리를 등록할 수 없습니다.");
+			throw new NotFoundStoreException("등록되지 않는 Store에 메뉴 카테고리 생성을 시도했습니다.");
 		}
 		Store store = findStore.get();
+		if (!store.isOwnedBy(cmd.vendorId())) {
+			throw new UnauthorizedMenuCategoryCreationException("권한없는 사용자가 메뉴 카테고리 등록을 시도했습니다.");
+		}
 		MenuCategory savedMenuCategory;
 		try {
 			savedMenuCategory = menuCategoryRepository.saveAndFlush(new MenuCategory(store, cmd.name()));
 		} catch (DataIntegrityViolationException e) {
-			throw new DuplicateMenuCategoryException("해당 Store에는 이미 같은 이름의 메뉴 카테고리가 있습니다.");
+			throw new DuplicateMenuCategoryException("같은 이름의 메뉴 카테고리 생성을 시도했습니다.");
 		}
 		return savedMenuCategory.getId();
 	}

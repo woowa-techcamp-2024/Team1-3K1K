@@ -1,6 +1,7 @@
 package camp.woowak.lab.store.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
 import camp.woowak.lab.vendor.domain.Vendor;
@@ -69,4 +70,7 @@ public class Store {
 		}
 	}
 
+	public boolean isOwnedBy(UUID ownerId) {
+		return owner.getId().equals(ownerId);
+	}
 }
