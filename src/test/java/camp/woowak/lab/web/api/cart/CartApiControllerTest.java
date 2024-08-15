@@ -80,7 +80,7 @@ class CartApiControllerTest {
 			customer = createCustomer();
 			vendor = createVendor();
 			Store store = createStore(vendor, "중화반점", 8000, startTime, endTime);
-			menu = createMenu(store, "짜장면", 90000, 10);
+			menu = createMenu(store, "짜장면", 90000);
 			session = new MockHttpSession();
 			session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, new LoginCustomer(customer.getId()));
 		}
@@ -124,7 +124,7 @@ class CartApiControllerTest {
 			LocalDateTime closedStartTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
 			LocalDateTime closedEndTime = LocalDateTime.now().minusMinutes(1).withSecond(0).withNano(0);
 			Store closedStore = createStore(vendor, "닫힌 가게", minOrderPrice, closedStartTime, closedEndTime);
-			Menu closedStoresMenu = createMenu(closedStore, "닫힌 가게의 메뉴", 1000, 10);
+			Menu closedStoresMenu = createMenu(closedStore, "닫힌 가게의 메뉴", 1000);
 
 			AddCartRequest request = new AddCartRequest(closedStoresMenu.getId());
 			String content = mapper.writeValueAsString(request);
@@ -144,7 +144,7 @@ class CartApiControllerTest {
 		void cantAddMenuWithOtherStoresMenu() throws Exception {
 			//given
 			Store otherStore = createStore(vendor, "옆집 가게", minOrderPrice, startTime, endTime);
-			Menu otherStoreMenu = createMenu(otherStore, "옆집 가게 메뉴", 10000, 10);
+			Menu otherStoreMenu = createMenu(otherStore, "옆집 가게 메뉴", 10000);
 
 			AddCartRequest givenRequest = new AddCartRequest(menu.getId());
 			String givenContent = mapper.writeValueAsString(givenRequest);
@@ -169,8 +169,8 @@ class CartApiControllerTest {
 		}
 	}
 
-	private Menu createMenu(Store store, String name, int price, int quantity) {
-		Menu menu1 = new Menu(store, name, price, quantity);
+	private Menu createMenu(Store store, String name, int price) {
+		Menu menu1 = new Menu(store, name, price);
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;

@@ -28,13 +28,9 @@ public class Menu {
 	@Column
 	private int price;
 
-	@Column
-	private int quantity;
-
-	public Menu(Store store, String name, int price, int quantity) {
+	public Menu(Store store, String name, int price) {
 		this.store = store;
 		this.name = name;
 		this.price = price;
-		this.quantity = quantity;
 	}
 }

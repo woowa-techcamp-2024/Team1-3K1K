@@ -114,7 +114,7 @@ class CartServiceTest {
 			LocalDateTime startTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
 			LocalDateTime endTime = LocalDateTime.now().minusMinutes(1).withSecond(0).withNano(0);
 			Store closedStore = createStore(vendor, "오픈 전의 중화반점", 8000, startTime, endTime);
-			Menu menu = createMenu(closedStore, "오픈시간이 아니라 담을 수 없는 메뉴", 1000, 10);
+			Menu menu = createMenu(closedStore, "오픈시간이 아니라 담을 수 없는 메뉴", 1000);
 
 			AddCartCommand command = new AddCartCommand(customer.getId(), menu.getId());
 
@@ -128,7 +128,7 @@ class CartServiceTest {
 		void throwExceptionWhenAddMenuInCartWithOtherStoresMenu() {
 			//given
 			Store otherStore = createStore(vendor, "다른집", 8000, startTime, endTime);
-			Menu otherStoresMenu = createMenu(otherStore, "다른집 짜장면", 9000, 10);
+			Menu otherStoresMenu = createMenu(otherStore, "다른집 짜장면", 9000);
 
 			AddCartCommand command1 = new AddCartCommand(customer.getId(), menu.getId());
 			cartService.addMenu(command1);
@@ -140,8 +140,8 @@ class CartServiceTest {
 		}
 	}
 
-	private Menu createMenu(Store store, String name, int price, int quantity) {
-		Menu menu1 = new Menu(store, name, price, quantity);
+	private Menu createMenu(Store store, String name, int price) {
+		Menu menu1 = new Menu(store, name, price);
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;
