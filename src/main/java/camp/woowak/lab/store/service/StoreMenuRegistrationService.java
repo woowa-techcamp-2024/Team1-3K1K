@@ -83,7 +83,8 @@ public class StoreMenuRegistrationService {
 
 	private Menu createMenu(final Store store, final MenuLineItem menuLineItem) {
 		MenuCategory menuCategory = findMenuCategoryBy(store, menuLineItem.categoryName());
-		return new Menu(store, menuCategory, menuLineItem.name(), menuLineItem.price(), menuLineItem.imageUrl());
+		return new Menu(store, menuCategory, menuLineItem.name(), menuLineItem.price(),
+			menuLineItem.stockCount(), menuLineItem.imageUrl());
 	}
 
 	private MenuCategory findMenuCategoryBy(final Store store, final String manuCategoryName) {
