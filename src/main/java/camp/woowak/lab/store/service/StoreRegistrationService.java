@@ -25,8 +25,9 @@ public class StoreRegistrationService {
 	private final StoreCategoryRepository storeCategoryRepository;
 
 	/**
-	 * @throws camp.woowak.lab.store.exception.InvalidStoreCreationException Store 객체 검증 실패
-	 * @throws NotFoundStoreCategoryException 존재하지 않는 이름의 가게 카테고리
+	 * @throws camp.woowak.lab.store.exception.InvalidStoreCreationException Store 객체 생성 검증에 실패시
+	 * @throws NotFoundStoreCategoryException 가게 카테고리 이름에 대한 가게 카테고리가 존재하지 않을 시
+	 * @throws NotFoundVendorException UUID 에 대한 가게 점주가 존재하지 않을 시
 	 */
 	@Transactional
 	public void storeRegistration(final StoreRegistrationCommand command) {
