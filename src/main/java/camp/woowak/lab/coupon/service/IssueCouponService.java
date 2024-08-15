@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import camp.woowak.lab.coupon.domain.Coupon;
 import camp.woowak.lab.coupon.domain.CouponIssuance;
 import camp.woowak.lab.coupon.exception.ExpiredCouponException;
+import camp.woowak.lab.coupon.exception.InsufficientCouponQuantityException;
 import camp.woowak.lab.coupon.exception.InvalidICreationIssuanceException;
 import camp.woowak.lab.coupon.repository.CouponIssuanceRepository;
 import camp.woowak.lab.coupon.repository.CouponRepository;
@@ -30,6 +31,7 @@ public class IssueCouponService {
 	 *
 	 * @throws InvalidICreationIssuanceException customer 또는 coupon이 존재하지 않을 경우 또는 coupon이 만료되었을 경우
 	 * @throws ExpiredCouponException coupon이 만료되었을 경우
+	 * @throws InsufficientCouponQuantityException coupon 수량이 부족할 경우
 	 */
 	@Transactional
 	public Long issueCoupon(IssueCouponCommand cmd) {
@@ -40,6 +42,11 @@ public class IssueCouponService {
 		// coupon 조회
 		Coupon targetCoupon = couponRepository.findById(cmd.couponId())
 			.orElseThrow(() -> new InvalidICreationIssuanceException("coupon not found"));
+
+		// coupon 수량 확인
+		if (!targetCoupon.hasAvailableQuantity()) {
+			throw new InsufficientCouponQuantityException("coupon is expired");
+		}
 
 		// coupon issuance 생성
 		CouponIssuance newCouponIssuance = new CouponIssuance(targetCoupon, targetCustomer);
