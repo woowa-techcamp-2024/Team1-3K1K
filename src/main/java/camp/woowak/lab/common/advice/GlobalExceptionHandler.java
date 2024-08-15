@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import camp.woowak.lab.common.exception.ErrorCode;
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return problemDetail;
 	}
 
-	@ExceptionHandler(HttpStatusCodeException.class)
+	@ExceptionHandler(HttpStatusException.class)
 	public ProblemDetail handleException(HttpStatusException exception) {
 		log.info(exception.getMessage(), exception);
 		ErrorCode errorCode = exception.errorCode();
