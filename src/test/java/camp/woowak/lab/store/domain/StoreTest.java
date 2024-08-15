@@ -126,7 +126,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeSameWithStartTime))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME.getMessage());
 			}
 
 			@Test
@@ -141,7 +140,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						validStartTimeFixture, endTimeBeforeThanStartTime))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME.getMessage());
 			}
 
 			@Test
@@ -172,7 +170,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						startTimeWithSeconds, validEndTimeFixture))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -188,7 +185,6 @@ class StoreTest {
 						5000,
 						startTimeWithNanoSeconds, validEndTimeFixture))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -204,7 +200,6 @@ class StoreTest {
 						5000,
 						validStartTimeFixture, endTimeWithSeconds))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 			@Test
@@ -220,7 +215,6 @@ class StoreTest {
 						5000,
 						validStartTimeFixture, endTimeWithNanoSeconds))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_TIME_UNIT.getMessage());
 			}
 
 		}
@@ -257,7 +251,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_NAME_RANGE.getMessage());
 			}
 
 			@Test
@@ -273,7 +266,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_NAME_RANGE.getMessage());
 			}
 
 		}
@@ -306,7 +298,6 @@ class StoreTest {
 						validMinOrderPriceFixture,
 						validStartTimeFixture, validEndTimeFixture))
 					.isInstanceOf(InvalidStoreCreationException.class);
-				// .hasMessage(INVALID_ADDRESS.getMessage());
 			}
 
 		}
