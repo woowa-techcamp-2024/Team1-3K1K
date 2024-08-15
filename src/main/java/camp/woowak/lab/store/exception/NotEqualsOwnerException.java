@@ -1,9 +1,13 @@
 package camp.woowak.lab.store.exception;
 
-public class NotEqualsOwnerException extends RuntimeException {
+import static camp.woowak.lab.store.exception.StoreErrorCode.*;
+
+import camp.woowak.lab.common.exception.BadRequestException;
+
+public class NotEqualsOwnerException extends BadRequestException {
 
 	public NotEqualsOwnerException(String message) {
-		super(message);
+		super(NOT_EQUALS_VENDOR, message);
 	}
 
 }

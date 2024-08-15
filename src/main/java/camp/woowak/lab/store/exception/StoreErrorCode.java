@@ -17,7 +17,10 @@ public enum StoreErrorCode implements ErrorCode {
 	INVALID_TIME_UNIT(HttpStatus.BAD_REQUEST, "S5", "가게 시작 시간은 분 단위까지 가능합니다"),
 	INVALID_TIME(HttpStatus.BAD_REQUEST, "S6", "가게 시작 시간은 종료 시간보다 이전이어야 합니다"),
 
-	INVALID_STORE_CATEGORY(HttpStatus.BAD_REQUEST, "S7", "존재하지 않는 가게 카테고리입니다.");
+	INVALID_STORE_CATEGORY(HttpStatus.BAD_REQUEST, "S7", "존재하지 않는 가게 카테고리입니다."),
+
+	NOT_EQUALS_VENDOR(HttpStatus.BAD_REQUEST, "S8", "가게의 점주와 일치하지 않습니다."),
+	NOT_FOUND_STORE(HttpStatus.BAD_REQUEST, "S9", "가게를 찾을 수 없습니다.");
 
 	private final int status;
 	private final String errorCode;
