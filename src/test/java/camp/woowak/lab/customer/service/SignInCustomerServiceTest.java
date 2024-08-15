@@ -3,6 +3,8 @@ package camp.woowak.lab.customer.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +42,7 @@ public class SignInCustomerServiceTest implements CustomerFixture {
 		PayAccount newPayAccount = new TestPayAccount(1L);
 		Customer customer = createCustomer(newPayAccount, passwordEncoder);
 		SignInCustomerCommand cmd = new SignInCustomerCommand(customer.getEmail(), customer.getPassword());
-		given(customerRepository.findByEmail(customer.getEmail())).willReturn(customer);
+		given(customerRepository.findByEmail(customer.getEmail())).willReturn(Optional.of(customer));
 		given(passwordEncoder.matches(cmd.password(), customer.getPassword())).willReturn(true);
 
 		// when & then
@@ -56,7 +58,7 @@ public class SignInCustomerServiceTest implements CustomerFixture {
 		PayAccount newPayAccount = new TestPayAccount(1L);
 		Customer customer = createCustomer(newPayAccount, passwordEncoder);
 		SignInCustomerCommand cmd = new SignInCustomerCommand("InvalidCustomer@email.com", customer.getPassword());
-		given(customerRepository.findByEmail(cmd.email())).willReturn(null);
+		given(customerRepository.findByEmail(cmd.email())).willReturn(Optional.empty());
 
 		// when & then
 		assertThrows(CustomerAuthenticationException.class, () -> signInCustomerService.signIn(cmd));
@@ -70,7 +72,7 @@ public class SignInCustomerServiceTest implements CustomerFixture {
 		PayAccount newPayAccount = new TestPayAccount(1L);
 		Customer customer = createCustomer(newPayAccount, passwordEncoder);
 		SignInCustomerCommand cmd = new SignInCustomerCommand(customer.getEmail(), customer.getPassword());
-		given(customerRepository.findByEmail(customer.getEmail())).willReturn(customer);
+		given(customerRepository.findByEmail(customer.getEmail())).willReturn(Optional.of(customer));
 		given(passwordEncoder.matches(cmd.password(), customer.getPassword())).willReturn(false);
 
 		// when & then
