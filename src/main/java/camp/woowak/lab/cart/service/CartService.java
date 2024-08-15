@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.cart.repository.CartRepository;
+import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 
@@ -23,11 +24,11 @@ public class CartService {
 	 * @throws camp.woowak.lab.cart.exception.OtherStoreMenuException 다른 가게의 메뉴를 담은 경우 도메인에서 발생
 	 * @throws camp.woowak.lab.cart.exception.StoreNotOpenException   해당 가게가 열려있지 않은 경우 발생
 	 */
-	public void addMenu(Long customerId, Long menuId) {
-		Cart customerCart = getCart(customerId);
+	public void addMenu(AddCartCommand command) {
+		Cart customerCart = getCart(command.customerId());
 
-		Menu menu = menuRepository.findByIdWithStore(menuId)
-			.orElseThrow(() -> new MenuNotFoundException(menuId + " not found"));
+		Menu menu = menuRepository.findByIdWithStore(command.menuId())
+			.orElseThrow(() -> new MenuNotFoundException(command.menuId() + " not found"));
 
 		customerCart.addMenu(menu);
 	}
