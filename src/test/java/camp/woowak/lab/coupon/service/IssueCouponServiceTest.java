@@ -48,5 +48,4 @@ class IssueCouponServiceTest implements CouponFixture {
 		assertEquals(quantity, coupon.getQuantity());
 		assertEquals(expiredAt, coupon.getExpiredAt());
 	}
-
 }
