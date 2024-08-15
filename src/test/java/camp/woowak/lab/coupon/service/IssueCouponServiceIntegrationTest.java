@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
 import camp.woowak.lab.coupon.exception.InvalidCreationCouponException;
 import camp.woowak.lab.coupon.repository.CouponRepository;
 import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
@@ -20,6 +21,23 @@ class IssueCouponServiceIntegrationTest {
 
 	@Autowired
 	private CouponRepository couponRepository;
+
+	@Test
+	@DisplayName("쿠폰 생성 테스트 - 중복된 제목 입력 시 실패 테스트")
+	void testFailWhenDuplicatedTitle() {
+		// given
+		String title = "테스트 쿠폰";
+		int discountAmount = 1000;
+		int quantity = 100;
+		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
+		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+
+		service.issueCoupon(cmd);
+
+		// when & then
+		assertThrows(DuplicateCouponTitleException.class,
+			() -> service.issueCoupon(cmd));
+	}
 
 	@Test
 	@DisplayName("쿠폰 생성 테스트 - 잘못된 제목 입력 시 하위 예외 전파 테스트")
