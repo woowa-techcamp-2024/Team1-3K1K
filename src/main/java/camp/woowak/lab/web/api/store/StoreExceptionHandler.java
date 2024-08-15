@@ -91,5 +91,4 @@ public class StoreExceptionHandler {
 
 		return problemDetail;
 	}
-
 }

@@ -6,6 +6,9 @@ import camp.woowak.lab.common.exception.ErrorCode;
 
 public enum MenuErrorCode implements ErrorCode {
 
+	DUPLICATE_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "m_1", "이미 생성된 카테고리입니다."),
+	UNAUTHORIZED_MENU_CATEGORY_CREATION(HttpStatus.FORBIDDEN, "m_2", "점주만 카테고리를 생성할 수 있습니다."),
+
 	NULL_EXIST(HttpStatus.BAD_REQUEST, "M0", "값이 존재해야 합니다."),
 	BLANK_EXIST(HttpStatus.BAD_REQUEST, "M1", "빈 문자열이거나 공백 문자열이 포함되면 안됩니다."),
 	INVALID_NAME_RANGE(HttpStatus.BAD_REQUEST, "M2", "이름의 길이 범위를 벗어났습니다."),
@@ -18,8 +21,8 @@ public enum MenuErrorCode implements ErrorCode {
 	private final String errorCode;
 	private final String message;
 
-	MenuErrorCode(HttpStatus status, String errorCode, String message) {
-		this.status = status.value();
+	MenuErrorCode(HttpStatus httpStatus, String errorCode, String message) {
+		this.status = httpStatus.value();
 		this.errorCode = errorCode;
 		this.message = message;
 	}
