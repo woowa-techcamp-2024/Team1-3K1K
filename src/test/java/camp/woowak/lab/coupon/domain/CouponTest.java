@@ -32,7 +32,7 @@ class CouponTest {
 	void testConstructWithQuantityZero() {
 		// given
 		int discountAmount = 1000;
-		int quantity = 0;
+		int quantity = -1;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
 
 		// when & then
@@ -43,7 +43,7 @@ class CouponTest {
 	@DisplayName("쿠폰 생성 테스트 - 쿠폰의 할인 금액은 0원 이상이어야 한다.")
 	void testConstructWithDiscountAmountZero() {
 		// given
-		int discountAmount = 0;
+		int discountAmount = -1;
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
 
