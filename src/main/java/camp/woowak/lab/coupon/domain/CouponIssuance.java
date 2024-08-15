@@ -41,7 +41,7 @@ public class CouponIssuance {
 	}
 
 	public CouponIssuance(Coupon coupon, Customer customer) {
-
+		CouponIssuanceValidator.validate(customer, coupon);
 		this.coupon = coupon;
 		this.customer = customer;
 		this.issuedAt = LocalDateTime.now();
