@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import camp.woowak.lab.common.advice.DomainExceptionHandler;
 import camp.woowak.lab.common.exception.BadRequestException;
+import camp.woowak.lab.customer.exception.CustomerAuthenticationException;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
 import camp.woowak.lab.customer.exception.InvalidCreationException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,15 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ProblemDetail handleDuplicateEmailException(DuplicateEmailException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
+			e.errorCode().getMessage());
+		problemDetail.setProperty("errorCode", e.errorCode().getErrorCode());
+		return problemDetail;
+	}
+
+	@ExceptionHandler({CustomerAuthenticationException.class})
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ProblemDetail handleCustomerAuthenticationException(CustomerAuthenticationException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
 			e.errorCode().getMessage());
 		problemDetail.setProperty("errorCode", e.errorCode().getErrorCode());
 		return problemDetail;
