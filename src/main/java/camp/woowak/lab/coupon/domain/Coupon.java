@@ -14,7 +14,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "coupons")
+@Table(name = "Coupons")
 public class Coupon {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
