@@ -1,6 +1,6 @@
 package camp.woowak.lab.common.exception;
 
-abstract class HttpStatusException extends RuntimeException {
+public class HttpStatusException extends RuntimeException {
 	private final ErrorCode errorCode;
 
 	@Deprecated
