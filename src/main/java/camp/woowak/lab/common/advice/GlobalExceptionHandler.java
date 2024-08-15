@@ -32,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorCode errorCode = exception.errorCode();
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
 			HttpStatus.valueOf(errorCode.getStatus()), exception.errorCode().getMessage());
-		problemDetail.setProperty("error_code", errorCode.getErrorCode());
+		problemDetail.setProperty("errorCode", errorCode.getErrorCode());
 		return problemDetail;
 	}
 }
