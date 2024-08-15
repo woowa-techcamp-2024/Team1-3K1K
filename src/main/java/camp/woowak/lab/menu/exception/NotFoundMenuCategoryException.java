@@ -1,10 +1,12 @@
 package camp.woowak.lab.menu.exception;
 
-// TODO: extends CustomException
-public class NotFoundMenuCategoryException extends RuntimeException {
+import camp.woowak.lab.common.exception.BadRequestException;
+import camp.woowak.lab.common.exception.ErrorCode;
 
-	public NotFoundMenuCategoryException(String message) {
-		super(message);
+public class NotFoundMenuCategoryException extends BadRequestException {
+
+	public NotFoundMenuCategoryException(ErrorCode errorCode, String message) {
+		super(errorCode, message);
 	}
-	
+
 }

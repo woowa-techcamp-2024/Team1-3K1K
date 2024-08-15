@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import camp.woowak.lab.common.advice.DomainExceptionHandler;
 import camp.woowak.lab.common.exception.BadRequestException;
@@ -15,8 +14,8 @@ import camp.woowak.lab.customer.exception.InvalidCreationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DomainExceptionHandler
-public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
+@DomainExceptionHandler(basePackageClasses = CustomerApiController.class)
+public class CustomerExceptionHandler {
 	/**
 	 *
 	 *  BadRequestException.class 와 MethodArgumentNotValidException.class 를 처리한다.

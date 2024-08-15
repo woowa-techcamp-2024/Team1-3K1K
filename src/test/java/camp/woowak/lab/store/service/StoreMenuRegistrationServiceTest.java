@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +25,18 @@ import camp.woowak.lab.store.domain.StoreAddress;
 import camp.woowak.lab.store.domain.StoreCategory;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
-import camp.woowak.lab.store.service.dto.StoreMenuRegistrationRequest;
+import camp.woowak.lab.store.service.command.MenuLineItem;
+import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.vendor.domain.Vendor;
+import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class StoreMenuRegistrationServiceTest {
+
+	@Mock
+	VendorRepository vendorRepository;
 
 	@Mock
 	StoreRepository storeRepository;
@@ -54,18 +60,20 @@ class StoreMenuRegistrationServiceTest {
 	void storeMenuRegistrationSuccess() {
 		// given
 		Long storeId = 1L;
-
-		List<StoreMenuRegistrationRequest.MenuLineItem> menuItems = List.of(
-			new StoreMenuRegistrationRequest.MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
+		UUID vendorId = UUID.randomUUID();
+		List<MenuLineItem> menuItems = List.of(
+			new MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
 		);
-		StoreMenuRegistrationRequest request = new StoreMenuRegistrationRequest(storeId, menuItems);
 
+		StoreMenuRegistrationCommand request = new StoreMenuRegistrationCommand(vendorId, storeId, menuItems);
+
+		when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(owner));
 		when(storeRepository.findById(storeId)).thenReturn(Optional.of(storeFixture));
 		when(menuCategoryRepository.findByStoreIdAndName(storeFixture.getId(), "카테고리1")).thenReturn(
 			Optional.of(menuCategoryFixture));
 
 		// when
-		storeMenuRegistrationService.storeMenuRegistration(owner, request);
+		storeMenuRegistrationService.storeMenuRegistration(request);
 
 		// then
 		verify(storeRepository).findById(storeId);
@@ -78,16 +86,17 @@ class StoreMenuRegistrationServiceTest {
 	void storeMenuRegistrationStoreNotFound() {
 		// given
 		Long storeId = 1L;
-
-		List<StoreMenuRegistrationRequest.MenuLineItem> menuItems = List.of(
-			new StoreMenuRegistrationRequest.MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
+		UUID vendorId = UUID.randomUUID();
+		List<MenuLineItem> menuItems = List.of(
+			new MenuLineItem("메뉴1", "image1.jpg", "카테고리1", 10000)
 		);
-		StoreMenuRegistrationRequest request = new StoreMenuRegistrationRequest(storeId, menuItems);
+		StoreMenuRegistrationCommand command = new StoreMenuRegistrationCommand(vendorId, storeId, menuItems);
 
+		when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(owner));
 		when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
 		// when & then
-		assertThatThrownBy(() -> storeMenuRegistrationService.storeMenuRegistration(owner, request))
+		assertThatThrownBy(() -> storeMenuRegistrationService.storeMenuRegistration(command))
 			.isInstanceOf(NotFoundStoreException.class);
 	}
 

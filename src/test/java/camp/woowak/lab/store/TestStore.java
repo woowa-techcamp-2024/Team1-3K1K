@@ -9,6 +9,13 @@ import camp.woowak.lab.vendor.domain.Vendor;
 public class TestStore extends Store {
 	private Long id;
 
+	public TestStore(Long id, Vendor owner, StoreCategory storeCategory, String name, String address,
+					 String phoneNumber, Integer minOrderPrice, LocalDateTime startTime, LocalDateTime endTime
+	) {
+		super(owner, storeCategory, name, address, phoneNumber, minOrderPrice, startTime, endTime);
+		this.id = id;
+	}
+
 	public TestStore(Long id, Vendor vendor, String name, String address, String phoneNumber, int minOrderPrice,
 					 LocalDateTime startTime, LocalDateTime endTime) {
 		super(vendor, new StoreCategory("중식"), name, address, phoneNumber, minOrderPrice, startTime, endTime);
