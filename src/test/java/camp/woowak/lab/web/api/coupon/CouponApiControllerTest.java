@@ -27,6 +27,7 @@ import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
 import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.coupon.CreateCouponRequest;
+import camp.woowak.lab.web.resolver.session.SessionConst;
 
 @WebMvcTest(CouponApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -134,7 +135,7 @@ class CouponApiControllerTest {
 		LoginCustomer loginCustomer = new LoginCustomer(customerId);
 
 		MockHttpSession session = new MockHttpSession();
-		session.setAttribute("loginCustomer", loginCustomer);
+		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
 
 		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class))).willReturn(1L);
 
@@ -144,6 +145,6 @@ class CouponApiControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
-			.andExpect(status().isOk());
+			.andExpect(status().isCreated());
 	}
 }
