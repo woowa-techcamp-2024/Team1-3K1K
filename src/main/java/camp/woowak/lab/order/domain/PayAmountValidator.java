@@ -2,10 +2,13 @@ package camp.woowak.lab.order.domain;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.order.exception.NotEnoughBalanceException;
 
+@Component
 public class PayAmountValidator implements OrderValidator {
 	@Override
 	public void check(Customer requester, List<Menu> orderedMenus) {
