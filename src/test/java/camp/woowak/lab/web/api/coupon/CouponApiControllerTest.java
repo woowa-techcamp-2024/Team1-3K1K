@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,13 +15,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
 import camp.woowak.lab.coupon.service.CreateCouponService;
+import camp.woowak.lab.coupon.service.IssueCouponService;
 import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
+import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
+import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.coupon.CreateCouponRequest;
 
 @WebMvcTest(CouponApiController.class)
@@ -31,6 +36,9 @@ class CouponApiControllerTest {
 
 	@MockBean
 	private CreateCouponService createCouponService;
+
+	@MockBean
+	private IssueCouponService issueCouponService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -117,4 +125,25 @@ class CouponApiControllerTest {
 			.andExpect(status().isConflict());
 	}
 
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 성공")
+	void testIssueCoupon() throws Exception {
+		// given
+		Long couponId = 1L;
+		UUID customerId = UUID.randomUUID();
+		LoginCustomer loginCustomer = new LoginCustomer(customerId);
+
+		MockHttpSession session = new MockHttpSession();
+		session.setAttribute("loginCustomer", loginCustomer);
+
+		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class))).willReturn(1L);
+
+		// when & then
+		mockMvc.perform(post("/coupons/" + couponId + "/issue")
+				.session(session) // 세션 설정
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk());
+	}
 }
