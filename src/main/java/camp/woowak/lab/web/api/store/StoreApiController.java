@@ -44,4 +44,16 @@ public class StoreApiController {
 			request.storeEndTime());
 	}
 
+	@PostMapping("/stores/{storeId}/menus")
+	public StoreMenuRegistrationResponse storeMenuRegistration(final @AuthenticationPrincipal LoginVendor loginVendor,
+															   final @PathVariable Long storeId,
+															   final @Valid @RequestBody StoreMenuRegistrationRequest request
+	) {
+		StoreMenuRegistrationCommand command =
+			new StoreMenuRegistrationCommand(loginVendor.getId(), storeId, request.menuItems());
+
+		List<Long> menuIds = storeMenuRegistrationService.storeMenuRegistration(command);
+		return new StoreMenuRegistrationResponse(menuIds);
+	}
+
 }
