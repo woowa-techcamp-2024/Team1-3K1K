@@ -47,4 +47,8 @@ public class Coupon {
 		this.quantity = quantity;
 		this.expiredAt = expiredAt;
 	}
+
+	public boolean isExpired() {
+		return expiredAt.isBefore(LocalDateTime.now());
+	}
 }
