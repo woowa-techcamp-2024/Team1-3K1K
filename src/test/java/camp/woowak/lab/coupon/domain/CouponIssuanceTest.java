@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import camp.woowak.lab.coupon.exception.CouponExpiredException;
+import camp.woowak.lab.coupon.exception.ExpiredCouponException;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.fixture.CouponFixture;
 import camp.woowak.lab.fixture.CustomerFixture;
@@ -83,6 +83,6 @@ class CouponIssuanceTest implements CouponFixture, CustomerFixture {
 		Customer customer = createCustomer(payAccount, passwordEncoder);
 
 		// when & then
-		assertThrows(CouponExpiredException.class, () -> new CouponIssuance(coupon, customer));
+		assertThrows(ExpiredCouponException.class, () -> new CouponIssuance(coupon, customer));
 	}
 }
