@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.customer.domain.Customer;
-import camp.woowak.lab.customer.exception.AuthenticationException;
+import camp.woowak.lab.customer.exception.CustomerAuthenticationException;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.customer.service.command.SignInCustomerCommand;
 import camp.woowak.lab.fixture.CustomerFixture;
@@ -59,7 +59,7 @@ public class SignInCustomerServiceTest implements CustomerFixture {
 		given(customerRepository.findByEmail(cmd.email())).willReturn(null);
 
 		// when & then
-		assertThrows(AuthenticationException.class, () -> signInCustomerService.signIn(cmd));
+		assertThrows(CustomerAuthenticationException.class, () -> signInCustomerService.signIn(cmd));
 		verify(customerRepository).findByEmail(cmd.email());
 	}
 
@@ -74,7 +74,7 @@ public class SignInCustomerServiceTest implements CustomerFixture {
 		given(passwordEncoder.matches(cmd.password(), customer.getPassword())).willReturn(false);
 
 		// when & then
-		assertThrows(AuthenticationException.class, () -> signInCustomerService.signIn(cmd));
+		assertThrows(CustomerAuthenticationException.class, () -> signInCustomerService.signIn(cmd));
 		verify(customerRepository).findByEmail(customer.getEmail());
 		verify(passwordEncoder).matches(cmd.password(), customer.getPassword());
 	}
