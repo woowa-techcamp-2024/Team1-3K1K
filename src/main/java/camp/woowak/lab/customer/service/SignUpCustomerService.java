@@ -22,7 +22,7 @@ public class SignUpCustomerService {
 	private final PasswordEncoder passwordEncoder;
 
 	public SignUpCustomerService(CustomerRepository customerRepository, PayAccountRepository payAccountRepository,
-		PasswordEncoder passwordEncoder) {
+								 PasswordEncoder passwordEncoder) {
 		this.customerRepository = customerRepository;
 		this.payAccountRepository = payAccountRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -33,7 +33,7 @@ public class SignUpCustomerService {
 	 * @throws InvalidCreationException 구매자 생성에 오류가 나는 경우
 	 * @throws DuplicateEmailException 이메일이 중복되는 경우
 	 */
-	@Transactional()
+	@Transactional
 	public String signUp(SignUpCustomerCommand cmd) {
 		PayAccount payAccount = new PayAccount();
 		payAccountRepository.save(payAccount);
