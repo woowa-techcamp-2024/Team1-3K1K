@@ -103,7 +103,7 @@ class CartTest implements CartFixture {
 			//given
 
 			//when
-			long totalPrice = cart.totalPrice();
+			long totalPrice = cart.getTotalPrice();
 
 			//then
 			assertThat(totalPrice).isEqualTo(0);
@@ -127,7 +127,7 @@ class CartTest implements CartFixture {
 			cart.addMenu(menu3);
 
 			//when
-			long totalPrice = cart.totalPrice();
+			long totalPrice = cart.getTotalPrice();
 
 			//then
 			assertThat(totalPrice).isEqualTo((long)price1 + (long)price2 + (long)price3);
