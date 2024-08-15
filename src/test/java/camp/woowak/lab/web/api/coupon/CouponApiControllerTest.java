@@ -44,4 +44,52 @@ class CouponApiControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.data.couponId").exists());
 	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 잘못된 제목 입력 시 실패")
+	void testIssueCouponFailWithInvalidTitle() throws Exception {
+		mockMvc.perform(post("/coupons")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(
+					new IssueCouponRequest("", 1000, 100, LocalDateTime.now().plusDays(7))))
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 잘못된 할인 금액 입력 시 실패")
+	void testIssueCouponFailWithInvalidDiscountAmount() throws Exception {
+		mockMvc.perform(post("/coupons")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(
+					new IssueCouponRequest("테스트 쿠폰", -1, 100, LocalDateTime.now().plusDays(7))))
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 잘못된 수량 입력 시 실패")
+	void testIssueCouponFailWithInvalidQuantity() throws Exception {
+		mockMvc.perform(post("/coupons")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(
+					new IssueCouponRequest("테스트 쿠폰", 1000, -1, LocalDateTime.now().plusDays(7))))
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("쿠폰 발급 테스트 - 잘못된 만료일 입력 시 실패")
+	void testIssueCouponFailWithInvalidExpiredAt() throws Exception {
+		mockMvc.perform(post("/coupons")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(
+					new IssueCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().minusDays(7))))
+				.accept(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
 }
