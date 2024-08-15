@@ -20,7 +20,7 @@ public class CouponValidator {
 	}
 
 	private static void validateTitle(String title) {
-		if (title == null || title.isEmpty()) {
+		if (title == null || title.isBlank()) {
 			throw new InvalidCreationCouponException("title should not be null or empty");
 		}
 
