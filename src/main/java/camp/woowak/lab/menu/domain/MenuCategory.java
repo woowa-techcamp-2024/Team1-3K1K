@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Menu {
+public class MenuCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,26 +24,13 @@ public class Menu {
 	@JoinColumn(name = "store_id", nullable = false)
 	private Store store;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "menu_category_id", nullable = false)
-	private MenuCategory menuCategory;
-
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = false)
-	private Integer price;
-
-	@Column(nullable = false)
-	private String imageUrl;
-
-	public Menu(Store store, MenuCategory menuCategory, String name, Integer price, String imageUrl) {
-		MenuValidator.validate(store, menuCategory, name, price, imageUrl);
+	public MenuCategory(Store store, String name) {
+		MenuCategoryValidator.validate(store, name);
 		this.store = store;
-		this.menuCategory = menuCategory;
 		this.name = name;
-		this.price = price;
-		this.imageUrl = imageUrl;
 	}
 
 }
