@@ -28,7 +28,7 @@ public class CustomerApiController {
 		SignUpCustomerCommand command =
 			new SignUpCustomerCommand(request.name(), request.email(), request.password(), request.phone());
 
-		Long registeredId = signUpCustomerService.signUp(command);
+		String registeredId = signUpCustomerService.signUp(command);
 
 		response.setHeader("Location", "/customers/" + registeredId);
 
