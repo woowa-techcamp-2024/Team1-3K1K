@@ -9,11 +9,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+	name = "menu_category",
+	uniqueConstraints = {
+		@UniqueConstraint(name = "unique_store_name", columnNames = {"store_id", "name"})
+	}
+)
 public class MenuCategory {
 
 	@Id
@@ -37,3 +45,4 @@ public class MenuCategory {
 		return id;
 	}
 }
+
