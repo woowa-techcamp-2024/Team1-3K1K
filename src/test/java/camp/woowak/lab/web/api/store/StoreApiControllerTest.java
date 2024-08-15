@@ -1,6 +1,5 @@
 package camp.woowak.lab.web.api.store;
 
-import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,7 +25,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
-import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
 import camp.woowak.lab.store.service.StoreRegistrationService;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
@@ -121,7 +120,7 @@ class StoreApiControllerTest {
 			validEndTimeFixture
 		);
 
-		doThrow(new StoreException(INVALID_STORE_CATEGORY))
+		doThrow(new NotFoundStoreCategoryException("invalid category"))
 			.when(storeRegistrationService).storeRegistration(any(Vendor.class), any(StoreRegistrationRequest.class));
 
 		// when & then

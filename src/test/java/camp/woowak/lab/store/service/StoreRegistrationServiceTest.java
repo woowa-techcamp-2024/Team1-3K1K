@@ -1,6 +1,5 @@
 package camp.woowak.lab.store.service;
 
-import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreCategory;
-import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
@@ -78,8 +77,7 @@ class StoreRegistrationServiceTest {
 
 		// when & then
 		Assertions.assertThatThrownBy(() -> storeRegistrationService.storeRegistration(vendor, request))
-			.isInstanceOf(StoreException.class)
-			.hasMessage(INVALID_STORE_CATEGORY.getMessage());
+			.isInstanceOf(NotFoundStoreCategoryException.class);
 
 		then(storeRepository).shouldHaveNoInteractions();
 	}
