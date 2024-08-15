@@ -24,8 +24,18 @@ public class Cart {
 	 * @param customerId 장바구니 소유주의 ID값입니다.
 	 */
 	public Cart(String customerId) {
+		this(customerId, new LinkedList<>());
+	}
+
+	/**
+	 * 해당 Domain을 사용하는 같은 패키지내의 클래스, 혹은 자식 클래스는 List를 커스텀할 수 있습니다.
+	 *
+	 * @param customerId 장바구니 소유주의 ID값입니다.
+	 * @param menuList 장바구니에 사용될 List입니다.
+	 */
+	protected Cart(String customerId, List<Menu> menuList) {
 		this.customerId = customerId;
-		this.menuList = new LinkedList<>();
+		this.menuList = menuList;
 	}
 
 	public void addMenu(Menu menu) {
@@ -34,6 +44,14 @@ public class Cart {
 		validateStoreOpenTime(store);
 
 		this.menuList.add(menu);
+	}
+
+	public long totalPrice() {
+		return this.menuList.stream()
+			.map(Menu::getPrice)
+			.mapToLong(Long::valueOf)
+			.boxed()
+			.reduce(0L, Long::sum);
 	}
 
 	private void validateStoreOpenTime(Store store) {
