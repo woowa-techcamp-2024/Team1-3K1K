@@ -45,7 +45,7 @@ public class IssueCouponService {
 
 		// coupon 수량 확인
 		if (!targetCoupon.hasAvailableQuantity()) {
-			throw new InsufficientCouponQuantityException("coupon is expired");
+			throw new InsufficientCouponQuantityException("quantity of coupon is insufficient");
 		}
 
 		// coupon issuance 생성
