@@ -1,4 +1,4 @@
-package camp.woowak.lab.store.service.dto;
+package camp.woowak.lab.web.dto.request.store;
 
 import java.util.List;
 

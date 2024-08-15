@@ -26,14 +26,15 @@ import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
+import camp.woowak.lab.store.service.StoreMenuRegistrationService;
 import camp.woowak.lab.store.service.StoreRegistrationService;
 import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
-import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
 
@@ -46,6 +47,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private StoreRegistrationService storeRegistrationService;
+
+	@MockBean
+	private StoreMenuRegistrationService storeMenuRegistrationService;
 
 	@MockBean
 	private VendorRepository vendorRepository;
