@@ -80,7 +80,9 @@ class CouponIssuanceTest implements CouponFixture, CustomerFixture {
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().minusDays(1);
 		PayAccount payAccount = createPayAccount();
-		Coupon coupon = createCoupon(fakeCouponId, title, discountAmount, quantity, expiredAt);
+		TestCoupon coupon = (TestCoupon)createCoupon(fakeCouponId, title, discountAmount, quantity,
+			LocalDateTime.now().plusDays(7));
+		coupon.setExpiredAt(expiredAt);
 		Customer customer = createCustomer(payAccount, passwordEncoder);
 
 		// when & then
