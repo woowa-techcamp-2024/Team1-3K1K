@@ -1,5 +1,7 @@
 package camp.woowak.lab.coupon.domain;
 
+import static camp.woowak.lab.coupon.domain.CouponValidator.*;
+
 import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +36,7 @@ public class Coupon {
 	}
 
 	public Coupon(int discountAmount, int quantity, LocalDateTime expiredAt) {
+		validate(discountAmount, quantity, expiredAt);
 		this.discountAmount = discountAmount;
 		this.quantity = quantity;
 		this.expiredAt = expiredAt;
