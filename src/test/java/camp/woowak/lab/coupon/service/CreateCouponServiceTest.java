@@ -14,20 +14,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.coupon.domain.Coupon;
 import camp.woowak.lab.coupon.repository.CouponRepository;
-import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
+import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
 import camp.woowak.lab.fixture.CouponFixture;
 
 @ExtendWith(MockitoExtension.class)
-class IssueCouponServiceTest implements CouponFixture {
+class CreateCouponServiceTest implements CouponFixture {
 	@InjectMocks
-	private IssueCouponService issueCouponService;
+	private CreateCouponService createCouponService;
 
 	@Mock
 	private CouponRepository couponRepository;
 
 	@Test
 	@DisplayName("쿠폰 생성 테스트 - 쿠폰은 고정 할인 금액, 개수, 만료일을 입력해 할인 쿠폰을 등록할 수 있다.")
-	void testIssueCoupon() {
+	void testCreateCoupon() {
 		// given
 		Long fakeId = 1L;
 		String title = "테스트 쿠폰";
@@ -35,11 +35,11 @@ class IssueCouponServiceTest implements CouponFixture {
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
 		Coupon coupon = createCoupon(fakeId, title, discountAmount, quantity, expiredAt);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
 		given(couponRepository.save(any())).willReturn(coupon);
 
 		// when
-		issueCouponService.issueCoupon(cmd);
+		createCouponService.createCoupon(cmd);
 
 		// then
 		assertEquals(fakeId, coupon.getId());

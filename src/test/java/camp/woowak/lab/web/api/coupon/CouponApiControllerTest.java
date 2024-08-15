@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
-import camp.woowak.lab.coupon.service.IssueCouponService;
-import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
-import camp.woowak.lab.web.dto.request.coupon.IssueCouponRequest;
+import camp.woowak.lab.coupon.service.CreateCouponService;
+import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
+import camp.woowak.lab.web.dto.request.coupon.CreateCouponRequest;
 
 @WebMvcTest(CouponApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -30,18 +30,18 @@ class CouponApiControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private IssueCouponService issueCouponService;
+	private CreateCouponService createCouponService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 성공")
-	void testIssueCoupon() throws Exception {
+	void testCreateCoupon() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new IssueCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().plusDays(7))))
+					new CreateCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().plusDays(7))))
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isCreated())
@@ -50,11 +50,11 @@ class CouponApiControllerTest {
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 잘못된 제목 입력 시 실패")
-	void testIssueCouponFailWithInvalidTitle() throws Exception {
+	void testCreateCouponFailWithInvalidTitle() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new IssueCouponRequest("", 1000, 100, LocalDateTime.now().plusDays(7))))
+					new CreateCouponRequest("", 1000, 100, LocalDateTime.now().plusDays(7))))
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isBadRequest());
@@ -62,11 +62,11 @@ class CouponApiControllerTest {
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 잘못된 할인 금액 입력 시 실패")
-	void testIssueCouponFailWithInvalidDiscountAmount() throws Exception {
+	void testCreateCouponFailWithInvalidDiscountAmount() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new IssueCouponRequest("테스트 쿠폰", -1, 100, LocalDateTime.now().plusDays(7))))
+					new CreateCouponRequest("테스트 쿠폰", -1, 100, LocalDateTime.now().plusDays(7))))
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isBadRequest());
@@ -74,11 +74,11 @@ class CouponApiControllerTest {
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 잘못된 수량 입력 시 실패")
-	void testIssueCouponFailWithInvalidQuantity() throws Exception {
+	void testCreateCouponFailWithInvalidQuantity() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new IssueCouponRequest("테스트 쿠폰", 1000, -1, LocalDateTime.now().plusDays(7))))
+					new CreateCouponRequest("테스트 쿠폰", 1000, -1, LocalDateTime.now().plusDays(7))))
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isBadRequest());
@@ -86,11 +86,11 @@ class CouponApiControllerTest {
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 잘못된 만료일 입력 시 실패")
-	void testIssueCouponFailWithInvalidExpiredAt() throws Exception {
+	void testCreateCouponFailWithInvalidExpiredAt() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new IssueCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().minusDays(7))))
+					new CreateCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().minusDays(7))))
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isBadRequest());
@@ -98,10 +98,10 @@ class CouponApiControllerTest {
 
 	@Test
 	@DisplayName("쿠폰 발급 테스트 - 중복된 제목 입력 시 실패")
-	void testIssueCouponFailWithDuplicateTitle() throws Exception {
+	void testCreateCouponFailWithDuplicateTitle() throws Exception {
 		// given
-		IssueCouponRequest request = new IssueCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().plusDays(7));
-		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+		CreateCouponRequest request = new CreateCouponRequest("테스트 쿠폰", 1000, 100, LocalDateTime.now().plusDays(7));
+		given(createCouponService.createCoupon(any(CreateCouponCommand.class)))
 			.willThrow(new DuplicateCouponTitleException("중복된 쿠폰 제목입니다."));
 
 		// when & then

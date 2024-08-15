@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record IssueCouponRequest(
+public record CreateCouponRequest(
 	@NotNull(message = "할인 쿠폰 제목은 null 이 될 수 없습니다.")
 	@NotBlank(message = "할인 쿠폰 제목은 공백이 될 수 없습니다.")
 	@Length(min = 1, max = 100, message = "할인 쿠폰 제목은 1자 이상 100자 이하여야 합니다.")

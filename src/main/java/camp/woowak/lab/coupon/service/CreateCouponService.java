@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import camp.woowak.lab.coupon.domain.Coupon;
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
 import camp.woowak.lab.coupon.repository.CouponRepository;
-import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
+import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
 import jakarta.transaction.Transactional;
 
 @Service
-public class IssueCouponService {
+public class CreateCouponService {
 	private final CouponRepository couponRepository;
 
-	public IssueCouponService(CouponRepository couponRepository) {
+	public CreateCouponService(CouponRepository couponRepository) {
 		this.couponRepository = couponRepository;
 	}
 
@@ -23,7 +23,7 @@ public class IssueCouponService {
 	 * @throw DuplicateCouponTitleException 쿠폰 생성 시 중복된 제목이 입력되었을 경우
 	 */
 	@Transactional
-	public Long issueCoupon(IssueCouponCommand cmd) {
+	public Long createCoupon(CreateCouponCommand cmd) {
 		Coupon newCoupon = new Coupon(cmd.title(), cmd.discountAmount(), cmd.quantity(), cmd.expiredAt());
 		try {
 			return couponRepository.save(newCoupon).getId();

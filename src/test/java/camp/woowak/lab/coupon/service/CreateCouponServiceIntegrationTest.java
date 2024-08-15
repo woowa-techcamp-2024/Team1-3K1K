@@ -12,12 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
 import camp.woowak.lab.coupon.exception.InvalidCreationCouponException;
 import camp.woowak.lab.coupon.repository.CouponRepository;
-import camp.woowak.lab.coupon.service.command.IssueCouponCommand;
+import camp.woowak.lab.coupon.service.command.CreateCouponCommand;
 
 @SpringBootTest
-class IssueCouponServiceIntegrationTest {
+class CreateCouponServiceIntegrationTest {
 	@Autowired
-	private IssueCouponService service;
+	private CreateCouponService service;
 
 	@Autowired
 	private CouponRepository couponRepository;
@@ -30,13 +30,13 @@ class IssueCouponServiceIntegrationTest {
 		int discountAmount = 1000;
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
 
-		service.issueCoupon(cmd);
+		service.createCoupon(cmd);
 
 		// when & then
 		assertThrows(DuplicateCouponTitleException.class,
-			() -> service.issueCoupon(cmd));
+			() -> service.createCoupon(cmd));
 	}
 
 	@Test
@@ -47,11 +47,11 @@ class IssueCouponServiceIntegrationTest {
 		int discountAmount = 1000;
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
-		
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
+
 		// when & then
 		assertThrows(InvalidCreationCouponException.class,
-			() -> service.issueCoupon(cmd));
+			() -> service.createCoupon(cmd));
 	}
 
 	@Test
@@ -62,11 +62,11 @@ class IssueCouponServiceIntegrationTest {
 		int discountAmount = 1000;
 		int quantity = -1;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
 
 		// when & then
 		assertThrows(InvalidCreationCouponException.class,
-			() -> service.issueCoupon(cmd));
+			() -> service.createCoupon(cmd));
 	}
 
 	@Test
@@ -77,11 +77,11 @@ class IssueCouponServiceIntegrationTest {
 		int discountAmount = -1;
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().plusDays(7);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
 
 		// when & then
 		assertThrows(InvalidCreationCouponException.class,
-			() -> service.issueCoupon(cmd));
+			() -> service.createCoupon(cmd));
 	}
 
 	@Test
@@ -92,10 +92,10 @@ class IssueCouponServiceIntegrationTest {
 		int discountAmount = 1000;
 		int quantity = 100;
 		LocalDateTime expiredAt = LocalDateTime.now().minusDays(7);
-		IssueCouponCommand cmd = new IssueCouponCommand(title, discountAmount, quantity, expiredAt);
+		CreateCouponCommand cmd = new CreateCouponCommand(title, discountAmount, quantity, expiredAt);
 
 		// when & then
 		assertThrows(InvalidCreationCouponException.class,
-			() -> service.issueCoupon(cmd));
+			() -> service.createCoupon(cmd));
 	}
 }
