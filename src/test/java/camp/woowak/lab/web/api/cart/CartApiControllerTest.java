@@ -24,6 +24,8 @@ import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -52,6 +54,8 @@ class CartApiControllerTest {
 	private PayAccountRepository payAccountRepository;
 	@Autowired
 	private MenuRepository menuRepository;
+	@Autowired
+	private MenuCategoryRepository menuCategoryRepository;
 	@Autowired
 	private StoreCategoryRepository storeCategoryRepository;
 	@Autowired
@@ -170,7 +174,9 @@ class CartApiControllerTest {
 	}
 
 	private Menu createMenu(Store store, String name, int price) {
-		Menu menu1 = new Menu(store, name, price);
+		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
+		menuCategoryRepository.saveAndFlush(menuCategory);
+		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;

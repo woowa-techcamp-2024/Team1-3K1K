@@ -33,7 +33,7 @@ public class CartService {
 		customerCart.addMenu(menu);
 	}
 
-	private Cart getCart(Long customerId) {
+	private Cart getCart(String customerId) {
 		return cartRepository.findByCustomerId(customerId)
 			.orElse(cartRepository.save(new Cart(customerId)));
 	}

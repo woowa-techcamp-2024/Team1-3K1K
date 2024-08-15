@@ -2,6 +2,8 @@ package camp.woowak.lab.customer.service;
 
 import static org.mockito.BDDMockito.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,13 +16,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
-import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.fixture.CustomerFixture;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
-import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,13 +40,14 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 
 	@Test
 	@DisplayName("구매자 회원가입 테스트")
-	void testSignUp() throws InvalidCreationException, DuplicateEmailException {
+	void testSignUp() {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		PayAccount payAccount = createPayAccount();
-		Customer customer = createCustomer(payAccount, new NoOpPasswordEncoder());
+		Customer customerMock = Mockito.mock(Customer.class);
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(payAccount);
-		given(customerRepository.save(Mockito.any(Customer.class))).willReturn(customer);
+		given(customerRepository.saveAndFlush(Mockito.any(Customer.class))).willReturn(customerMock);
+		when(customerMock.getId()).thenReturn(UUID.randomUUID());
 
 		// when
 		SignUpCustomerCommand command =
@@ -55,7 +56,7 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 
 		// then
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(customerRepository).should().save(Mockito.any(Customer.class));
+		then(customerRepository).should().saveAndFlush(Mockito.any(Customer.class));
 	}
 
 	@Test
@@ -64,7 +65,8 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// given
 		given(passwordEncoder.encode(Mockito.anyString())).willReturn("password");
 		given(payAccountRepository.save(Mockito.any(PayAccount.class))).willReturn(createPayAccount());
-		when(customerRepository.save(Mockito.any(Customer.class))).thenThrow(DataIntegrityViolationException.class);
+		when(customerRepository.saveAndFlush(Mockito.any(Customer.class))).thenThrow(
+			DataIntegrityViolationException.class);
 
 		// when
 		SignUpCustomerCommand command =
@@ -73,6 +75,6 @@ class SignUpCustomerServiceTest implements CustomerFixture {
 		// then
 		Assertions.assertThrows(DuplicateEmailException.class, () -> service.signUp(command));
 		then(payAccountRepository).should().save(Mockito.any(PayAccount.class));
-		then(customerRepository).should().save(Mockito.any(Customer.class));
+		then(customerRepository).should().saveAndFlush(Mockito.any(Customer.class));
 	}
 }

@@ -13,16 +13,16 @@ import camp.woowak.lab.cart.domain.Cart;
  */
 @Repository
 public class InMemoryCartRepository implements CartRepository {
-	private static final Map<Long, Cart> cartMap = new ConcurrentHashMap<>();
+	private static final Map<String, Cart> cartMap = new ConcurrentHashMap<>();
 
 	@Override
-	public Optional<Cart> findByCustomerId(Long customerId) {
+	public Optional<Cart> findByCustomerId(String customerId) {
 		return Optional.ofNullable(cartMap.get(customerId));
 	}
 
 	@Override
 	public Cart save(Cart cart) {
-		Long customerId = cart.getCustomerId();
+		String customerId = cart.getCustomerId();
 		cartMap.put(customerId, cart);
 
 		return cart;

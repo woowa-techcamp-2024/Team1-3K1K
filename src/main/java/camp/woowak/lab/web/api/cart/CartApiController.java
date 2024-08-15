@@ -27,7 +27,7 @@ public class CartApiController {
 	public AddCartResponse addCart(
 		@AuthenticationPrincipal LoginCustomer loginCustomer,
 		@RequestBody AddCartRequest addCartRequest) {
-		AddCartCommand command = new AddCartCommand(loginCustomer.getId(), addCartRequest.menuId());
+		AddCartCommand command = new AddCartCommand(loginCustomer.getId().toString(), addCartRequest.menuId());
 		cartService.addMenu(command);
 
 		log.info("Customer({}) add Menu({}) in Cart", loginCustomer.getId(), addCartRequest.menuId());

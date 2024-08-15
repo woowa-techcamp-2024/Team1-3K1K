@@ -1,7 +1,7 @@
 package camp.woowak.lab.cart.service.command;
 
 public record AddCartCommand(
-	Long customerId,
+	String customerId,
 	Long menuId
 ) {
 }

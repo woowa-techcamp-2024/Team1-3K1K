@@ -3,6 +3,7 @@ package camp.woowak.lab.cart.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +16,8 @@ import camp.woowak.lab.cart.domain.Cart;
 @DisplayName("InMemoryCartRepository 클래스")
 class InMemoryCartRepositoryTest {
 	private CartRepository repository;
-	private static final Long CUSTOMER_ID_EXIST = 1L;
-	private static final Long CUSTOMER_ID_NOT_EXIST = 2L;
+	private static final String CUSTOMER_ID_EXIST = UUID.randomUUID().toString();
+	private static final String CUSTOMER_ID_NOT_EXIST = UUID.randomUUID().toString();
 	private Cart cart;
 
 	@BeforeEach

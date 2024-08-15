@@ -8,6 +8,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import camp.woowak.lab.common.advice.DomainExceptionHandler;
 import camp.woowak.lab.common.exception.BadRequestException;
+import camp.woowak.lab.common.exception.HttpStatusException;
+import camp.woowak.lab.customer.exception.CustomerAuthenticationException;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
 import camp.woowak.lab.customer.exception.InvalidCreationException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +24,7 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({InvalidCreationException.class})
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ProblemDetail handleBadRequestException(BadRequestException e) {
-		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-			e.errorCode().getErrorCode());
-		problemDetail.setProperty("errorCode", e.errorCode().getErrorCode());
-		return problemDetail;
+		return getProblemDetail(e, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -35,8 +34,17 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({DuplicateEmailException.class})
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ProblemDetail handleDuplicateEmailException(DuplicateEmailException e) {
-		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
-			e.errorCode().getMessage());
+		return getProblemDetail(e, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler({CustomerAuthenticationException.class})
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ProblemDetail handleCustomerAuthenticationException(CustomerAuthenticationException e) {
+		return getProblemDetail(e, HttpStatus.UNAUTHORIZED);
+	}
+
+	private ProblemDetail getProblemDetail(HttpStatusException e, HttpStatus status) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, e.errorCode().getMessage());
 		problemDetail.setProperty("errorCode", e.errorCode().getErrorCode());
 		return problemDetail;
 	}

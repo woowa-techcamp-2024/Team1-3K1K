@@ -3,23 +3,37 @@ package camp.woowak.lab.web.api.customer;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.UUID;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.customer.exception.CustomerAuthenticationException;
 import camp.woowak.lab.customer.exception.CustomerErrorCode;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
+import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
+import camp.woowak.lab.customer.service.command.SignInCustomerCommand;
+import camp.woowak.lab.web.authentication.LoginCustomer;
+import camp.woowak.lab.web.dto.request.customer.SignInCustomerRequest;
 import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
+import camp.woowak.lab.web.resolver.session.SessionConst;
+import jakarta.servlet.http.HttpSession;
 
 @WebMvcTest(CustomerApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -31,6 +45,9 @@ class CustomerApiControllerTest {
 	@MockBean
 	private SignUpCustomerService signUpCustomerService;
 
+	@MockBean
+	private SignInCustomerService signInCustomerService;
+
 	@Autowired
 	private ObjectMapper objectMapper;
 
@@ -38,9 +55,10 @@ class CustomerApiControllerTest {
 	@DisplayName("구매자 회원가입 테스트 - 성공")
 	void testSignUpCustomer() throws Exception {
 		// given
+		String customerId = UUID.randomUUID().toString();
 		SignUpCustomerRequest request = new SignUpCustomerRequest("name", "email@test.com", "password123",
 			"010-1234-5678");
-		given(signUpCustomerService.signUp(any())).willReturn(1L);
+		given(signUpCustomerService.signUp(any())).willReturn(customerId);
 
 		// when & then
 		mockMvc.perform(post("/customers")
@@ -212,4 +230,48 @@ class CustomerApiControllerTest {
 			.andExpect(jsonPath("$.errorCode").value(CustomerErrorCode.DUPLICATE_EMAIL.getErrorCode()))
 			.andExpect(jsonPath("$.detail").value(CustomerErrorCode.DUPLICATE_EMAIL.getMessage()));
 	}
+
+	@Test
+	@DisplayName("구매자 로그인 테스트")
+	void testLoginCustomer() throws Exception {
+		UUID fakeCustomerId = UUID.randomUUID();
+		BDDMockito.given(signInCustomerService.signIn(BDDMockito.any(SignInCustomerCommand.class)))
+			.willReturn(fakeCustomerId);
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			post("/customers/login")
+				.content(new ObjectMapper().writeValueAsString(
+					new SignInCustomerRequest("customer@email.com", "validPassword")))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+		);
+
+		// then
+		actions.andExpect(status().isNoContent())
+			.andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
+			.andExpect(result -> {
+				HttpSession session = result.getRequest().getSession();
+				LoginCustomer loginCustomer = (LoginCustomer)session.getAttribute(SessionConst.SESSION_CUSTOMER_KEY);
+				Assertions.assertNotNull(loginCustomer);
+				Assertions.assertEquals(loginCustomer.getId(), fakeCustomerId);
+			})
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("구매자 로그인 테스트 - 로그인 실패")
+	void testLoginFail() throws Exception {
+		// given
+		SignInCustomerCommand command = new SignInCustomerCommand("email", "password");
+		given(signInCustomerService.signIn(command)).willThrow(new CustomerAuthenticationException("invalid email"));
+
+		// when & then
+		mockMvc.perform(post("/customers/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(new SignInCustomerRequest("email", "password"))))
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.errorCode").value(CustomerErrorCode.AUTHENTICATION_FAILED.getErrorCode()));
+	}
+
 }

@@ -1,18 +1,21 @@
 package camp.woowak.lab.vendor.domain;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import camp.woowak.lab.fixture.VendorFixture;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.vendor.exception.InvalidVendorCreationException;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
-class VendorTest {
+class VendorTest implements VendorFixture {
 
 	private PayAccount payAccount;
 	private PasswordEncoder passwordEncoder;
@@ -207,6 +210,42 @@ class VendorTest {
 					() -> new Vendor("aaaaaaaaaa", "validEmail@validEmail.com", "validPassword", "010-0000-0000", null,
 						passwordEncoder));
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName("비밀번화 확인은")
+	class Matches {
+		@Test
+		@DisplayName("[성공] 비밀번호가 일치하면 true를 반환한다.")
+		void return_true() {
+			// given
+			Vendor savedVendor = createSavedVendor(UUID.randomUUID(), createPayAccount(), passwordEncoder);
+
+			// when
+			boolean matches = savedVendor.matches("vendorPassword", passwordEncoder);
+
+			// then
+			Assertions.assertTrue(matches);
+		}
+
+		@Test
+		@DisplayName("[예외] 비밀번호가 불일치하면 false를 반환한다.")
+		void return_false() {
+			// given
+			Vendor savedVendor = createSavedVendor(UUID.randomUUID(), createPayAccount(), passwordEncoder);
+
+			// when
+			boolean matches = savedVendor.matches("something_wrong", passwordEncoder);
+
+			// then
+			Assertions.assertFalse(matches);
+		}
+
+		@Test
+		void test() {
+			boolean matches = passwordEncoder.matches("vendorPassword", "vendorPassword");
+			Assertions.assertTrue(matches);
 		}
 	}
 }

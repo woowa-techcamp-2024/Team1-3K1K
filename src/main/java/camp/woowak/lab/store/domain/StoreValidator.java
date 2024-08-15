@@ -5,6 +5,7 @@ import static camp.woowak.lab.store.exception.StoreException.ErrorCode.*;
 import java.time.LocalDateTime;
 
 import camp.woowak.lab.store.exception.StoreException;
+import camp.woowak.lab.vendor.domain.Vendor;
 
 public class StoreValidator {
 
@@ -15,14 +16,24 @@ public class StoreValidator {
 	private static final int MIN_NAME_LENGTH = 2;
 	private static final int MAX_NAME_LENGTH = 10;
 
-	public static void validate(final String name, final String address, final Integer minOrderPrice,
+	public static void validate(final Vendor owner, StoreCategory storeCategory, final String name,
+								final String address, final Integer minOrderPrice,
 								final LocalDateTime startTime, final LocalDateTime endTime
 	) {
+		validateNotNull(owner, storeCategory, name, address, minOrderPrice, startTime, endTime);
 		validateName(name);
 		validateAddress(address);
 		validateMinOrderPrice(minOrderPrice);
 		validateUnitOrderPrice(minOrderPrice);
 		validateTime(startTime, endTime);
+	}
+
+	private static void validateNotNull(Object... targets) {
+		for (Object target : targets) {
+			if (target == null) {
+				throw new StoreException(NULL_EXIST);
+			}
+		}
 	}
 
 	private static void validateName(final String name) {
@@ -32,7 +43,6 @@ public class StoreValidator {
 		throw new StoreException(INVALID_NAME_RANGE);
 	}
 
-	// TODO: 가게 위치 비즈니스 요구사항 구체화하면, 주소 검증 로직 수정 예정
 	private static void validateAddress(final String address) {
 		if (StoreAddress.DEFAULT_DISTRICT.equals(address)) {
 			return;

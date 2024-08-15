@@ -15,7 +15,7 @@ import lombok.Getter;
 
 @Getter
 public class Cart {
-	private Long customerId;
+	private String customerId;
 	private List<Menu> menuList;
 
 	/**
@@ -23,7 +23,7 @@ public class Cart {
 	 *
 	 * @param customerId 장바구니 소유주의 ID값입니다.
 	 */
-	public Cart(Long customerId) {
+	public Cart(String customerId) {
 		this.customerId = customerId;
 		this.menuList = new LinkedList<>();
 	}

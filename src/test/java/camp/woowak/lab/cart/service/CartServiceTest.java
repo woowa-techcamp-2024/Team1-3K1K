@@ -21,6 +21,8 @@ import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -44,6 +46,8 @@ class CartServiceTest {
 	private CartRepository cartRepository;
 	@Autowired
 	private MenuRepository menuRepository;
+	@Autowired
+	private MenuCategoryRepository menuCategoryRepository;
 	@Autowired
 	private StoreCategoryRepository storeCategoryRepository;
 	@Autowired
@@ -83,13 +87,13 @@ class CartServiceTest {
 		@DisplayName("존재하는 메뉴를 장바구니에 추가할 수 있다.")
 		void addMenuInCartWhenMenuExists() {
 			//given
-			AddCartCommand command = new AddCartCommand(customer.getId(), menu.getId());
+			AddCartCommand command = new AddCartCommand(customer.getId().toString(), menu.getId());
 
 			//when
 			cartService.addMenu(command);
 
 			//then
-			Optional<Cart> cart = cartRepository.findByCustomerId(customer.getId());
+			Optional<Cart> cart = cartRepository.findByCustomerId(customer.getId().toString());
 			assertThat(cart).isPresent();
 			Cart cartList = cart.get();
 			assertThat(cartList.getMenuList()).contains(menu);
@@ -100,7 +104,7 @@ class CartServiceTest {
 		void addMenuInCartWhenMenuDoesNotExist() {
 			//given
 			Long notExistsMenuId = Long.MAX_VALUE;
-			AddCartCommand command = new AddCartCommand(customer.getId(), notExistsMenuId);
+			AddCartCommand command = new AddCartCommand(customer.getId().toString(), notExistsMenuId);
 
 			//when & then
 			assertThatThrownBy(() -> cartService.addMenu(command))
@@ -114,9 +118,9 @@ class CartServiceTest {
 			LocalDateTime startTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
 			LocalDateTime endTime = LocalDateTime.now().minusMinutes(1).withSecond(0).withNano(0);
 			Store closedStore = createStore(vendor, "오픈 전의 중화반점", 8000, startTime, endTime);
-			Menu menu = createMenu(closedStore, "오픈시간이 아니라 담을 수 없는 메뉴", 1000);
+			Menu menu = createMenu(closedStore, "닫힌 가게의 메뉴", 1000);
 
-			AddCartCommand command = new AddCartCommand(customer.getId(), menu.getId());
+			AddCartCommand command = new AddCartCommand(customer.getId().toString(), menu.getId());
 
 			//when & then
 			assertThatThrownBy(() -> cartService.addMenu(command))
@@ -130,18 +134,20 @@ class CartServiceTest {
 			Store otherStore = createStore(vendor, "다른집", 8000, startTime, endTime);
 			Menu otherStoresMenu = createMenu(otherStore, "다른집 짜장면", 9000);
 
-			AddCartCommand command1 = new AddCartCommand(customer.getId(), menu.getId());
+			AddCartCommand command1 = new AddCartCommand(customer.getId().toString(), menu.getId());
 			cartService.addMenu(command1);
 
 			//when & then
-			AddCartCommand otherStoreCommand = new AddCartCommand(customer.getId(), otherStoresMenu.getId());
+			AddCartCommand otherStoreCommand = new AddCartCommand(customer.getId().toString(), otherStoresMenu.getId());
 			assertThatThrownBy(() -> cartService.addMenu(otherStoreCommand))
 				.isExactlyInstanceOf(OtherStoreMenuException.class);
 		}
 	}
 
 	private Menu createMenu(Store store, String name, int price) {
-		Menu menu1 = new Menu(store, name, price);
+		MenuCategory menuCategory = new MenuCategory(store, "카테고리1");
+		menuCategoryRepository.saveAndFlush(menuCategory);
+		Menu menu1 = new Menu(store, menuCategory,name, price,"imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;

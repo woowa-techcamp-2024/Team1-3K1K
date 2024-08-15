@@ -12,7 +12,7 @@ import camp.woowak.lab.common.exception.HttpStatusException;
 import camp.woowak.lab.common.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
-@DomainExceptionHandler
+@DomainExceptionHandler(basePackageClasses = CartApiControllerAdvice.class)
 @Slf4j
 public class CartApiControllerAdvice {
 	@ExceptionHandler(value = {BadRequestException.class})

@@ -2,6 +2,7 @@ package camp.woowak.lab.store.domain;
 
 import java.time.LocalDateTime;
 
+import camp.woowak.lab.store.exception.NotEqualsOwnerException;
 import camp.woowak.lab.vendor.domain.Vendor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -37,8 +38,6 @@ public class Store {
 	@Column(nullable = false)
 	private String name;
 
-	// TODO: 위치 정보에 대한 요구사항 논의 후 수정 예정.
-	//  i.g) 송파구로 특정, 도시 정보로 특정 등 요구사항이 정의되어야 엔티티 설계를 진행할 수 있음
 	@Embedded
 	private StoreAddress storeAddress;
 
@@ -54,7 +53,7 @@ public class Store {
 	public Store(Vendor owner, StoreCategory storeCategory, String name, String address, String phoneNumber,
 				 Integer minOrderPrice, LocalDateTime startTime, LocalDateTime endTime
 	) {
-		StoreValidator.validate(name, address, minOrderPrice, startTime, endTime);
+		StoreValidator.validate(owner, storeCategory, name, address, minOrderPrice, startTime, endTime);
 		this.owner = owner;
 		this.storeCategory = storeCategory;
 		this.name = name;
@@ -62,6 +61,12 @@ public class Store {
 		this.phoneNumber = phoneNumber;
 		this.minOrderPrice = minOrderPrice;
 		this.storeTime = new StoreTime(startTime, endTime);
+	}
+
+	public void validateOwner(Vendor owner) {
+		if (!this.owner.equals(owner)) {
+			throw new NotEqualsOwnerException("가게의 점주가 일치하지 않습니다." + this.owner + ", " + owner);
+		}
 	}
 
 	public boolean isOpen() {
