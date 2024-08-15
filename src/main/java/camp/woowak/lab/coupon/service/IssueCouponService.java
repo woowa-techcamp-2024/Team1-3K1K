@@ -29,7 +29,7 @@ public class IssueCouponService {
 
 	/**
 	 *
-	 * @throws InvalidICreationIssuanceException customer 또는 coupon이 존재하지 않을 경우 또는 coupon이 만료되었을 경우
+	 * @throws InvalidICreationIssuanceException customer 또는 coupon이 존재하지 않을 경우
 	 * @throws ExpiredCouponException coupon이 만료되었을 경우
 	 * @throws InsufficientCouponQuantityException coupon 수량이 부족할 경우
 	 */
