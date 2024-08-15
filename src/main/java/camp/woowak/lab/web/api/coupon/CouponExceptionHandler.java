@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import camp.woowak.lab.common.advice.DomainExceptionHandler;
 import camp.woowak.lab.common.exception.HttpStatusException;
 import camp.woowak.lab.coupon.exception.DuplicateCouponTitleException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @DomainExceptionHandler(basePackageClasses = CouponApiController.class)
 public class CouponExceptionHandler {
 
@@ -17,6 +19,7 @@ public class CouponExceptionHandler {
 	 */
 	@ExceptionHandler(value = DuplicateCouponTitleException.class)
 	public ProblemDetail handleDuplicateCouponTitleException(DuplicateCouponTitleException e) {
+		log.warn("Conflict", e.getMessage());
 		return getProblemDetail(e, HttpStatus.CONFLICT);
 	}
 
