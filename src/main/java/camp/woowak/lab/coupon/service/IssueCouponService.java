@@ -40,7 +40,7 @@ public class IssueCouponService {
 			.orElseThrow(() -> new InvalidICreationIssuanceException("customer not found"));
 
 		// coupon 조회
-		Coupon targetCoupon = couponRepository.findById(cmd.couponId())
+		Coupon targetCoupon = couponRepository.findByIdWithPessimisticLock(cmd.couponId())
 			.orElseThrow(() -> new InvalidICreationIssuanceException("coupon not found"));
 
 		// coupon 수량 확인
