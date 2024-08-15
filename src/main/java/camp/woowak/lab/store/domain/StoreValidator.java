@@ -31,7 +31,7 @@ public class StoreValidator {
 	private static void validateNotNull(Object... targets) {
 		for (Object target : targets) {
 			if (target == null) {
-				throw new InvalidStoreCreationException(NULL_EXIST);
+				throw new InvalidStoreCreationException(NULL_EXIST, "Null 값은 허용하지 않습니다.");
 			}
 		}
 	}
