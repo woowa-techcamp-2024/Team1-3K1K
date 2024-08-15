@@ -9,6 +9,7 @@ import camp.woowak.lab.common.advice.DomainExceptionHandler;
 import camp.woowak.lab.common.exception.BadRequestException;
 import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.common.exception.HttpStatusException;
+import camp.woowak.lab.common.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @DomainExceptionHandler
@@ -19,6 +20,13 @@ public class CartApiControllerAdvice {
 	public ProblemDetail badRequestException(BadRequestException e) {
 		log.warn("Bad Request", e);
 		return getProblemDetail(e, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(value = {NotFoundException.class})
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ProblemDetail notFoundException(NotFoundException e) {
+		log.warn("Not Found", e);
+		return getProblemDetail(e, HttpStatus.NOT_FOUND);
 	}
 
 	private ProblemDetail getProblemDetail(HttpStatusException exception, HttpStatus httpStatus) {
