@@ -43,7 +43,7 @@ public class StoreRegistrationService {
 
 	private StoreCategory findStoreCategoryByName(final String name) {
 		return storeCategoryRepository.findByName(name)
-			.orElseThrow(() -> new StoreException(INVALID_STORE_CATEGORY));
+			.orElseThrow(() -> new NotFoundStoreCategoryException("해당 이름의 가게 카테고리가 없습니다. " + name));
 	}
 
 }
