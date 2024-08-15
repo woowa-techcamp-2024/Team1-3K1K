@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,6 +33,7 @@ class CouponApiControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
+	@DisplayName("쿠폰 발급 테스트 - 성공")
 	void testIssueCoupon() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
