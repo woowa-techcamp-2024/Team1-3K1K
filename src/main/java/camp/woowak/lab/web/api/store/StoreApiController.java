@@ -1,16 +1,22 @@
 package camp.woowak.lab.web.api.store;
 
-import org.springframework.http.ResponseEntity;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import camp.woowak.lab.store.service.StoreMenuRegistrationService;
 import camp.woowak.lab.store.service.StoreRegistrationService;
+import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
-import camp.woowak.lab.store.service.dto.StoreRegistrationRequest;
-import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
+import camp.woowak.lab.web.dto.request.store.StoreMenuRegistrationRequest;
+import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
+import camp.woowak.lab.web.dto.response.store.StoreMenuRegistrationResponse;
+import camp.woowak.lab.web.dto.response.store.StoreRegistrationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -19,17 +25,16 @@ import lombok.RequiredArgsConstructor;
 public class StoreApiController {
 
 	private final StoreRegistrationService storeRegistrationService;
-	private final VendorRepository vendorRepository;
+	private final StoreMenuRegistrationService storeMenuRegistrationService;
 
-	// TODO: 서비스 메서드 코드 스타일 통일하면서 dtoResponse 반환하도록 수정할 예정
 	@PostMapping("/stores")
-	public ResponseEntity<Void> storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
-												  final @Valid @RequestBody StoreRegistrationRequest request
+	public StoreRegistrationResponse storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
+													   final @Valid @RequestBody StoreRegistrationRequest request
 	) {
 		StoreRegistrationCommand command = mapBy(loginVendor, request);
 
-		storeRegistrationService.storeRegistration(command);
-		return ResponseEntity.ok().build();
+		Long storeId = storeRegistrationService.storeRegistration(command);
+		return new StoreRegistrationResponse(storeId);
 	}
 
 	private StoreRegistrationCommand mapBy(LoginVendor loginVendor, StoreRegistrationRequest request) {
