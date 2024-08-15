@@ -26,16 +26,16 @@ public class SignUpVendorService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public Long signUp(SignUpVendorCommand cmd) {
+	public String signUp(SignUpVendorCommand cmd) {
 		PayAccount newPayAccount = new PayAccount();
 		payAccountRepository.save(newPayAccount);
-		Vendor newVendor =
-			new Vendor(cmd.name(), cmd.email(), cmd.password(), cmd.phone(), newPayAccount, passwordEncoder);
+		Vendor savedVendor;
 		try {
-			vendorRepository.save(newVendor);
+			savedVendor = vendorRepository.saveAndFlush(
+				new Vendor(cmd.name(), cmd.email(), cmd.password(), cmd.phone(), newPayAccount, passwordEncoder));
 		} catch (DataIntegrityViolationException e) {
 			throw new DuplicateEmailException();
 		}
-		return newVendor.getId();
+		return savedVendor.getId().toString();
 	}
 }

@@ -1,6 +1,7 @@
 package camp.woowak.lab.vendor.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -54,7 +55,7 @@ class VendorRepositoryTest implements VendorFixture {
 			// when
 			Vendor vendor = createVendor(payAccount, passwordEncoder);
 			Vendor savedVendor = vendorRepository.save(vendor);
-			Long savedVendorId = savedVendor.getId();
+			UUID savedVendorId = savedVendor.getId();
 			vendorRepository.flush();
 
 			// then
