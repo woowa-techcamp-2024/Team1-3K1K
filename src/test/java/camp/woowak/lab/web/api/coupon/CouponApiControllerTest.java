@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.coupon.service.IssueCouponService;
+import camp.woowak.lab.web.dto.request.coupon.IssueCouponRequest;
 
 @WebMvcTest(CouponApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -31,7 +32,7 @@ class CouponApiControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	void testIssueCoupon() {
+	void testIssueCoupon() throws Exception {
 		mockMvc.perform(post("/coupons")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
@@ -39,6 +40,6 @@ class CouponApiControllerTest {
 				.accept(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.couponId").exists());
+			.andExpect(jsonPath("$.data.couponId").exists());
 	}
 }
