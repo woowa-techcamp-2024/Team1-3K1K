@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.exception.MultiStoreOrderException;
@@ -11,7 +12,7 @@ import camp.woowak.lab.order.exception.MultiStoreOrderException;
 @Component
 public class SingleStoreOrderValidator implements OrderValidator {
 	@Override
-	public void check(List<Menu> orderedMenus) {
+	public void check(Customer requester, List<Menu> orderedMenus) {
 		if (orderedMenus == null || orderedMenus.isEmpty()) {
 			throw new EmptyCartException("최소 하나 이상의 메뉴를 주문해야 합니다.");
 		}

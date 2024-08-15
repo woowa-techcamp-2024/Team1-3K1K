@@ -36,7 +36,7 @@ public class Order {
 	private List<OrderItem> orderItems = new ArrayList<>();
 
 	public Order(Customer requester, List<Menu> orderedMenus, OrderValidator orderValidator) {
-		orderValidator.check(orderedMenus);
+		orderValidator.check(requester, orderedMenus);
 		this.requester = requester;
 		this.store = orderedMenus.get(0).getStore();
 	}
