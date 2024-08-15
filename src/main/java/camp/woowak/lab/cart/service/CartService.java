@@ -31,6 +31,7 @@ public class CartService {
 			.orElseThrow(() -> new MenuNotFoundException(command.menuId() + " not found"));
 
 		customerCart.addMenu(menu);
+		cartRepository.save(customerCart);
 	}
 
 	private Cart getCart(String customerId) {
