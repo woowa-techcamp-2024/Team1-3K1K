@@ -5,22 +5,22 @@ import org.springframework.http.HttpStatus;
 import camp.woowak.lab.common.exception.ErrorCode;
 
 public enum CouponErrorCode implements ErrorCode {
-	INVALID_CREATION(HttpStatus.BAD_REQUEST, "CP1", "잘못된 요청입니다."),
+	INVALID_CREATION(HttpStatus.BAD_REQUEST, "cp_1_1", "잘못된 요청입니다."),
 	;
 
-	HttpStatus status;
+	int status;
 	String errorCode;
 	String message;
 
 	CouponErrorCode(HttpStatus status, String errorCode, String message) {
-		this.status = status;
+		this.status = status.value();
 		this.errorCode = errorCode;
 		this.message = message;
 	}
 
 	@Override
 	public int getStatus() {
-		return status.value();
+		return status;
 	}
 
 	@Override
