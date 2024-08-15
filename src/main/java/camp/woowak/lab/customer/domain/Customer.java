@@ -46,4 +46,8 @@ public class Customer {
 		this.phone = phone;
 		this.payAccount = payAccount;
 	}
+
+	public boolean validatePassword(String password, PasswordEncoder passwordEncoder) {
+		return passwordEncoder.matches(password, this.password);
+	}
 }
