@@ -18,6 +18,7 @@ import camp.woowak.lab.coupon.domain.Coupon;
 import camp.woowak.lab.coupon.domain.CouponIssuance;
 import camp.woowak.lab.coupon.domain.TestCoupon;
 import camp.woowak.lab.coupon.exception.ExpiredCouponException;
+import camp.woowak.lab.coupon.exception.InsufficientCouponQuantityException;
 import camp.woowak.lab.coupon.exception.InvalidICreationIssuanceException;
 import camp.woowak.lab.coupon.repository.CouponIssuanceRepository;
 import camp.woowak.lab.coupon.repository.CouponRepository;
@@ -124,5 +125,28 @@ class IssueCouponServiceTest implements CouponFixture, CustomerFixture, CouponIs
 		verify(customerRepository).findById(fakeCustomerId);
 		verify(couponRepository).findById(fakeCouponId);
 		verify(couponIssuanceRepository, never()).save(any(CouponIssuance.class));
+	}
+
+	@Test
+	@DisplayName("Coupon 발급 테스트 - 수량 부족")
+	void testIssueCouponFailWithInsufficientCouponQuantity() {
+		// given
+		UUID fakeCustomerId = UUID.randomUUID();
+		Long fakeCouponId = 1L;
+		TestCoupon fakeCoupon = (TestCoupon)createCoupon(fakeCouponId, "할인 쿠폰", 1000, 1,
+			LocalDateTime.now().plusDays(7));
+		Customer fakeCustomer = createCustomer(fakeCustomerId);
+		fakeCoupon.setQuantity(0); // 수량 부족 시나리오 적용
+		given(customerRepository.findById(fakeCustomerId)).willReturn(Optional.of(fakeCustomer));
+		given(couponRepository.findById(fakeCouponId)).willReturn(Optional.of(fakeCoupon));
+		given(couponIssuanceRepository.save(any(CouponIssuance.class))).willThrow(
+			new InsufficientCouponQuantityException("the quantity of coupon is insufficient"));
+		IssueCouponCommand cmd = new IssueCouponCommand(fakeCustomerId, fakeCouponId);
+
+		// when & then
+		assertThrows(InsufficientCouponQuantityException.class, () -> issueCouponService.issueCoupon(cmd));
+		verify(customerRepository).findById(fakeCustomerId);
+		verify(couponRepository).findById(fakeCouponId);
+		verify(couponIssuanceRepository).save(any(CouponIssuance.class));
 	}
 }
