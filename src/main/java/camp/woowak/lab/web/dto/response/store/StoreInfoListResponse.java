@@ -6,19 +6,19 @@ import camp.woowak.lab.store.domain.Store;
 import lombok.Getter;
 
 @Getter
-public class StoreInfoResponse {
+public class StoreInfoListResponse {
 	private List<InfoResponse> stores;
 
-	private StoreInfoResponse(List<InfoResponse> stores) {
+	private StoreInfoListResponse(List<InfoResponse> stores) {
 		this.stores = stores;
 	}
 
-	public static StoreInfoResponse of(List<Store> stores) {
+	public static StoreInfoListResponse of(List<Store> stores) {
 		List<InfoResponse> storeInfos = stores.stream()
 			.map(InfoResponse::of)
 			.toList();
 
-		return new StoreInfoResponse(storeInfos);
+		return new StoreInfoListResponse(storeInfos);
 	}
 
 	@Getter

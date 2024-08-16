@@ -36,7 +36,7 @@ import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
-import camp.woowak.lab.web.dto.response.store.StoreInfoResponse;
+import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -90,7 +90,7 @@ public class StoreApiControllerWithDaoTest {
 			Map<String, Object> responseData = objectMapper.readValue(responseString, Map.class);
 			String actualResponseDataString = objectMapper.writeValueAsString(responseData.get("data"));
 
-			StoreInfoResponse expectedResponse = StoreInfoResponse.of(stores);
+			StoreInfoListResponse expectedResponse = StoreInfoListResponse.of(stores);
 			String expectedResponseString = objectMapper.writeValueAsString(expectedResponse);
 
 			assertThat(actualResponseDataString).isEqualTo(expectedResponseString);

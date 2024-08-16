@@ -21,7 +21,7 @@ import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreMenuRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.dto.response.store.MenuCategoryRegistrationResponse;
-import camp.woowak.lab.web.dto.response.store.StoreInfoResponse;
+import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 import camp.woowak.lab.web.dto.response.store.StoreMenuRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.StoreRegistrationResponse;
 import jakarta.validation.Valid;
@@ -37,7 +37,7 @@ public class StoreApiController {
 	private final StoreDao storeDao;
 
 	@GetMapping("/stores")
-	public StoreInfoResponse getStoreInfos() {
+	public StoreInfoListResponse getStoreInfos() {
 		return storeDao.findAllStoreList();
 	}
 

@@ -16,7 +16,7 @@ import camp.woowak.lab.store.domain.StoreCategory;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 
-class StoreInfoResponseTest implements VendorFixture {
+class StoreInfoListResponseTest implements VendorFixture {
 	private Store store1;
 	private Store store2;
 
@@ -35,19 +35,19 @@ class StoreInfoResponseTest implements VendorFixture {
 
 	@Test
 	void testStoreInfoResponseCreation() {
-		StoreInfoResponse response = StoreInfoResponse.of(Arrays.asList(store1, store2));
+		StoreInfoListResponse response = StoreInfoListResponse.of(Arrays.asList(store1, store2));
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStores()).size().isEqualTo(2);
 
-		StoreInfoResponse.InfoResponse info1 = response.getStores().get(0);
+		StoreInfoListResponse.InfoResponse info1 = response.getStores().get(0);
 		assertStoresInfo(info1, store1);
 
-		StoreInfoResponse.InfoResponse info2 = response.getStores().get(1);
+		StoreInfoListResponse.InfoResponse info2 = response.getStores().get(1);
 		assertStoresInfo(info2, store2);
 	}
 
-	private void assertStoresInfo(StoreInfoResponse.InfoResponse info1, Store store) {
+	private void assertStoresInfo(StoreInfoListResponse.InfoResponse info1, Store store) {
 		assertThat(info1.isOpen()).isEqualTo(store.isOpen());
 		assertThat(info1.getName()).isEqualTo(store.getName());
 		assertThat(info1.getCategory()).isEqualTo(store.getStoreCategory().getName());
