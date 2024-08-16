@@ -35,14 +35,16 @@ public class Order {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	public Order(Customer requester, Store store, List<CartItem> cartItems, SingleStoreOrderValidator validator,
-				 StockRequester stockRequester, PriceChecker priceChecker) {
-		validator.check(store, cartItems);
+	public Order(Customer requester, Store store, List<CartItem> cartItems,
+				 SingleStoreOrderValidator singleStoreOrderValidator,
+				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService) {
+		singleStoreOrderValidator.check(store, cartItems);
 		stockRequester.request(cartItems);
-		List<OrderItem> orderItem = priceChecker.check(cartItems);
+		List<OrderItem> orderItems = priceChecker.check(cartItems);
+		withdrawPointService.withdraw(requester, orderItems);
 		this.requester = requester;
 		this.store = store;
-		this.orderItems = orderItem;
+		this.orderItems = orderItems;
 	}
 
 	public Long getId() {

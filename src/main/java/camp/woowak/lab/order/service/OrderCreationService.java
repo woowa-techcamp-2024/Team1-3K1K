@@ -13,8 +13,10 @@ import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
+import camp.woowak.lab.order.domain.WithdrawPointService;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
@@ -31,16 +33,21 @@ public class OrderCreationService {
 	private final CustomerRepository customerRepository;
 	private final SingleStoreOrderValidator singleStoreOrderValidator;
 	private final StockRequester stockRequester;
+	private final WithdrawPointService withdrawPointService;
+	private final PriceChecker priceChecker;
 
 	public OrderCreationService(OrderRepository orderRepository, CartRepository cartRepository,
 								StoreRepository storeRepository, CustomerRepository customerRepository,
-								SingleStoreOrderValidator singleStoreOrderValidator, StockRequester stockRequester) {
+								SingleStoreOrderValidator singleStoreOrderValidator, StockRequester stockRequester,
+								WithdrawPointService withdrawPointService, PriceChecker priceChecker) {
 		this.orderRepository = orderRepository;
 		this.cartRepository = cartRepository;
 		this.storeRepository = storeRepository;
 		this.customerRepository = customerRepository;
 		this.singleStoreOrderValidator = singleStoreOrderValidator;
 		this.stockRequester = stockRequester;
+		this.withdrawPointService = withdrawPointService;
+		this.priceChecker = priceChecker;
 	}
 
 	public Long create(OrderCreationCommand cmd) {
@@ -56,7 +63,8 @@ public class OrderCreationService {
 			throw new NotFoundStoreException("등록되지 않은 가게의 상품을 주문했습니다.");
 		}
 		Order savedOrder = orderRepository.save(
-			new Order(requester, findStore.get(), cartItems, singleStoreOrderValidator, stockRequester));
+			new Order(requester, findStore.get(), cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService));
 		return savedOrder.getId();
 	}
 }
