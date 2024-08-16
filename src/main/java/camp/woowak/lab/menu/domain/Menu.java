@@ -37,19 +37,25 @@ public class Menu {
 	private Integer price;
 
 	@Column(nullable = false)
+	private Long stockCount;
+
+	@Column(nullable = false)
 	private String imageUrl;
 
-	public Menu(Store store, MenuCategory menuCategory, String name, Integer price, String imageUrl) {
-		MenuValidator.validate(store, menuCategory, name, price, imageUrl);
+	public Menu(Store store, MenuCategory menuCategory, String name,
+				Integer price, Long stockCount, String imageUrl
+	) {
+		MenuValidator.validate(store, menuCategory, name, price, stockCount, imageUrl);
 		this.store = store;
 		this.menuCategory = menuCategory;
 		this.name = name;
 		this.price = price;
+		this.stockCount = stockCount;
 		this.imageUrl = imageUrl;
 	}
 
 	public Long getId() {
 		return id;
 	}
-	
+
 }
