@@ -35,6 +35,9 @@ public class OrderPaymentAdjustmentService {
 		for (Vendor vendor : vendors) {
 			// 2. 각 점주의 정산해야할 OrderPayment 목록을 조회
 			List<OrderPayment> orderPayments = findOrderPaymentsToAdjustment(vendor);
+
+			// 6. 송금을 성공하면, OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
+			updateOrderPaymentStatus(orderPayments);
 		}
 	}
 
@@ -54,6 +57,13 @@ public class OrderPaymentAdjustmentService {
 		}
 
 		return orderPayments;
+	}
+
+	// OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
+	private void updateOrderPaymentStatus(List<OrderPayment> orderPayments) {
+		orderPaymentRepository.updateOrderPaymentStatus(
+			orderPayments.stream().map(OrderPayment::getId).toList(),
+			OrderPaymentStatus.ADJUSTMENT_SUCCESS);
 	}
 
 }
