@@ -17,7 +17,7 @@ public record MenuLineItem(
 	String categoryName,
 
 	@NotNull(message = "음식 상품 가격은 필수값입니다.")
-	Integer price
+	Long price
 
 ) {
 }
