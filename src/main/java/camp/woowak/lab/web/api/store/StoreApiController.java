@@ -18,12 +18,14 @@ import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
+import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreMenuRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.dto.response.store.MenuCategoryRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 import camp.woowak.lab.web.dto.response.store.StoreMenuRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.StoreRegistrationResponse;
+import camp.woowak.lab.web.resolver.store.annotation.StorePFS;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -37,8 +39,9 @@ public class StoreApiController {
 	private final StoreDao storeDao;
 
 	@GetMapping("/stores")
-	public StoreInfoListResponse getStoreInfos() {
-		return storeDao.findAllStoreList();
+	public StoreInfoListResponse getStoreInfos(@StorePFS StoreInfoListRequest request
+	) {
+		return storeDao.findAllStoreList(request);
 	}
 
 	@PostMapping("/stores")
