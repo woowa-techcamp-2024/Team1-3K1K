@@ -9,6 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import camp.woowak.lab.store.domain.QStore;
 import camp.woowak.lab.store.domain.Store;
+import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 
 @Repository
@@ -27,11 +28,13 @@ public class StoreDao {
 	 * TODO 최소 주문 가격으로 필터링할 수 있다.
 	 * TODO 매장의 카테고리로 필터링할 수 잇다.
 	 */
-	public StoreInfoListResponse findAllStoreList() {
+	public StoreInfoListResponse findAllStoreList(StoreInfoListRequest request) {
 		QStore store = QStore.store;
 
 		List<Store> fetchResult = qf.select(store)
 			.from(store)
+			.offset(request.getPage()*request.getSize())
+			.limit(request.getSize())
 			.fetch();
 
 		return StoreInfoListResponse.of(fetchResult);
