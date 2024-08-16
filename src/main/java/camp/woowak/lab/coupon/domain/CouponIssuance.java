@@ -30,7 +30,7 @@ public class CouponIssuance {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer customer;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	@CreatedDate
 	private LocalDateTime issuedAt;
 
