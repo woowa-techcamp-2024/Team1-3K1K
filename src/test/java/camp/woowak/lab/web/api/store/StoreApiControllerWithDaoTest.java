@@ -37,10 +37,12 @@ import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.dto.response.store.StoreInfoResponse;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("StoreApiController 클래스 With Dao")
+@Transactional
 public class StoreApiControllerWithDaoTest {
 	@Autowired
 	private PayAccountRepository payAccountRepository;
