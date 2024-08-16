@@ -18,8 +18,6 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
@@ -35,9 +33,6 @@ class OrderApiControllerTest {
 
 	@MockBean
 	private RetrieveOrderListService retrieveOrderListService;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@Test
 	@DisplayName("점주 주문 리스트 조회 테스트 - 성공")
