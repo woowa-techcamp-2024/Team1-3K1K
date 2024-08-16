@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.repository.MenuRepository;
+import camp.woowak.lab.payment.domain.OrderPayment;
+import camp.woowak.lab.payment.domain.OrderPaymentStatus;
 import camp.woowak.lab.payment.repository.OrderPaymentRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.exception.NotFoundVendorException;
@@ -30,11 +32,23 @@ public class OrderPaymentAdjustmentService {
 	public void adjustment() {
 		// 1. 모든 점주 조회
 		List<Vendor> vendors = findAllVendors();
+		for (Vendor vendor : vendors) {
+			// 2. 각 점주의 정산해야할 OrderPayment 목록을 조회
+			List<OrderPayment> orderPayments = findOrderPaymentsToAdjustment(vendor);
+		}
 	}
 
 	// 모든 점주 조회
 	private List<Vendor> findAllVendors() {
 		return vendorRepository.findAll();
+	}
+
+	// 각 점주의 정산해야할 OrderPayment 목록을 조회
+	private List<OrderPayment> findOrderPaymentsToAdjustment(final Vendor vendor) {
+		List<OrderPayment> orderPayments = orderPaymentRepository.findByRecipientIdAndOrderPaymentStatus(
+			vendor.getId(), OrderPaymentStatus.ORDER_SUCCESS);
+
+		return orderPayments;
 	}
 
 }
