@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.OtherStoreMenuException;
 import camp.woowak.lab.cart.exception.StoreNotOpenException;
 import camp.woowak.lab.menu.domain.Menu;
@@ -16,7 +17,7 @@ import lombok.Getter;
 @Getter
 public class Cart {
 	private final String customerId;
-	private final List<Menu> menuList;
+	private final List<CartItem> cartItems;
 
 	/**
 	 * 생성될 때 무조건 cart가 비어있도록 구현
@@ -31,27 +32,36 @@ public class Cart {
 	 * 해당 Domain을 사용하는 같은 패키지내의 클래스, 혹은 자식 클래스는 List를 커스텀할 수 있습니다.
 	 *
 	 * @param customerId 장바구니 소유주의 ID값입니다.
-	 * @param menuList   장바구니에 사용될 List입니다.
+	 * @param cartItems   장바구니에 사용될 List입니다.
 	 */
-	protected Cart(String customerId, List<Menu> menuList) {
+	protected Cart(String customerId, List<CartItem> cartItems) {
 		this.customerId = customerId;
-		this.menuList = menuList;
+		this.cartItems = cartItems;
 	}
 
 	public void addMenu(Menu menu) {
+		addMenu(menu, 1);
+	}
+
+	public void addMenu(Menu menu, int amount) {
 		Store store = menu.getStore();
 		validateOtherStore(store.getId());
 		validateStoreOpenTime(store);
 
-		this.menuList.add(menu);
+		CartItem existingCartItem = getExistingCartItem(menu, store);
+		if (existingCartItem != null) {
+			CartItem updatedCartItem = existingCartItem.add(amount);
+			cartItems.set(cartItems.indexOf(existingCartItem), updatedCartItem);
+		} else {
+			this.cartItems.add(new CartItem(menu.getId(), store.getId(), amount));
+		}
 	}
 
-	public long getTotalPrice() {
-		return this.menuList.stream()
-			.map(Menu::getPrice)
-			.mapToLong(Long::valueOf)
-			.boxed()
-			.reduce(0L, Long::sum);
+	private CartItem getExistingCartItem(Menu menu, Store store) {
+		return cartItems.stream()
+			.filter(item -> item.getMenuId().equals(menu.getId()) && item.getStoreId().equals(store.getId()))
+			.findFirst()
+			.orElse(null);
 	}
 
 	private void validateStoreOpenTime(Store store) {
@@ -72,10 +82,8 @@ public class Cart {
 	}
 
 	private Set<Long> getStoreIds() {
-		return this.menuList.stream()
-			.map(Menu::getStore)
-			.mapToLong(Store::getId)
-			.boxed()
+		return this.cartItems.stream()
+			.map(CartItem::getStoreId)
 			.collect(Collectors.toSet());
 	}
 }
