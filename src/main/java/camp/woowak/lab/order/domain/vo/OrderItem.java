@@ -5,13 +5,21 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class OrderItem {
 	private Long menuId;
+	private int price;
 	private int quantity;
+	private int totalPrice;
 
 	protected OrderItem() {
 	}
 
-	public OrderItem(Long menuId, int quantity) {
+	public OrderItem(Long menuId, int price, int quantity) {
 		this.menuId = menuId;
+		this.price = price;
 		this.quantity = quantity;
+		this.totalPrice = price * quantity;
+	}
+
+	public int getTotalPrice() {
+		return totalPrice;
 	}
 }

@@ -36,14 +36,13 @@ public class Order {
 	private List<OrderItem> orderItems = new ArrayList<>();
 
 	public Order(Customer requester, Store store, List<CartItem> cartItems, SingleStoreOrderValidator validator,
-				 StockRequester stockRequester) {
+				 StockRequester stockRequester, PriceChecker priceChecker) {
 		validator.check(store, cartItems);
 		stockRequester.request(cartItems);
+		List<OrderItem> orderItem = priceChecker.check(cartItems);
 		this.requester = requester;
 		this.store = store;
-		for (CartItem cartItem : cartItems) {
-			orderItems.add(new OrderItem(cartItem.getMenuId(), cartItem.getAmount()));
-		}
+		this.orderItems = orderItem;
 	}
 
 	public Long getId() {
