@@ -16,11 +16,12 @@ import jakarta.persistence.PersistenceContext;
 @Repository
 @Transactional(readOnly = true)
 public class StoreDao {
-	@PersistenceContext
-	private EntityManager entityManager;
+	private final JPAQueryFactory qf;
+	public StoreDao(JPAQueryFactory qf) {
+		this.qf = qf;
+	}
 
 	public StoreInfoResponse findAllStoreList() {
-		JPAQueryFactory qf = new JPAQueryFactory(entityManager);
 		QStore store = QStore.store;
 
 		List<Store> fetchResult = qf.select(store)
