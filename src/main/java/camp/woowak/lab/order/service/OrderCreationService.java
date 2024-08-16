@@ -1,7 +1,6 @@
 package camp.woowak.lab.order.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -53,18 +52,22 @@ public class OrderCreationService {
 	public Long create(OrderCreationCommand cmd) {
 		UUID requesterId = cmd.requesterId();
 		Customer requester = customerRepository.findByIdOrThrow(requesterId);
-		Optional<Cart> findCart = cartRepository.findByCustomerId(requesterId.toString());
-		List<CartItem> cartItems;
-		if (findCart.isEmpty() || (cartItems = findCart.get().getCartItems()) == null || cartItems.isEmpty()) {
-			throw new EmptyCartException("구매자 " + cmd.requesterId() + "가 비어있는 카트로 주문을 시도했습니다.");
+
+		Cart cart = cartRepository.findByCustomerId(requesterId.toString())
+			.orElseThrow(() -> new EmptyCartException("구매자 " + requesterId + "가 비어있는 카트로 주문을 시도했습니다."));
+		List<CartItem> cartItems = cart.getCartItems();
+
+		if (cartItems == null || cartItems.isEmpty()) {
+			throw new EmptyCartException("구매자 " + requesterId + "가 비어있는 카트로 주문을 시도했습니다.");
 		}
-		Optional<Store> findStore = storeRepository.findById(cartItems.get(0).getStoreId());
-		if (findStore.isEmpty()) {
-			throw new NotFoundStoreException("등록되지 않은 가게의 상품을 주문했습니다.");
-		}
+
+		Store store = storeRepository.findById(cartItems.get(0).getStoreId())
+			.orElseThrow(() -> new NotFoundStoreException("등록되지 않은 가게의 상품을 주문했습니다."));
+
 		Order savedOrder = orderRepository.save(
-			new Order(requester, findStore.get(), cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService));
+			new Order(requester, store, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService)
+		);
 		return savedOrder.getId();
 	}
 }
