@@ -48,6 +48,11 @@ public class OrderPaymentAdjustmentService {
 		List<OrderPayment> orderPayments = orderPaymentRepository.findByRecipientIdAndOrderPaymentStatus(
 			vendor.getId(), OrderPaymentStatus.ORDER_SUCCESS);
 
+		for (OrderPayment orderPayment : orderPayments) {
+			// 정산해야할 OrderPayment 가 맞는지 검증
+			orderPayment.validateReadyToAdjustment(vendor);
+		}
+
 		return orderPayments;
 	}
 

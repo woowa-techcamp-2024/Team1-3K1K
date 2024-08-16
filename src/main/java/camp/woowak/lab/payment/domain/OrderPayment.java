@@ -50,4 +50,19 @@ public class OrderPayment {
 		this.createdAt = createdAt;
 	}
 
+	public void validateReadyToAdjustment(final Vendor adjustmentTarget) {
+		if (isEqualsRecipient(adjustmentTarget) && orderPaymentStatusIsSuccess()) {
+			return;
+		}
+		throw new IllegalArgumentException();
+	}
+
+	private boolean isEqualsRecipient(Vendor recipient) {
+		return this.recipient.equals(recipient);
+	}
+
+	private boolean orderPaymentStatusIsSuccess() {
+		return this.orderPaymentStatus.equals(OrderPaymentStatus.ORDER_SUCCESS);
+	}
+
 }
