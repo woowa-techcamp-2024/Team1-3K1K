@@ -3,8 +3,8 @@ package camp.woowak.lab.order.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
-import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.store.domain.Store;
 import jakarta.persistence.CollectionTable;
@@ -35,10 +35,15 @@ public class Order {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	public Order(Customer requester, List<Menu> orderedMenus, OrderValidator orderValidator) {
-		orderValidator.check(requester, orderedMenus);
+	public Order(Customer requester, Store store, List<CartItem> cartItems, SingleStoreOrderValidator validator,
+				 StockRequester stockRequester) {
+		validator.check(store, cartItems);
+		stockRequester.request(cartItems);
 		this.requester = requester;
-		this.store = orderedMenus.get(0).getStore();
+		this.store = store;
+		for (CartItem cartItem : cartItems) {
+			orderItems.add(new OrderItem(cartItem.getMenuId(), cartItem.getAmount()));
+		}
 	}
 
 	public Long getId() {

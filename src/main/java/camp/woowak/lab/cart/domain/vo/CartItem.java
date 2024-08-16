@@ -5,7 +5,7 @@ import java.util.Objects;
 public class CartItem {
 	private final Long menuId;
 	private final Long storeId;
-	private final Integer amount;
+	private final int amount;
 
 	public CartItem(Long menuId, Long storeId, Integer amount) {
 		this.menuId = menuId;
@@ -21,7 +21,7 @@ public class CartItem {
 		return storeId;
 	}
 
-	public Integer getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
