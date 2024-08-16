@@ -58,4 +58,7 @@ public class Menu {
 		return id;
 	}
 
+	public void decrementStockCount(int amount) {
+		stockCount -= amount;
+	}
 }
