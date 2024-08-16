@@ -242,7 +242,7 @@ class CartApiControllerTest {
 	}
 
 	private Menu createMenu(Store store, MenuCategory menuCategory, String name, int price) {
-		Menu menu1 = new Menu(store, menuCategory, name, price, "imageUrl");
+		Menu menu1 = new Menu(store, menuCategory, name, price, 1L, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
 		return menu1;
