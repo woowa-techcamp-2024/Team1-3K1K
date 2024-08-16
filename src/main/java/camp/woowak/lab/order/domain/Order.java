@@ -50,4 +50,8 @@ public class Order {
 	public Long getId() {
 		return id;
 	}
+
+	public List<OrderItem> getOrderItems() {
+		return orderItems;
+	}
 }
