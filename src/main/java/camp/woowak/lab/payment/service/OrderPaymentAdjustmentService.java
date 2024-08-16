@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.repository.MenuRepository;
+import camp.woowak.lab.order.domain.OrderItem;
 import camp.woowak.lab.payment.domain.OrderPayment;
 import camp.woowak.lab.payment.domain.OrderPaymentStatus;
 import camp.woowak.lab.payment.repository.OrderPaymentRepository;
@@ -36,6 +37,14 @@ public class OrderPaymentAdjustmentService {
 			// 2. 각 점주의 정산해야할 OrderPayment 목록을 조회
 			List<OrderPayment> orderPayments = findOrderPaymentsToAdjustment(vendor);
 
+			// 3. 각 OrderPayment 의 Order 주문 금액을 계산
+			Long totalOrderPrice = calculateTotalOrderPrice(orderPayments);
+
+			// 4. 총 주문 금액에서 수수료 5%를 계산
+			Double commission = calculateCommission(totalOrderPrice);
+
+			// 5. 수수료를 제외한 금액을 점주에게 송금
+
 			// 6. 송금을 성공하면, OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
 			updateOrderPaymentStatus(orderPayments);
 		}
@@ -57,6 +66,27 @@ public class OrderPaymentAdjustmentService {
 		}
 
 		return orderPayments;
+	}
+
+	// TODO: OrderPayment 목록의 Order 총 주문 금액을 계산한다.
+	//  메뉴의 가격은 계속 바뀔 수 있어서, 정산 시점에 주문 - 메뉴 정보로 금액을 다시 계산하는 부분이 제약이 있음
+	private long calculateTotalOrderPrice(final List<OrderPayment> orderPayments) {
+		Long totalOrderPrice = 0L;
+
+		return totalOrderPrice;
+	}
+
+	// TODO: 각 OrderPayment 의 Order 주문 금액을 계산한다.
+	private Long calculateOrderPrice(List<OrderItem> orderItems) {
+		long totalOrderPrice = 0L;
+
+		return totalOrderPrice;
+	}
+
+	// 총 주문 금액에서 수수료 5%를 계산한다.
+	private Double calculateCommission(Long totalOrderPrice) {
+
+		return 0.0;
 	}
 
 	// OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
