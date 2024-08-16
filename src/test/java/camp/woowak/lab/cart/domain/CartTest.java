@@ -42,7 +42,7 @@ class CartTest implements CartFixture {
 		store = createSavedStore(1L, vendor, "중화반점", minPrice,
 			LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0),
 			LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0));
-		menu = createSavedMenu(1L, store, new MenuCategory(store, "중식"), "짜장면", 9000);
+		menu = createSavedMenu(1L, store, new MenuCategory(store, "중식"), "짜장면", 9000L);
 	}
 
 	@Nested
@@ -67,7 +67,7 @@ class CartTest implements CartFixture {
 			Store closedStore = createSavedStore(2L, vendor, "closed", minPrice,
 				LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0),
 				LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0));
-			Menu closedMenu = createSavedMenu(2L, closedStore, new MenuCategory(closedStore, "중식"), "짬뽕", 9000);
+			Menu closedMenu = createSavedMenu(2L, closedStore, new MenuCategory(closedStore, "중식"), "짬뽕", 9000L);
 
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(closedMenu))
@@ -84,7 +84,7 @@ class CartTest implements CartFixture {
 			Store otherStore = createSavedStore(2L, vendor, "closed", minPrice,
 				LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0),
 				LocalDateTime.now().plusMinutes(30).withSecond(0).withNano(0));
-			Menu otherStoreMenu = createSavedMenu(2L, otherStore, new MenuCategory(otherStore, "중식"), "짬뽕", 9000);
+			Menu otherStoreMenu = createSavedMenu(2L, otherStore, new MenuCategory(otherStore, "중식"), "짬뽕", 9000L);
 
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(otherStoreMenu))
@@ -114,15 +114,15 @@ class CartTest implements CartFixture {
 		void getTotalPriceTest() {
 			//given
 			MenuCategory menuCategory = new MenuCategory(store, "중식");
-			int price1 = 1000;
+			Long price1 = 1000L;
 			Menu menu1 = createSavedMenu(2L, store, menuCategory, "짜장면1", price1);
 			cart.addMenu(menu1);
 
-			int price2 = 2000;
+			Long price2 = 2000L;
 			Menu menu2 = createSavedMenu(3L, store, menuCategory, "짬뽕1", price2);
 			cart.addMenu(menu2);
 
-			int price3 = Integer.MAX_VALUE;
+			Long price3 = Long.MAX_VALUE;
 			Menu menu3 = createSavedMenu(4L, store, menuCategory, "황제정식", price3);
 			cart.addMenu(menu3);
 
