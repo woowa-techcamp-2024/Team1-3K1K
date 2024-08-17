@@ -2,26 +2,17 @@ package camp.woowak.lab.vendor.service.dto;
 
 import java.util.UUID;
 
-import camp.woowak.lab.payaccount.service.dto.PayAccountDTO;
+import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.vendor.domain.Vendor;
+import lombok.Getter;
 
+@Getter
 public class VendorDTO {
-	private UUID id;
-	private String name;
-	private String email;
-	private String phone;
-	private PayAccountDTO payAccount;
-
-	public VendorDTO() {
-	}
-
-	public VendorDTO(UUID id, String name, String email, String phone, PayAccountDTO payAccount) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.phone = phone;
-		this.payAccount = payAccount;
-	}
+	private final UUID id;
+	private final String name;
+	private final String email;
+	private final String phone;
+	private final PayAccountDTO payAccount;
 
 	public VendorDTO(Vendor vendor) {
 		this.id = vendor.getId();
@@ -31,23 +22,14 @@ public class VendorDTO {
 		this.payAccount = new PayAccountDTO(vendor.getPayAccount());
 	}
 
-	public UUID getId() {
-		return id;
-	}
+	@Getter
+	public static class PayAccountDTO {
+		private final Long id;
+		private final Long balance;
 
-	public String getName() {
-		return name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public PayAccountDTO getPayAccount() {
-		return payAccount;
+		public PayAccountDTO(PayAccount payAccount) {
+			this.id = payAccount.getId();
+			this.balance = payAccount.getBalance();
+		}
 	}
 }
