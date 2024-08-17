@@ -1,13 +1,17 @@
 package camp.woowak.lab.web.api.customer;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import camp.woowak.lab.customer.domain.Customer;
+import camp.woowak.lab.customer.service.RetrieveCustomerService;
 import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
 import camp.woowak.lab.customer.service.command.SignInCustomerCommand;
@@ -15,6 +19,7 @@ import camp.woowak.lab.customer.service.command.SignUpCustomerCommand;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.customer.SignInCustomerRequest;
 import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
+import camp.woowak.lab.web.dto.response.customer.RetrieveCustomerResponse;
 import camp.woowak.lab.web.dto.response.customer.SignInCustomerResponse;
 import camp.woowak.lab.web.dto.response.customer.SignUpCustomerResponse;
 import camp.woowak.lab.web.resolver.session.SessionConst;
@@ -26,11 +31,21 @@ import jakarta.validation.Valid;
 public class CustomerApiController {
 	private final SignUpCustomerService signUpCustomerService;
 	private final SignInCustomerService signInCustomerService;
+	private final RetrieveCustomerService retrieveCustomerService;
 
 	public CustomerApiController(SignUpCustomerService signUpCustomerService,
-								 SignInCustomerService signInCustomerService) {
+								 SignInCustomerService signInCustomerService,
+								 RetrieveCustomerService retrieveCustomerService) {
 		this.signUpCustomerService = signUpCustomerService;
 		this.signInCustomerService = signInCustomerService;
+		this.retrieveCustomerService = retrieveCustomerService;
+	}
+
+	@GetMapping("/customers")
+	@ResponseStatus(HttpStatus.OK)
+	public RetrieveCustomerResponse retrieveAllCustomers() {
+		List<Customer> customers = retrieveCustomerService.retrieveAllCustomers();
+		return new RetrieveCustomerResponse(customers);
 	}
 
 	@PostMapping("/customers")
