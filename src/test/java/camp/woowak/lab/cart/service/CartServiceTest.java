@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import camp.woowak.lab.cart.domain.Cart;
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.cart.exception.OtherStoreMenuException;
 import camp.woowak.lab.cart.exception.StoreNotOpenException;
@@ -100,7 +101,7 @@ class CartServiceTest {
 			Optional<Cart> cart = cartRepository.findByCustomerId(customer.getId().toString());
 			assertThat(cart).isPresent();
 			Cart cartList = cart.get();
-			assertThat(cartList.getMenuList()).contains(menu);
+			assertThat(cartList.getCartItems()).contains(new CartItem(menu.getId(), store.getId(), 1));
 		}
 
 		@Test

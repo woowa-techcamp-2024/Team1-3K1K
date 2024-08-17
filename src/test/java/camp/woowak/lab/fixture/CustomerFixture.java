@@ -1,8 +1,12 @@
 package camp.woowak.lab.fixture;
 
+import java.util.UUID;
+
 import camp.woowak.lab.customer.domain.Customer;
+import camp.woowak.lab.customer.domain.TestCustomer;
 import camp.woowak.lab.customer.exception.InvalidCreationException;
 import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 /**
@@ -23,4 +27,13 @@ public interface CustomerFixture {
 		}
 	}
 
+	default Customer createCustomer(UUID id) {
+		try {
+			return new TestCustomer(id, "customerName", "customer@email.com", "customerPassword", "010-0000-0000",
+				createPayAccount(),
+				new NoOpPasswordEncoder());
+		} catch (InvalidCreationException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

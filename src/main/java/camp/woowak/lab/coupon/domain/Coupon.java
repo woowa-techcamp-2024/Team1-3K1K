@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import camp.woowak.lab.coupon.exception.InsufficientCouponQuantityException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,5 +47,20 @@ public class Coupon {
 		this.discountAmount = discountAmount;
 		this.quantity = quantity;
 		this.expiredAt = expiredAt;
+	}
+
+	public boolean isExpired() {
+		return expiredAt.isBefore(LocalDateTime.now());
+	}
+
+	public boolean hasAvailableQuantity() {
+		return quantity > 0;
+	}
+
+	public void decreaseQuantity() {
+		if (!hasAvailableQuantity()) {
+			throw new InsufficientCouponQuantityException("quantity is not enough");
+		}
+		quantity--;
 	}
 }

@@ -35,8 +35,35 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//QueryDsl
+	// QueryDsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Querydsl 설정부
+def generated = 'src/main/generated'
+
+// querydsl QClass 생성 위치
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(generated)
+}
+
+task cleanGenerated(type: Delete) {
+	delete generated
+}
+
+clean.dependsOn cleanGenerated
+compileJava.dependsOn clean
+
+// java source set 에 querydsl QClass 위치 추가
+sourceSets {
+	main.java.srcDirs += "$projectDir/build/generated"
 }
