@@ -12,9 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
+import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.PriceChecker;
+import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
+import camp.woowak.lab.order.domain.StockRequester;
+import camp.woowak.lab.order.domain.WithdrawPointService;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
 import camp.woowak.lab.store.domain.Store;
@@ -46,6 +55,12 @@ class OrderRepositoryTest {
 	@Autowired
 	private CustomerRepository customerRepository;
 
+	@Autowired
+	private MenuRepository menuRepository;
+
+	@Autowired
+	private MenuCategoryRepository menuCategoryRepository;
+
 	private Store store1;
 
 	private Store store2;
@@ -55,6 +70,10 @@ class OrderRepositoryTest {
 	private Vendor differentVendor;
 
 	private Customer customer;
+
+	private Menu menu1;
+
+	private Menu menu2;
 
 	@BeforeEach
 	void setUp() {
@@ -66,9 +85,11 @@ class OrderRepositoryTest {
 		differentVendor = vendorRepository.saveAndFlush(
 			new Vendor("differentVendor", "differentVendor@email.com", "password", "010-1234-5678",
 				payAccountRepository.save(new PayAccount()), new NoOpPasswordEncoder()));
+		PayAccount customerPayAccount = new PayAccount();
+		customerPayAccount.charge(1000000L);
 		customer = customerRepository.saveAndFlush(
 			new Customer("customer", "customer@email.com", "password", "010-1234-5678",
-				payAccountRepository.save(new PayAccount()), new NoOpPasswordEncoder()));
+				payAccountRepository.save(customerPayAccount), new NoOpPasswordEncoder()));
 		store1 = storeRepository.saveAndFlush(
 			new Store(vendor, storeCategory, "store", "송파", "010-1234-5678", 10000, LocalDate.now().atTime(9, 0),
 				LocalDate.now().atTime(21, 0)));
@@ -76,14 +97,28 @@ class OrderRepositoryTest {
 		store2 = storeRepository.saveAndFlush(
 			new Store(vendor, storeCategory, "store", "송파", "010-1234-5678", 10000, LocalDate.now().atTime(9, 0),
 				LocalDate.now().atTime(21, 0)));
+		menu1 = menuRepository.saveAndFlush(
+			new Menu(store1, menuCategoryRepository.saveAndFlush(new MenuCategory(store1, "메인")), "menu1", 10000, 100L,
+				"image"));
+		menu2 = menuRepository.saveAndFlush(
+			new Menu(store2, menuCategoryRepository.saveAndFlush(new MenuCategory(store2, "메인")), "menu2", 10000, 100L,
+				"image"));
 	}
 
 	@Test
 	@DisplayName("점주 주문 조회 테스트 - 성공")
 	void testFindAllByOwner() {
 		// given
-		orderRepository.saveAndFlush(new Order(customer, store1));
-		orderRepository.saveAndFlush(new Order(customer, store1));
+		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
+		orderRepository.saveAndFlush(
+			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
+				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new WithdrawPointService(payAccountRepository)));
+		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
+		orderRepository.saveAndFlush(
+			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
+				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new WithdrawPointService(payAccountRepository)));
 
 		// when
 		List<Order> orders = orderRepository.findAllByOwner(vendor.getId());
@@ -96,8 +131,6 @@ class OrderRepositoryTest {
 	@DisplayName("점주 주문 조회 테스트 - 권한 없는 점주 실패")
 	void testFindAllByOwnerFailWithUnauthorized() {
 		// given
-		orderRepository.saveAndFlush(new Order(customer, store1));
-
 		// when
 		List<Order> orders = orderRepository.findAllByOwner(differentVendor.getId());
 
@@ -109,8 +142,16 @@ class OrderRepositoryTest {
 	@DisplayName("점주 특정 매장 주문 조회 테스트 - 성공")
 	void testFindByStore() {
 		// given
-		Order order = orderRepository.saveAndFlush(new Order(customer, store1));
-		orderRepository.saveAndFlush(new Order(customer, store2));
+		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
+		Order order = orderRepository.saveAndFlush(
+			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
+				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new WithdrawPointService(payAccountRepository)));
+		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
+		orderRepository.saveAndFlush(
+			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
+				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new WithdrawPointService(payAccountRepository)));
 
 		// when
 		List<Order> orders = orderRepository.findByStore(store1.getId(), vendor.getId());
@@ -124,8 +165,6 @@ class OrderRepositoryTest {
 	@DisplayName("점주 특정 매장 주문 조회 테스트 - 권한 없는 점주 실패")
 	void testFindByStoreFailWithUnauthorized() {
 		// given
-		orderRepository.saveAndFlush(new Order(customer, store1));
-
 		// when
 		List<Order> orders = orderRepository.findByStore(store1.getId(), differentVendor.getId());
 
