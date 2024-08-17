@@ -34,7 +34,7 @@ class RetrieveVendorServiceTest implements VendorFixture {
 		// when
 		List<Vendor> vendors = retrieveVendorService.retrieveVendors();
 		// then
-		assertEquals(vendors.size(), 1);
+		assertEquals(1, vendors.size());
 		verify(vendorRepository).findAll();
 	}
 }
