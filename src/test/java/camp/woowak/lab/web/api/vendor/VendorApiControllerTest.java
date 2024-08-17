@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.api;
+package camp.woowak.lab.web.api.vendor;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -29,7 +29,6 @@ import camp.woowak.lab.vendor.service.SignInVendorService;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignInVendorCommand;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
-import camp.woowak.lab.web.api.vendor.VendorApiController;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
