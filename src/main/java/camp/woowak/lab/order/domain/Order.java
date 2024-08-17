@@ -40,7 +40,7 @@ public class Order {
 				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService) {
 		singleStoreOrderValidator.check(store, cartItems);
 		stockRequester.request(cartItems);
-		List<OrderItem> orderItems = priceChecker.check(cartItems);
+		List<OrderItem> orderItems = priceChecker.check(store, cartItems);
 		withdrawPointService.withdraw(requester, orderItems);
 		this.requester = requester;
 		this.store = store;

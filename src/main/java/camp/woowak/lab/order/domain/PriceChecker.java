@@ -14,7 +14,9 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.vo.OrderItem;
+import camp.woowak.lab.order.exception.MinimumOrderPriceNotMetException;
 import camp.woowak.lab.order.exception.NotFoundMenuException;
+import camp.woowak.lab.store.domain.Store;
 
 @Component
 public class PriceChecker {
@@ -24,7 +26,7 @@ public class PriceChecker {
 		this.menuRepository = menuRepository;
 	}
 
-	public List<OrderItem> check(List<CartItem> cartItems) {
+	public List<OrderItem> check(Store store, List<CartItem> cartItems) {
 		Set<Long> cartItemMenuIds = extractMenuIds(cartItems);
 		List<Menu> menus = menuRepository.findAllById(cartItemMenuIds);
 		Map<Long, Menu> menuMap = listToMap(menus);
@@ -42,6 +44,14 @@ public class PriceChecker {
 		for (CartItem cartItem : cartItems) {
 			Menu menu = menuMap.get(cartItem.getMenuId());
 			orderItems.add(new OrderItem(menu.getId(), menu.getPrice(), cartItem.getAmount()));
+		}
+		int totalPrice = 0;
+		for (OrderItem orderItem : orderItems) {
+			totalPrice += orderItem.getTotalPrice();
+		}
+		if (totalPrice < store.getMinOrderPrice()) {
+			throw new MinimumOrderPriceNotMetException(
+				"가게의 최소 주문금액(" + store.getMinOrderPrice() + ")보다 적은 금액(" + totalPrice + ")을 주문했습니다.");
 		}
 		return orderItems;
 	}
