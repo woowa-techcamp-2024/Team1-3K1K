@@ -35,10 +35,10 @@ public class Order {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	public Order(Customer requester, Store store, List<CartItem> cartItems,
+	public Order(Customer requester, List<CartItem> cartItems,
 				 SingleStoreOrderValidator singleStoreOrderValidator,
 				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService) {
-		singleStoreOrderValidator.check(store, cartItems);
+		Store store = singleStoreOrderValidator.check(cartItems);
 		stockRequester.request(cartItems);
 		List<OrderItem> orderItems = priceChecker.check(store, cartItems);
 		withdrawPointService.withdraw(requester, orderItems);
