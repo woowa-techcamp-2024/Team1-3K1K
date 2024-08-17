@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import camp.woowak.lab.web.resolver.session.SessionCustomerArgumentResolver;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
-import camp.woowak.lab.web.resolver.store.StorePageableFilterSortArgumentResolver;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -16,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 public class WebConfig implements WebMvcConfigurer {
 	private final SessionCustomerArgumentResolver sessionCustomerArgumentResolver;
 	private final SessionVendorArgumentResolver sessionVendorArgumentResolver;
-	private final StorePageableFilterSortArgumentResolver storePageableFilterSortArgumentResolver;
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.addAll(List.of(sessionCustomerArgumentResolver, sessionVendorArgumentResolver,
-								 storePageableFilterSortArgumentResolver));
+		resolvers.addAll(List.of(sessionCustomerArgumentResolver, sessionVendorArgumentResolver));
 	}
 }
