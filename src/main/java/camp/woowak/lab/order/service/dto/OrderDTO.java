@@ -1,6 +1,7 @@
 package camp.woowak.lab.order.service.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.order.domain.Order;
@@ -31,11 +32,13 @@ public class OrderDTO {
 
 	@Getter
 	public static class RequesterDTO {
+		private final UUID id;
 		private final String name;
 		private final String email;
 		private final String phone;
 
 		public RequesterDTO(Customer customer) {
+			this.id = customer.getId();
 			this.name = customer.getName();
 			this.email = customer.getEmail();
 			this.phone = customer.getPhone();
@@ -59,12 +62,14 @@ public class OrderDTO {
 
 	@Getter
 	public static class StoreDTO {
+		private final Long id;
 		private final String name;
 		private final String ownerName;
 		private final String address;
 		private final String phoneNumber;
 
 		public StoreDTO(Store store) {
+			this.id = store.getId();
 			this.name = store.getName();
 			this.ownerName = store.getOwner().getName();
 			this.address = store.getStoreAddress().getDistrict();
