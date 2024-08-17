@@ -28,7 +28,7 @@ public class StockRequester {
 		}
 	}
 
-	private static List<Long> extractMenuIds(List<CartItem> cartItems) {
+	private List<Long> extractMenuIds(List<CartItem> cartItems) {
 		return cartItems.stream().map(CartItem::getMenuId).toList();
 	}
 }
