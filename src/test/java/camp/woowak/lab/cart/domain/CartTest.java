@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.OtherStoreMenuException;
 import camp.woowak.lab.cart.exception.StoreNotOpenException;
 import camp.woowak.lab.fixture.CartFixture;
@@ -26,7 +27,7 @@ import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 class CartTest implements CartFixture {
 	private final String customerId = UUID.randomUUID().toString();
 
-	private List<Menu> cartList;
+	private List<CartItem> cartItemList;
 	private Cart cart;
 	private Menu menu;
 	private int minPrice = 8000;
@@ -35,8 +36,8 @@ class CartTest implements CartFixture {
 
 	@BeforeEach
 	void setUp() {
-		cartList = new LinkedList<>();
-		cart = new Cart(customerId, cartList);
+		cartItemList = new LinkedList<>();
+		cart = new Cart(customerId, cartItemList);
 
 		vendor = createSavedVendor(UUID.randomUUID(), new PayAccount(), new NoOpPasswordEncoder());
 		store = createSavedStore(1L, vendor, "중화반점", minPrice,
@@ -46,7 +47,7 @@ class CartTest implements CartFixture {
 	}
 
 	@Nested
-	@DisplayName("addMenu 메서드")
+	@DisplayName("addMenu 메서드는")
 	class AddMenuTest {
 		@Test
 		@DisplayName("Menu를 받으면 cart에 저장된다.")
@@ -57,7 +58,9 @@ class CartTest implements CartFixture {
 			cart.addMenu(menu);
 
 			//then
-			assertThat(cartList.get(0)).isEqualTo(menu);
+			assertThat(cartItemList).hasSize(1);
+			assertThat(cartItemList.get(0).getMenuId()).isEqualTo(menu.getId());
+			assertThat(cartItemList.get(0).getAmount()).isEqualTo(1);
 		}
 
 		@Test
@@ -72,7 +75,7 @@ class CartTest implements CartFixture {
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(closedMenu))
 				.isExactlyInstanceOf(StoreNotOpenException.class);
-			assertThat(cartList).isEmpty();
+			assertThat(cartItemList).isEmpty();
 		}
 
 		@Test
@@ -81,7 +84,7 @@ class CartTest implements CartFixture {
 			//given
 			cart.addMenu(menu);
 
-			Store otherStore = createSavedStore(2L, vendor, "closed", minPrice,
+			Store otherStore = createSavedStore(2L, vendor, "otherStore", minPrice,
 				LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0),
 				LocalDateTime.now().plusMinutes(30).withSecond(0).withNano(0));
 			Menu otherStoreMenu = createSavedMenu(2L, otherStore, new MenuCategory(otherStore, "중식"), "짬뽕", 9000);
@@ -89,48 +92,12 @@ class CartTest implements CartFixture {
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(otherStoreMenu))
 				.isExactlyInstanceOf(OtherStoreMenuException.class);
-			assertThat(cartList).doesNotContain(otherStoreMenu);
-			assertThat(cartList).contains(menu);
-		}
-	}
-
-	@Nested
-	@DisplayName("totalPrice 메서드는")
-	class GetTotalPriceTest {
-		@Test
-		@DisplayName("장바구니가 비어있으면 0원을 return한다.")
-		void getTotalPriceWithEmptyList() {
-			//given
-
-			//when
-			long totalPrice = cart.getTotalPrice();
 
 			//then
-			assertThat(totalPrice).isEqualTo(0);
-		}
-
-		@Test
-		@DisplayName("현재 장바구니에 담긴 모든 메뉴의 총 금액을 return 받는다.")
-		void getTotalPriceTest() {
-			//given
-			MenuCategory menuCategory = new MenuCategory(store, "중식");
-			int price1 = 1000;
-			Menu menu1 = createSavedMenu(2L, store, menuCategory, "짜장면1", price1);
-			cart.addMenu(menu1);
-
-			int price2 = 2000;
-			Menu menu2 = createSavedMenu(3L, store, menuCategory, "짬뽕1", price2);
-			cart.addMenu(menu2);
-
-			int price3 = Integer.MAX_VALUE;
-			Menu menu3 = createSavedMenu(4L, store, menuCategory, "황제정식", price3);
-			cart.addMenu(menu3);
-
-			//when
-			long totalPrice = cart.getTotalPrice();
-
-			//then
-			assertThat(totalPrice).isEqualTo((long)price1 + (long)price2 + (long)price3);
+			assertThat(cartItemList).hasSize(1);
+			assertThat(cartItemList)
+				.containsExactly(new CartItem(menu.getId(), store.getId(), 1))
+				.doesNotContain(new CartItem(otherStoreMenu.getId(), otherStore.getId(), 1));
 		}
 	}
 }
