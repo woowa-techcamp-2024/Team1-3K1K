@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.repository.MenuRepository;
-import camp.woowak.lab.order.domain.OrderItem;
+import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.payment.domain.OrderPayment;
 import camp.woowak.lab.payment.domain.OrderPaymentStatus;
 import camp.woowak.lab.payment.repository.OrderPaymentRepository;
