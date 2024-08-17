@@ -43,7 +43,7 @@ class OrderTest {
 		// Mocking behavior
 		doNothing().when(singleStoreOrderValidator).check(store, cartItems);
 		doNothing().when(stockRequester).request(cartItems);
-		when(priceChecker.check(cartItems)).thenReturn(orderItems);
+		when(priceChecker.check(store, cartItems)).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(customer, orderItems)).thenReturn(orderItems);
 
 		// When
@@ -55,7 +55,7 @@ class OrderTest {
 
 		verify(singleStoreOrderValidator, times(1)).check(store, cartItems);
 		verify(stockRequester, times(1)).request(cartItems);
-		verify(priceChecker, times(1)).check(cartItems);
+		verify(priceChecker, times(1)).check(store, cartItems);
 		verify(withdrawPointService, times(1)).withdraw(customer, orderItems);
 	}
 

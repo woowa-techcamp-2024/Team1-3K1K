@@ -76,7 +76,7 @@ class OrderCreationServiceTest {
 		when(cartItem.getStoreId()).thenReturn(1L); // Mock the cartItem's storeId
 		doNothing().when(singleStoreOrderValidator).check(any(Store.class), anyList());
 		doNothing().when(stockRequester).request(anyList());
-		when(priceChecker.check(anyList())).thenReturn(orderItems);
+		when(priceChecker.check(any(), anyList())).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(any(Customer.class), anyList())).thenReturn(orderItems);
 
 		// When
@@ -88,7 +88,7 @@ class OrderCreationServiceTest {
 
 		verify(singleStoreOrderValidator, times(1)).check(store, cartItems);
 		verify(stockRequester, times(1)).request(cartItems);
-		verify(priceChecker, times(1)).check(cartItems);
+		verify(priceChecker, times(1)).check(store, cartItems);
 		verify(withdrawPointService, times(1)).withdraw(customer, orderItems);
 	}
 
