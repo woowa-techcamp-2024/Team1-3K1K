@@ -58,4 +58,12 @@ public class Menu {
 		return id;
 	}
 
+	public Long getMenuCategoryId() {
+		return menuCategory.getId();
+	}
+
+	public String getMenuCategoryName() {
+		return menuCategory.getName();
+	}
+
 }
