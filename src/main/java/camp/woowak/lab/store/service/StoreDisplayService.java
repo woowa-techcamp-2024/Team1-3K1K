@@ -21,7 +21,7 @@ public class StoreDisplayService {
 	private final MenuRepository menuRepository;
 
 	@Transactional(readOnly = true)
-	public StoreDisplayResponse findStore(final Long storeId) {
+	public StoreDisplayResponse displayStore(final Long storeId) {
 		Store store = findStoreById(storeId);
 		List<Menu> storeMenus = findMenusByStore(store.getId());
 

@@ -82,6 +82,6 @@ public class StoreApiController {
 
 	@GetMapping("/stores/{storeId}")
 	public StoreDisplayResponse storeDisplay(@PathVariable Long storeId) {
-		return storeDisplayService.findStore(storeId);
+		return storeDisplayService.displayStore(storeId);
 	}
 }
