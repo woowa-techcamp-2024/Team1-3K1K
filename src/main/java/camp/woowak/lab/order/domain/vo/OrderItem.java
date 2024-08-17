@@ -1,7 +1,9 @@
 package camp.woowak.lab.order.domain.vo;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
+@Getter
 @Embeddable
 public class OrderItem {
 	private Long menuId;
@@ -17,9 +19,5 @@ public class OrderItem {
 		this.price = price;
 		this.quantity = quantity;
 		this.totalPrice = price * quantity;
-	}
-
-	public int getTotalPrice() {
-		return totalPrice;
 	}
 }
