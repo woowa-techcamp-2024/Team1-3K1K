@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.resolver.store;
+package camp.woowak.lab.web.dto.request.store;
 
 public enum StoreFilterBy {
 	CATEGORY_NAME("cn"), MIN_PRICE("mp");

@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.resolver.store;
+package camp.woowak.lab.web.dto.request.store;
 
 public enum StoreSortBy {
 	MIN_PRICE("minPrice"), ORDER_COUNT("orderCount");

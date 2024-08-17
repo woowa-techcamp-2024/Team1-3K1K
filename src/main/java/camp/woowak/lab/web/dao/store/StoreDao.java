@@ -17,8 +17,8 @@ import camp.woowak.lab.store.domain.QStore;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
+import camp.woowak.lab.web.dto.request.store.StoreSortBy;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
-import camp.woowak.lab.web.resolver.store.StoreSortBy;
 
 @Repository
 @Transactional(readOnly = true)

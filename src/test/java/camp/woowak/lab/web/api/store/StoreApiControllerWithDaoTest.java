@@ -33,10 +33,10 @@ import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.repository.VendorRepository;
 import camp.woowak.lab.web.dao.store.StoreDummiesFixture;
+import camp.woowak.lab.web.dto.request.store.StoreFilterBy;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
+import camp.woowak.lab.web.dto.request.store.StoreSortBy;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
-import camp.woowak.lab.web.resolver.store.StoreFilterBy;
-import camp.woowak.lab.web.resolver.store.StoreSortBy;
 
 @SpringBootTest
 @AutoConfigureMockMvc

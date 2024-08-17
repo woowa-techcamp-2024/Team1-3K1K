@@ -2,8 +2,6 @@ package camp.woowak.lab.web.dto.request.store;
 
 import static camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst.*;
 
-import camp.woowak.lab.web.resolver.store.StoreFilterBy;
-import camp.woowak.lab.web.resolver.store.StoreSortBy;
 import lombok.Getter;
 
 @Getter

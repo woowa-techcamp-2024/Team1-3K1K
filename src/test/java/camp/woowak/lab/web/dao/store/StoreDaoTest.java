@@ -23,11 +23,11 @@ import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.web.dto.request.store.StoreFilterBy;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
+import camp.woowak.lab.web.dto.request.store.StoreSortBy;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
-import camp.woowak.lab.web.resolver.store.StoreFilterBy;
-import camp.woowak.lab.web.resolver.store.StoreSortBy;
 
 @SpringBootTest
 @Transactional(readOnly = true)
@@ -339,7 +339,8 @@ class StoreDaoTest extends StoreDummiesFixture {
 				StoreSortBy sortBy = StoreSortBy.MIN_PRICE;
 				StoreFilterBy filterBy = StoreFilterBy.CATEGORY_NAME;
 				String filterByValue = dummies.get(0).getStoreCategory().getName();
-				StoreInfoListRequest request = new StoreInfoListRequest(page, sortBy.value(), order, filterBy.value(), filterByValue);
+				StoreInfoListRequest request = new StoreInfoListRequest(page, sortBy.value(), order, filterBy.value(),
+					filterByValue);
 
 				//when
 				StoreInfoListResponse response = storeDao.findAllStoreList(request);
