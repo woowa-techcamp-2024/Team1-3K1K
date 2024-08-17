@@ -12,6 +12,6 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 	Optional<Customer> findByEmail(String email);
 
 	default Customer findByIdOrThrow(UUID id) {
-		return findById(id).orElseThrow(() -> new NotFoundCustomerException("존재하지 않는 사용자를 조회했습니다."));
+		return findById(id).orElseThrow(() -> new NotFoundCustomerException("존재하지 않는 사용자(id=" + id + ")를 조회했습니다."));
 	}
 }
