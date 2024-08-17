@@ -1,6 +1,7 @@
 package camp.woowak.lab.store.domain;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
@@ -82,4 +83,33 @@ public class Store {
 
 		return (now.isEqual(openTime) || now.isAfter(openTime)) && now.isBefore(closeTime);
 	}
+
+	public String getStoreAddress() {
+		return storeAddress.getDistrict();
+	}
+
+	public Long getStoreCategoryId() {
+		return storeCategory.getId();
+	}
+
+	public String getStoreCategoryName() {
+		return storeCategory.getName();
+	}
+
+	public LocalTime getStoreStartTime() {
+		return storeTime.getStartTime().toLocalTime();
+	}
+
+	public LocalTime getStoreEndTime() {
+		return storeTime.getEndTime().toLocalTime();
+	}
+
+	public UUID getVendorId() {
+		return owner.getId();
+	}
+
+	public String getVendorName() {
+		return owner.getName();
+	}
+
 }
