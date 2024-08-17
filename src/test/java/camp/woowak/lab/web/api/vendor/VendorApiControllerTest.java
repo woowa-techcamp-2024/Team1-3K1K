@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
 import camp.woowak.lab.vendor.exception.NotFoundVendorException;
 import camp.woowak.lab.vendor.exception.PasswordMismatchException;
+import camp.woowak.lab.vendor.service.RetrieveVendorService;
 import camp.woowak.lab.vendor.service.SignInVendorService;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignInVendorCommand;
@@ -44,6 +46,8 @@ class VendorApiControllerTest {
 	private SignUpVendorService signUpVendorService;
 	@MockBean
 	private SignInVendorService signInVendorService;
+	@MockBean
+	private RetrieveVendorService retrieveVendorService;
 
 	@Nested
 	@DisplayName("판매자 회원가입: POST /vendors")
@@ -474,6 +478,27 @@ class VendorApiControllerTest {
 			// then
 			actions.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+				.andDo(print());
+		}
+	}
+
+	@Nested
+	@DisplayName("전체 판매자 조회: GET /vendors")
+	class FindVendor {
+		@Test
+		@DisplayName("[성공] 200")
+		void success() throws Exception {
+			//given
+			BDDMockito.given(retrieveVendorService.retrieveVendors()).willReturn(new ArrayList<>());
+			// when
+			ResultActions actions = mockMvc.perform(
+				get("/vendors")
+			);
+
+			// then
+			actions.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+				.andExpect(jsonPath("$.data.vendors").isArray())
 				.andDo(print());
 		}
 	}
