@@ -23,20 +23,20 @@ public class StoreInfoListRequest {
 		this(page, null);
 	}
 
-	public StoreInfoListRequest(int page, StoreSortBy sortBy) {
+	public StoreInfoListRequest(int page, String sortBy) {
 		this(page, sortBy, DEFAULT_ORDER, null, null);
 	}
 
-	public StoreInfoListRequest(int page, StoreSortBy sortBy, int order) {
+	public StoreInfoListRequest(int page, String sortBy, int order) {
 		this(page, sortBy, order, null, null);
 	}
 
-	public StoreInfoListRequest(int page, StoreSortBy sortBy, int order, StoreFilterBy filterBy, String filterValue) {
+	public StoreInfoListRequest(int page, String sortBy, int order, String filterBy, String filterValue) {
 		this.page = page;
 		this.size = DEFAULT_PAGE_SIZE;
-		this.sortBy = sortBy;
+		this.sortBy = StoreSortBy.getStoreSortBy(sortBy);
 		this.order = order;
-		this.filterBy = filterBy;
+		this.filterBy = StoreFilterBy.getFilterBy(filterBy);
 		this.filterValue = filterValue;
 	}
 }
