@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +23,10 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import camp.woowak.lab.fixture.CustomerFixture;
+import camp.woowak.lab.fixture.StoreFixture;
+import camp.woowak.lab.fixture.VendorFixture;
+import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.exception.MinimumOrderPriceNotMetException;
 import camp.woowak.lab.order.exception.MultiStoreOrderException;
@@ -30,6 +34,9 @@ import camp.woowak.lab.order.service.OrderCreationService;
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
+import camp.woowak.lab.order.service.dto.OrderDTO;
+import camp.woowak.lab.order.service.dto.TestOrderDTO;
+import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
@@ -39,7 +46,7 @@ import camp.woowak.lab.web.resolver.session.SessionConst;
 
 @WebMvcTest(controllers = OrderApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class OrderApiControllerTest {
+class OrderApiControllerTest implements CustomerFixture, VendorFixture, StoreFixture {
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -48,6 +55,11 @@ class OrderApiControllerTest {
 
 	@MockBean
 	private OrderCreationService orderCreationService;
+
+	@Override
+	public PayAccount createPayAccount() {
+		return CustomerFixture.super.createPayAccount();
+	}
 
 	@Nested
 	@DisplayName("판매자 회원가입: POST /vendors")
@@ -196,7 +208,14 @@ class OrderApiControllerTest {
 	@DisplayName("점주 주문 리스트 조회 테스트 - 성공")
 	void testRetrieveOrderList() throws Exception {
 		// given
-		given(retrieveOrderListService.retrieveOrderListOfVendorStores(any())).willReturn(new ArrayList<>());
+		List<OrderItem> orderItems = List.of(new OrderItem(1L, 1000, 2), new OrderItem(2L, 1000, 2),
+			new OrderItem(3L, 1000, 2));
+		List<OrderDTO> orders = List.of(
+			new TestOrderDTO(1L, createCustomer(UUID.randomUUID()), createTestStore(1L, createTestVendor()),
+				orderItems),
+			new TestOrderDTO(1L, createCustomer(UUID.randomUUID()), createTestStore(2L, createTestVendor()),
+				orderItems));
+		given(retrieveOrderListService.retrieveOrderListOfVendorStores(any())).willReturn(orders);
 		MockHttpSession session = new MockHttpSession();
 		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		session.setAttribute(SessionConst.SESSION_VENDOR_KEY, loginVendor);
@@ -206,15 +225,25 @@ class OrderApiControllerTest {
 			.session(session));
 
 		// then
-		ra.andExpect(status().isOk());
+		ra.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.orders").isArray())
+			.andExpect(jsonPath("$.data.orders.length()").value(orders.size()))// 주문의 개수 확인
+		;
 	}
 
 	@Test
 	@DisplayName("점주 매장 주문 리스트 조회 테스트 - 성공")
 	void testRetrieveOrderListByStore() throws Exception {
 		// given
+		List<OrderItem> orderItems = List.of(new OrderItem(1L, 1000, 2), new OrderItem(2L, 1000, 2),
+			new OrderItem(3L, 1000, 2));
+		List<OrderDTO> orders = List.of(
+			new TestOrderDTO(1L, createCustomer(UUID.randomUUID()), createTestStore(1L, createTestVendor()),
+				orderItems),
+			new TestOrderDTO(2L, createCustomer(UUID.randomUUID()), createTestStore(1L, createTestVendor()),
+				orderItems));
 		given(retrieveOrderListService.retrieveOrderListOfStore(any(RetrieveOrderListCommand.class))).willReturn(
-			new ArrayList<>());
+			orders);
 		MockHttpSession session = new MockHttpSession();
 		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		session.setAttribute(SessionConst.SESSION_VENDOR_KEY, loginVendor);
@@ -225,7 +254,27 @@ class OrderApiControllerTest {
 			.session(session));
 
 		// then
-		ra.andExpect(status().isOk());
+		ra.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.orders").isArray());
+		for (int orderIndex = 0; orderIndex < orders.size(); orderIndex++) {
+			ra.andExpect(jsonPath("$.data.orders[" + orderIndex + "].id").value(orders.get(orderIndex).getId()))
+				.andExpect(jsonPath("$.data.orders[" + orderIndex + "].orderItems").isArray());
+			for (int orderItemIndex = 0; orderItemIndex < orderItems.size(); orderItemIndex++) {
+				ra.andExpect(
+						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].menuId").value(
+							orderItems.get(orderItemIndex).getMenuId()))
+					.andExpect(
+						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].price").value(
+							orderItems.get(orderItemIndex).getPrice()))
+					.andExpect(
+						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].quantity").value(
+							orderItems.get(orderItemIndex).getQuantity()))
+					.andExpect(
+						jsonPath(
+							"$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].totalPrice").value(
+							orderItems.get(orderItemIndex).getTotalPrice()));
+			}
+		}
 	}
 
 	@Test
