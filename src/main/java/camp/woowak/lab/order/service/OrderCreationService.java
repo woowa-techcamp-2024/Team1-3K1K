@@ -22,8 +22,10 @@ import camp.woowak.lab.order.service.command.OrderCreationCommand;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class OrderCreationService {
 	private final OrderRepository orderRepository;
@@ -34,20 +36,6 @@ public class OrderCreationService {
 	private final StockRequester stockRequester;
 	private final WithdrawPointService withdrawPointService;
 	private final PriceChecker priceChecker;
-
-	public OrderCreationService(OrderRepository orderRepository, CartRepository cartRepository,
-								StoreRepository storeRepository, CustomerRepository customerRepository,
-								SingleStoreOrderValidator singleStoreOrderValidator, StockRequester stockRequester,
-								WithdrawPointService withdrawPointService, PriceChecker priceChecker) {
-		this.orderRepository = orderRepository;
-		this.cartRepository = cartRepository;
-		this.storeRepository = storeRepository;
-		this.customerRepository = customerRepository;
-		this.singleStoreOrderValidator = singleStoreOrderValidator;
-		this.stockRequester = stockRequester;
-		this.withdrawPointService = withdrawPointService;
-		this.priceChecker = priceChecker;
-	}
 
 	public Long create(OrderCreationCommand cmd) {
 		UUID requesterId = cmd.requesterId();
