@@ -41,19 +41,19 @@ class OrderTest {
 		List<OrderItem> orderItems = List.of(orderItem);
 
 		// Mocking behavior
-		doNothing().when(singleStoreOrderValidator).check(store, cartItems);
+		when(singleStoreOrderValidator.check(cartItems)).thenReturn(store);
 		doNothing().when(stockRequester).request(cartItems);
 		when(priceChecker.check(store, cartItems)).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(customer, orderItems)).thenReturn(orderItems);
 
 		// When
-		Order order = new Order(customer, store, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
 			withdrawPointService);
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());
 
-		verify(singleStoreOrderValidator, times(1)).check(store, cartItems);
+		verify(singleStoreOrderValidator, times(1)).check(cartItems);
 		verify(stockRequester, times(1)).request(cartItems);
 		verify(priceChecker, times(1)).check(store, cartItems);
 		verify(withdrawPointService, times(1)).withdraw(customer, orderItems);
@@ -69,11 +69,11 @@ class OrderTest {
 
 		// Mock behavior to throw exception
 		doThrow(new MultiStoreOrderException("다른 가게의 메뉴를 같이 주문할 수 없습니다."))
-			.when(singleStoreOrderValidator).check(store, cartItems);
+			.when(singleStoreOrderValidator).check(cartItems);
 
 		// When & Then
 		MultiStoreOrderException exception = assertThrows(MultiStoreOrderException.class, () -> {
-			new Order(customer, store, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+			new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
 				withdrawPointService);
 		});
 

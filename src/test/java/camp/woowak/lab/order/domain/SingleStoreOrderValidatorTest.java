@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,14 +13,18 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.exception.MultiStoreOrderException;
 import camp.woowak.lab.store.domain.Store;
+import camp.woowak.lab.store.exception.NotFoundStoreException;
+import camp.woowak.lab.store.repository.StoreRepository;
 
 class SingleStoreOrderValidatorTest {
 
 	private SingleStoreOrderValidator validator;
+	private StoreRepository storeRepository;
 
 	@BeforeEach
 	void setUp() {
-		validator = new SingleStoreOrderValidator();
+		storeRepository = mock(StoreRepository.class);
+		validator = new SingleStoreOrderValidator(storeRepository);
 	}
 
 	@Test
@@ -28,52 +33,59 @@ class SingleStoreOrderValidatorTest {
 		Store store = mock(Store.class);
 
 		// When & Then
-		assertThrows(EmptyCartException.class, () -> validator.check(store, null));
+		assertThrows(EmptyCartException.class, () -> validator.check(null));
 	}
 
 	@Test
-	void check_EmptyCartItems_ThrowsEmptyCartException() {
-		// Given
-		Store store = mock(Store.class);
-
+	void check_EmptyCart_ThrowsEmptyCartException() {
 		// When & Then
-		assertThrows(EmptyCartException.class, () -> validator.check(store, List.of()));
+		assertThrows(EmptyCartException.class, () -> validator.check(List.of()));
 	}
 
 	@Test
-	void check_AllItemsBelongToSameStore_NoExceptionThrown() {
+	void check_StoreNotFound_ThrowsNotFoundStoreException() {
 		// Given
-		Store store = mock(Store.class);
-		Long storeId = 1L;
-		when(store.getId()).thenReturn(storeId);
-
-		CartItem item1 = mock(CartItem.class);
-		CartItem item2 = mock(CartItem.class);
-		when(item1.getStoreId()).thenReturn(storeId);
-		when(item2.getStoreId()).thenReturn(storeId);
-
-		List<CartItem> cartItems = List.of(item1, item2);
+		CartItem cartItem = mock(CartItem.class);
+		when(cartItem.getStoreId()).thenReturn(1L);
+		when(storeRepository.findById(1L)).thenReturn(Optional.empty());
 
 		// When & Then
-		assertDoesNotThrow(() -> validator.check(store, cartItems));
+		assertThrows(NotFoundStoreException.class, () -> validator.check(List.of(cartItem)));
 	}
 
 	@Test
-	void check_ItemsFromDifferentStores_ThrowsMultiStoreOrderException() {
+	void check_ValidCart_ReturnsStore() {
 		// Given
 		Store store = mock(Store.class);
-		Long storeId1 = 1L;
-		Long storeId2 = 2L;
-		when(store.getId()).thenReturn(storeId1);
+		when(store.getId()).thenReturn(1L);
+		when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
 
-		CartItem item1 = mock(CartItem.class);
-		CartItem item2 = mock(CartItem.class);
-		when(item1.getStoreId()).thenReturn(storeId1);
-		when(item2.getStoreId()).thenReturn(storeId2);
+		CartItem cartItem1 = mock(CartItem.class);
+		CartItem cartItem2 = mock(CartItem.class);
+		when(cartItem1.getStoreId()).thenReturn(1L);
+		when(cartItem2.getStoreId()).thenReturn(1L);
 
-		List<CartItem> cartItems = List.of(item1, item2);
+		// When
+		Store result = validator.check(List.of(cartItem1, cartItem2));
+
+		// Then
+		assertEquals(store, result);
+		verify(storeRepository).findById(1L);
+	}
+
+	@Test
+	void check_MultiStoreOrder_ThrowsMultiStoreOrderException() {
+		// Given
+		Store store = mock(Store.class);
+		when(store.getId()).thenReturn(1L);
+		when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+
+		CartItem cartItem1 = mock(CartItem.class);
+		CartItem cartItem2 = mock(CartItem.class);
+		when(cartItem1.getStoreId()).thenReturn(1L);
+		when(cartItem2.getStoreId()).thenReturn(2L);
 
 		// When & Then
-		assertThrows(MultiStoreOrderException.class, () -> validator.check(store, cartItems));
+		assertThrows(MultiStoreOrderException.class, () -> validator.check(List.of(cartItem1, cartItem2)));
 	}
 }

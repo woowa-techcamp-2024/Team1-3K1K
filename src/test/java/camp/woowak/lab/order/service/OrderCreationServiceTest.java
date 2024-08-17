@@ -74,19 +74,19 @@ class OrderCreationServiceTest {
 		// Mocking behavior
 		when(store.getId()).thenReturn(1L); // Ensure this is mocked
 		when(cartItem.getStoreId()).thenReturn(1L); // Mock the cartItem's storeId
-		doNothing().when(singleStoreOrderValidator).check(any(Store.class), anyList());
+		when(singleStoreOrderValidator.check(anyList())).thenReturn(store);
 		doNothing().when(stockRequester).request(anyList());
 		when(priceChecker.check(any(), anyList())).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(any(Customer.class), anyList())).thenReturn(orderItems);
 
 		// When
-		Order order = new Order(customer, store, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
 			withdrawPointService);
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());
 
-		verify(singleStoreOrderValidator, times(1)).check(store, cartItems);
+		verify(singleStoreOrderValidator, times(1)).check(cartItems);
 		verify(stockRequester, times(1)).request(cartItems);
 		verify(priceChecker, times(1)).check(store, cartItems);
 		verify(withdrawPointService, times(1)).withdraw(customer, orderItems);
