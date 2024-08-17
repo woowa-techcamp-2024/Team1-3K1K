@@ -11,13 +11,15 @@ import lombok.Getter;
 @Getter
 public class OrderDTO {
 	private final Long id;
-	private RequesterDTO requester;
-	private StoreDTO store;
+	private final RequesterDTO requester;
+	private final StoreDTO store;
 	private final List<OrderItemDTO> orderItems;
 
-	public OrderDTO(Long id, List<OrderItem> orderItems) {
+	public OrderDTO(Long id, RequesterDTO requester, StoreDTO store, List<OrderItemDTO> orderItems) {
 		this.id = id;
-		this.orderItems = orderItems.stream().map(OrderItemDTO::new).toList();
+		this.requester = requester;
+		this.store = store;
+		this.orderItems = orderItems;
 	}
 
 	public OrderDTO(Order order) {
