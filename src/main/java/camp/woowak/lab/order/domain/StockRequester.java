@@ -17,7 +17,8 @@ public class StockRequester {
 	}
 
 	public void request(List<CartItem> cartItems) {
-		List<Menu> allById = menuRepository.findAllByIdForUpdate(cartItems.stream().map(CartItem::getMenuId).toList());
+		List<Long> cartItemMenuIds = extractMenuIds(cartItems);
+		List<Menu> allById = menuRepository.findAllByIdForUpdate(cartItemMenuIds);
 		for (Menu menu : allById) {
 			for (CartItem cartItem : cartItems) {
 				if (cartItem.getMenuId().equals(menu.getId())) {
@@ -25,5 +26,9 @@ public class StockRequester {
 				}
 			}
 		}
+	}
+
+	private static List<Long> extractMenuIds(List<CartItem> cartItems) {
+		return cartItems.stream().map(CartItem::getMenuId).toList();
 	}
 }
