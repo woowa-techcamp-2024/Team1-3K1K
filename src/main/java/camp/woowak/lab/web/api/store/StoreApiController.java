@@ -2,6 +2,7 @@ package camp.woowak.lab.web.api.store;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.menu.service.MenuCategoryRegistrationService;
 import camp.woowak.lab.menu.service.command.MenuCategoryRegistrationCommand;
+import camp.woowak.lab.store.service.StoreDisplayService;
 import camp.woowak.lab.store.service.StoreMenuRegistrationService;
 import camp.woowak.lab.store.service.StoreRegistrationService;
 import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
+import camp.woowak.lab.store.service.response.StoreDisplayResponse;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
@@ -31,6 +34,7 @@ public class StoreApiController {
 	private final StoreRegistrationService storeRegistrationService;
 	private final StoreMenuRegistrationService storeMenuRegistrationService;
 	private final MenuCategoryRegistrationService menuCategoryRegistrationService;
+	private final StoreDisplayService storeDisplayService;
 
 	@PostMapping("/stores")
 	public StoreRegistrationResponse storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
@@ -74,5 +78,10 @@ public class StoreApiController {
 			new MenuCategoryRegistrationCommand(loginVendor.getId(), storeId, request.name());
 		Long registeredId = menuCategoryRegistrationService.register(command);
 		return new MenuCategoryRegistrationResponse(registeredId);
+	}
+
+	@GetMapping("/stores/{storeId}")
+	public StoreDisplayResponse storeDisplay(@PathVariable Long storeId) {
+		return storeDisplayService.findStore(storeId);
 	}
 }
