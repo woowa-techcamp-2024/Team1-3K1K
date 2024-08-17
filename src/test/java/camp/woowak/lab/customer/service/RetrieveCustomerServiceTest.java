@@ -13,8 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.customer.service.dto.CustomerDTO;
 import camp.woowak.lab.fixture.CustomerFixture;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +32,7 @@ class RetrieveCustomerServiceTest implements CustomerFixture {
 		given(customerRepository.findAll()).willReturn(
 			List.of(createCustomer(UUID.randomUUID()), createCustomer(UUID.randomUUID())));
 		// when
-		List<Customer> result = retrieveCustomerService.retrieveAllCustomers();
+		List<CustomerDTO> result = retrieveCustomerService.retrieveAllCustomers();
 
 		// then
 		assertEquals(2, result.size());

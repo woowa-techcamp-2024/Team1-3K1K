@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import camp.woowak.lab.fixture.VendorFixture;
+import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.exception.DuplicateEmailException;
 import camp.woowak.lab.vendor.exception.NotFoundVendorException;
 import camp.woowak.lab.vendor.exception.PasswordMismatchException;
@@ -31,7 +33,9 @@ import camp.woowak.lab.vendor.service.SignInVendorService;
 import camp.woowak.lab.vendor.service.SignUpVendorService;
 import camp.woowak.lab.vendor.service.command.SignInVendorCommand;
 import camp.woowak.lab.vendor.service.command.SignUpVendorCommand;
+import camp.woowak.lab.vendor.service.dto.VendorDTO;
 import camp.woowak.lab.web.authentication.LoginVendor;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.dto.request.vendor.SignInVendorRequest;
 import camp.woowak.lab.web.dto.request.vendor.SignUpVendorRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
@@ -39,7 +43,7 @@ import jakarta.servlet.http.HttpSession;
 
 @WebMvcTest(controllers = VendorApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class VendorApiControllerTest {
+class VendorApiControllerTest implements VendorFixture {
 	@Autowired
 	private MockMvc mockMvc;
 	@MockBean
@@ -488,8 +492,14 @@ class VendorApiControllerTest {
 		@Test
 		@DisplayName("[성공] 200")
 		void success() throws Exception {
-			//given
-			BDDMockito.given(retrieveVendorService.retrieveVendors()).willReturn(new ArrayList<>());
+			// given
+			List<Vendor> vendors = List.of(
+				createVendor(createPayAccount(), new NoOpPasswordEncoder()),
+				createVendor(createPayAccount(), new NoOpPasswordEncoder())
+			);
+			BDDMockito.given(retrieveVendorService.retrieveVendors())
+				.willReturn(vendors.stream().map(VendorDTO::new).toList());
+
 			// when
 			ResultActions actions = mockMvc.perform(
 				get("/vendors")
@@ -497,9 +507,18 @@ class VendorApiControllerTest {
 
 			// then
 			actions.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
 				.andExpect(jsonPath("$.data.vendors").isArray())
-				.andDo(print());
+				.andExpect(jsonPath("$.data.vendors.length()").value(vendors.size()));
+
+			for (int i = 0; i < vendors.size(); i++) {
+				actions
+					.andExpect(jsonPath("$.data.vendors[" + i + "].name").value(vendors.get(i).getName()))
+					.andExpect(jsonPath("$.data.vendors[" + i + "].email").value(vendors.get(i).getEmail()))
+					.andExpect(jsonPath("$.data.vendors[" + i + "].phone").value(vendors.get(i).getPhone()))
+					.andExpect(jsonPath("$.data.vendors[" + i + "].payAccount.balance")
+						.value(vendors.get(i).getPayAccount().getBalance()));
+			}
+			actions.andDo(print());
 		}
 	}
 }

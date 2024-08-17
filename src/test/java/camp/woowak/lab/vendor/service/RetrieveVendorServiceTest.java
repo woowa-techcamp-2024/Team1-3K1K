@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.fixture.VendorFixture;
-import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.vendor.service.dto.VendorDTO;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,9 +32,9 @@ class RetrieveVendorServiceTest implements VendorFixture {
 		given(vendorRepository.findAll()).willReturn(
 			List.of(createVendor(createPayAccount(), new NoOpPasswordEncoder())));
 		// when
-		List<Vendor> vendors = retrieveVendorService.retrieveVendors();
+		List<VendorDTO> result = retrieveVendorService.retrieveVendors();
 		// then
-		assertEquals(1, vendors.size());
+		assertEquals(1, result.size());
 		verify(vendorRepository).findAll();
 	}
 }

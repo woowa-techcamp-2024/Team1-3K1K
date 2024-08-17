@@ -31,6 +31,7 @@ import camp.woowak.lab.customer.service.RetrieveCustomerService;
 import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
 import camp.woowak.lab.customer.service.command.SignInCustomerCommand;
+import camp.woowak.lab.customer.service.dto.CustomerDTO;
 import camp.woowak.lab.fixture.CustomerFixture;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.customer.SignInCustomerRequest;
@@ -285,7 +286,10 @@ class CustomerApiControllerTest implements CustomerFixture {
 	void testRetrieveCustomers() throws Exception {
 		// given
 		given(retrieveCustomerService.retrieveAllCustomers()).willReturn(
-			List.of(createCustomer(UUID.randomUUID()), createCustomer(UUID.randomUUID())));
+			List.of(createCustomer(UUID.randomUUID()), createCustomer(UUID.randomUUID()))
+				.stream()
+				.map(CustomerDTO::new)
+				.toList());
 		// when & then
 		mockMvc.perform(get("/customers")
 				.contentType(MediaType.APPLICATION_JSON))

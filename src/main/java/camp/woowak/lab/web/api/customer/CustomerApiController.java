@@ -1,6 +1,5 @@
 package camp.woowak.lab.web.api.customer;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.service.RetrieveCustomerService;
 import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
@@ -44,8 +42,7 @@ public class CustomerApiController {
 	@GetMapping("/customers")
 	@ResponseStatus(HttpStatus.OK)
 	public RetrieveCustomerResponse retrieveAllCustomers() {
-		List<Customer> customers = retrieveCustomerService.retrieveAllCustomers();
-		return new RetrieveCustomerResponse(customers);
+		return new RetrieveCustomerResponse(retrieveCustomerService.retrieveAllCustomers());
 	}
 
 	@PostMapping("/customers")
