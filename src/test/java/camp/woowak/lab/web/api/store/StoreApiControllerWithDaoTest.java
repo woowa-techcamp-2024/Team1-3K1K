@@ -46,6 +46,11 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 	private final ObjectMapper objectMapper;
 	private final MockMvc mvc;
 	private final int size = StoreInfoListRequestConst.DEFAULT_PAGE_SIZE;
+	private final String sortByKey = "sortBy";
+	private final String filterByKey = "filterBy";
+	private final String filterValueKey = "filterValue";
+	private final String pageKey = "page";
+	private final String orderKey = "order";
 
 	@Autowired
 	public StoreApiControllerWithDaoTest(PayAccountRepository payAccountRepository, StoreRepository storeRepository,
@@ -84,7 +89,7 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 				//when & then
 				ResultActions actions = mvc.perform(get(BASE_URL)
-						.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page)))
+						.param(pageKey, Integer.toString(page)))
 					.andExpect(status().isOk());
 
 				//기본적으로는 ID 오름차순
@@ -100,7 +105,7 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 				//when & then
 				ResultActions actions = mvc.perform(get(BASE_URL)
-						.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page)))
+						.param(pageKey, Integer.toString(page)))
 					.andExpect(status().isOk());
 
 				//기본적으로는 ID 오름차순
@@ -125,8 +130,8 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value()))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value()))
 						.andExpect(status().isOk());
 
 					//then
@@ -144,9 +149,9 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value())
-							.param(StoreInfoListRequestConst.ORDER_KEY, Integer.toString(order)))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value())
+							.param(orderKey, Integer.toString(order)))
 						.andExpect(status().isOk());
 
 					//then
@@ -164,9 +169,9 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value())
-							.param(StoreInfoListRequestConst.ORDER_KEY, Integer.toString(order)))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value())
+							.param(orderKey, Integer.toString(order)))
 						.andExpect(status().isOk());
 
 					//then
@@ -195,8 +200,8 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value()))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value()))
 						.andExpect(status().isOk());
 
 					//then
@@ -226,9 +231,9 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value())
-							.param(StoreInfoListRequestConst.ORDER_KEY, Integer.toString(order)))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value())
+							.param(orderKey, Integer.toString(order)))
 						.andExpect(status().isOk());
 
 					//then
@@ -258,9 +263,9 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when & then
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.PAGE_KEY, Integer.toString(page))
-							.param(StoreInfoListRequestConst.SORT_BY_KEY, sortBy.value())
-							.param(StoreInfoListRequestConst.ORDER_KEY, Integer.toString(order)))
+							.param(pageKey, Integer.toString(page))
+							.param(sortByKey, sortBy.value())
+							.param(orderKey, Integer.toString(order)))
 						.andExpect(status().isOk());
 
 					//then
@@ -302,8 +307,8 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.FILTER_BY_KEY, filterBy.value())
-							.param(StoreInfoListRequestConst.FILTER_VALUE_KEY, value))
+							.param(filterByKey, filterBy.value())
+							.param(filterValueKey, value))
 						.andExpect(status().isOk());
 
 					//then
@@ -325,8 +330,8 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 					//when
 					ResultActions actions = mvc.perform(get(BASE_URL)
-							.param(StoreInfoListRequestConst.FILTER_BY_KEY, filterBy.value())
-							.param(StoreInfoListRequestConst.FILTER_VALUE_KEY, value))
+							.param(filterByKey, filterBy.value())
+							.param(filterValueKey, value))
 						.andExpect(status().isOk());
 
 					//then
@@ -350,14 +355,17 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 
 				//when
 				ResultActions actions = mvc.perform(get(BASE_URL)
-						.param(StoreInfoListRequestConst.SORT_BY_KEY,sortBy.value())
-						.param(StoreInfoListRequestConst.FILTER_BY_KEY, filterBy.value())
-						.param(StoreInfoListRequestConst.FILTER_VALUE_KEY, filterByValue))
+						.param(sortByKey, sortBy.value())
+						.param(filterByKey, filterBy.value())
+						.param(filterValueKey, filterByValue))
 					.andExpect(status().isOk());
 
 				//then
-				Comparator<Store> expectedOrderByMinOrderPrice = (o1,o2)-> Integer.compare(o1.getMinOrderPrice(),o2.getMinOrderPrice());
-				Predicate<Store> expectedFilterByCategoryName = (s) -> s.getStoreCategory().getName().equals(filterByValue);
+				Comparator<Store> expectedOrderByMinOrderPrice = (o1, o2) -> Integer.compare(o1.getMinOrderPrice(),
+					o2.getMinOrderPrice());
+				Predicate<Store> expectedFilterByCategoryName = (s) -> s.getStoreCategory()
+					.getName()
+					.equals(filterByValue);
 				assertResults(actions, dummies, expectedOrderByMinOrderPrice, page, size, expectedFilterByCategoryName);
 			}
 		}

@@ -112,7 +112,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 				void testWithPageRequestOrderByPriceAscWithDefaultOrder() {
 					//given
 					StoreSortBy sortBy = StoreSortBy.MIN_PRICE;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value());
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -137,7 +137,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					//given
 					int order = 0;
 					StoreSortBy sortBy = StoreSortBy.MIN_PRICE;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy, order);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value(), order);
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -162,7 +162,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					//given
 					int order = 1;
 					StoreSortBy sortBy = StoreSortBy.MIN_PRICE;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy, order);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value(), order);
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -197,7 +197,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 				void testWithPageRequestOrderByOrderCountAscWithDefaultOrder() {
 					//given
 					StoreSortBy sortBy = StoreSortBy.ORDER_COUNT;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value());
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -227,7 +227,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					//given
 					int order = 0;
 					StoreSortBy sortBy = StoreSortBy.ORDER_COUNT;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy, order);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value(), order);
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -257,7 +257,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					//given
 					int order = 1;
 					StoreSortBy sortBy = StoreSortBy.ORDER_COUNT;
-					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy, order);
+					StoreInfoListRequest request = new StoreInfoListRequest(0, sortBy.value(), order);
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -297,7 +297,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					int page = 0;
 					StoreFilterBy filterBy = StoreFilterBy.CATEGORY_NAME;
 					String value = dummies.get(0).getStoreCategory().getName();
-					StoreInfoListRequest request = new StoreInfoListRequest(page, null, 0, filterBy, value);
+					StoreInfoListRequest request = new StoreInfoListRequest(page, null, 0, filterBy.value(), value);
 
 					//when
 					StoreInfoListResponse response = storeDao.findAllStoreList(request);
@@ -314,7 +314,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 					int page = 0;
 					StoreFilterBy filterBy = StoreFilterBy.MIN_PRICE;
 					int value = dummies.get(0).getMinOrderPrice();
-					StoreInfoListRequest request = new StoreInfoListRequest(page, null, 0, filterBy,
+					StoreInfoListRequest request = new StoreInfoListRequest(page, null, 0, filterBy.value(),
 						Integer.toString(value));
 
 					//when
@@ -339,7 +339,7 @@ class StoreDaoTest extends StoreDummiesFixture {
 				StoreSortBy sortBy = StoreSortBy.MIN_PRICE;
 				StoreFilterBy filterBy = StoreFilterBy.CATEGORY_NAME;
 				String filterByValue = dummies.get(0).getStoreCategory().getName();
-				StoreInfoListRequest request = new StoreInfoListRequest(page, sortBy, order, filterBy, filterByValue);
+				StoreInfoListRequest request = new StoreInfoListRequest(page, sortBy.value(), order, filterBy.value(), filterByValue);
 
 				//when
 				StoreInfoListResponse response = storeDao.findAllStoreList(request);
