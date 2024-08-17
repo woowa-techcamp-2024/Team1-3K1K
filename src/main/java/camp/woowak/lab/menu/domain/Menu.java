@@ -1,5 +1,6 @@
 package camp.woowak.lab.menu.domain;
 
+import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,6 +60,9 @@ public class Menu {
 	}
 
 	public void decrementStockCount(int amount) {
+		if (stockCount < amount) {
+			throw new NotEnoughStockException("메뉴(id=" + id + "의 재고가 부족합니다.");
+		}
 		stockCount -= amount;
 	}
 }
