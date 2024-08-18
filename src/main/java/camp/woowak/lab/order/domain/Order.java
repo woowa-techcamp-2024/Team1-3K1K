@@ -47,6 +47,8 @@ public class Order {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
+	private LocalDateTime createdAt;
+
 	/**
 	 * @throws EmptyCartException 카트가 비어 있는 경우
 	 * @throws NotFoundStoreException 가게가 조회되지 않는 경우
@@ -59,7 +61,8 @@ public class Order {
 	 */
 	public Order(Customer requester, List<CartItem> cartItems,
 				 SingleStoreOrderValidator singleStoreOrderValidator,
-				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService) {
+				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService,
+				 LocalDateTime createdAt) {
 		Store store = singleStoreOrderValidator.check(cartItems);
 		stockRequester.request(cartItems);
 		List<OrderItem> orderItems = priceChecker.check(store, cartItems);
@@ -67,10 +70,7 @@ public class Order {
 		this.requester = requester;
 		this.store = store;
 		this.orderItems = orderItems;
-	}
-
-	public Long getId() {
-		return id;
+		this.createdAt = createdAt;
 	}
 
 	public List<OrderItem> getOrderItems() {

@@ -3,6 +3,7 @@ package camp.woowak.lab.order.domain;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
+import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.order.exception.MultiStoreOrderException;
 import camp.woowak.lab.store.domain.Store;
@@ -20,6 +22,7 @@ class OrderTest {
 	private StockRequester stockRequester;
 	private PriceChecker priceChecker;
 	private WithdrawPointService withdrawPointService;
+	private DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
 
 	@BeforeEach
 	void setUp() {
@@ -48,7 +51,7 @@ class OrderTest {
 
 		// When
 		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-			withdrawPointService);
+			withdrawPointService, fixedDateTime.now());
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());
@@ -74,7 +77,7 @@ class OrderTest {
 		// When & Then
 		MultiStoreOrderException exception = assertThrows(MultiStoreOrderException.class, () -> {
 			new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService);
+				withdrawPointService, fixedDateTime.now());
 		});
 
 		assertEquals("다른 가게의 메뉴를 같이 주문할 수 없습니다.", exception.getMessage());

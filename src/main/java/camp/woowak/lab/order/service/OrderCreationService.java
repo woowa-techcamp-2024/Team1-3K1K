@@ -11,6 +11,7 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.domain.PriceChecker;
@@ -40,6 +41,8 @@ public class OrderCreationService {
 	private final WithdrawPointService withdrawPointService;
 	private final PriceChecker priceChecker;
 
+	private final DateTimeProvider dateTimeProvider;
+
 	/**
 	 * @throws EmptyCartException 카트가 비어 있는 경우
 	 * @throws NotFoundStoreException 가게가 조회되지 않는 경우
@@ -60,7 +63,7 @@ public class OrderCreationService {
 
 		Order savedOrder = orderRepository.save(
 			new Order(requester, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService)
+				withdrawPointService, dateTimeProvider.now())
 		);
 		return savedOrder.getId();
 	}
