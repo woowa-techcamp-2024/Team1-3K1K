@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import camp.woowak.lab.fixture.MenuFixture;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.exception.InvalidMenuPriceUpdateException;
-import camp.woowak.lab.menu.exception.UnauthorizedMenuCategoryCreationException;
+import camp.woowak.lab.menu.exception.MenuOwnerNotMatchException;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.menu.service.command.MenuPriceUpdateCommand;
 import camp.woowak.lab.store.domain.Store;
@@ -79,7 +79,7 @@ class MenuPriceUpdateServiceTest implements MenuFixture {
 
 			//when & then
 			assertThatThrownBy(() -> menuPriceUpdateService.updateMenuPrice(command))
-				.isExactlyInstanceOf(UnauthorizedMenuCategoryCreationException.class);
+				.isExactlyInstanceOf(MenuOwnerNotMatchException.class);
 		}
 
 		@Test
