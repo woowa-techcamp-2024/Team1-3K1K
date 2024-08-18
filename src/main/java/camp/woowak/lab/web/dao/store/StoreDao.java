@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import camp.woowak.lab.order.domain.QOrder;
@@ -16,6 +17,7 @@ import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.web.dto.request.store.StoreFilterBy;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
+import camp.woowak.lab.web.dto.request.store.StoreSortBy;
 import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 
 @Repository
@@ -31,10 +33,17 @@ public class StoreDao {
 		QStore store = QStore.store;
 		QOrder order = QOrder.order;
 
-		List<Store> fetchResult = queryFactory
-			.selectFrom(store)
-			.leftJoin(order).on(order.store.eq(store))
-			.groupBy(store.id)
+		JPAQuery<Store> baseQuery = queryFactory
+			.selectFrom(store);
+
+		//orderBy의 기준이 주문의 개수가 아니라면 Order테이블을 조인할 필요가 없으므로 분기
+		if (request.getSortBy() == StoreSortBy.ORDER_COUNT) {
+			baseQuery.leftJoin(order)
+				.on(order.store.eq(store))
+				.groupBy(store);
+		}
+
+		baseQuery
 			.where(
 				eqCategoryName(request, store),
 				goeMinPrice(request, store)
@@ -46,7 +55,7 @@ public class StoreDao {
 			.limit(request.getSize())
 			.fetch();
 
-		return StoreInfoListResponse.of(fetchResult);
+		return StoreInfoListResponse.of(baseQuery.fetch());
 	}
 
 	private BooleanExpression eqCategoryName(StoreInfoListRequest request, QStore store) {
