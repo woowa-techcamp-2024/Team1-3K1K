@@ -10,7 +10,7 @@ public class MenuValidator {
 	private static final int MAX_NAME_LENGTH = 10;
 
 	public static void validate(final Store store, final MenuCategory menuCategory, final String name,
-								final Integer price, final Long stockCount, final String imageUrl) {
+								final Long price, final Long stockCount, final String imageUrl) {
 		validateNotNull(store, menuCategory, name, price, stockCount, imageUrl);
 		validateNotBlank(name, imageUrl);
 		validateNameLength(name);
@@ -40,7 +40,7 @@ public class MenuValidator {
 		}
 	}
 
-	private static void validatePriceNegative(final Integer price) {
+	private static void validatePriceNegative(final Long price) {
 		if (price <= 0) {
 			throw new InvalidMenuCreationException(INVALID_PRICE, "메뉴의 가격은 양수만 가능합니다. cur: " + price);
 		}

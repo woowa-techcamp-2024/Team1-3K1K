@@ -43,7 +43,7 @@ class CartTest implements CartFixture {
 		store = createSavedStore(1L, vendor, "중화반점", minPrice,
 			LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0),
 			LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0));
-		menu = createSavedMenu(1L, store, new MenuCategory(store, "중식"), "짜장면", 9000);
+		menu = createSavedMenu(1L, store, new MenuCategory(store, "중식"), "짜장면", 9000L);
 	}
 
 	@Nested
@@ -70,7 +70,7 @@ class CartTest implements CartFixture {
 			Store closedStore = createSavedStore(2L, vendor, "closed", minPrice,
 				LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0),
 				LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0));
-			Menu closedMenu = createSavedMenu(2L, closedStore, new MenuCategory(closedStore, "중식"), "짬뽕", 9000);
+			Menu closedMenu = createSavedMenu(2L, closedStore, new MenuCategory(closedStore, "중식"), "짬뽕", 9000L);
 
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(closedMenu))
@@ -87,7 +87,7 @@ class CartTest implements CartFixture {
 			Store otherStore = createSavedStore(2L, vendor, "otherStore", minPrice,
 				LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0),
 				LocalDateTime.now().plusMinutes(30).withSecond(0).withNano(0));
-			Menu otherStoreMenu = createSavedMenu(2L, otherStore, new MenuCategory(otherStore, "중식"), "짬뽕", 9000);
+			Menu otherStoreMenu = createSavedMenu(2L, otherStore, new MenuCategory(otherStore, "중식"), "짬뽕", 9000L);
 
 			//when & then
 			assertThatThrownBy(() -> cart.addMenu(otherStoreMenu))
