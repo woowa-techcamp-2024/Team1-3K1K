@@ -44,7 +44,7 @@ class UpdateMenuStockServiceTest {
 		given(fakeMenu.getStore()).willReturn(fakeStore);
 		given(fakeStore.isOwnedBy(any(UUID.class))).willReturn(true);
 		given(menuRepository.findByIdForUpdate(anyLong())).willReturn(Optional.of(fakeMenu));
-		given(fakeStore.isOpen()).willReturn(true);
+		given(fakeStore.isOpen()).willReturn(false);
 		given(menuRepository.updateStock(anyLong(), anyInt())).willReturn(1);
 
 		UpdateMenuStockCommand cmd = new UpdateMenuStockCommand(menuId, stock, vendorId);
@@ -105,7 +105,7 @@ class UpdateMenuStockServiceTest {
 	}
 
 	@Test
-	@DisplayName("메뉴 재고 업데이트 테스트 - 매장이 열려있지 않은 경우")
+	@DisplayName("메뉴 재고 업데이트 테스트 - 매장이 열려있는 경우")
 	void testUpdateMenuStockStoreNotOpen() {
 		// given
 		Long menuId = 1L;
@@ -116,7 +116,7 @@ class UpdateMenuStockServiceTest {
 
 		given(fakeMenu.getStore()).willReturn(fakeStore);
 		given(fakeStore.isOwnedBy(any(UUID.class))).willReturn(true);
-		given(fakeStore.isOpen()).willReturn(false);
+		given(fakeStore.isOpen()).willReturn(true);
 		given(menuRepository.findByIdForUpdate(anyLong())).willReturn(Optional.of(fakeMenu));
 
 		UpdateMenuStockCommand cmd = new UpdateMenuStockCommand(menuId, stock, vendorId);
@@ -143,7 +143,7 @@ class UpdateMenuStockServiceTest {
 
 		given(fakeMenu.getStore()).willReturn(fakeStore);
 		given(fakeStore.isOwnedBy(any(UUID.class))).willReturn(true);
-		given(fakeStore.isOpen()).willReturn(true);
+		given(fakeStore.isOpen()).willReturn(false);
 		given(menuRepository.findByIdForUpdate(anyLong())).willReturn(Optional.of(fakeMenu));
 		given(menuRepository.updateStock(anyLong(), anyInt())).willReturn(0);
 

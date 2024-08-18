@@ -37,8 +37,8 @@ public class UpdateMenuStockService {
 		}
 
 		// 가게가 열려있는지 확인한다.
-		if (!targetMenu.getStore().isOpen()) {
-			throw new StoreNotOpenException("가게가 열려있지 않습니다.");
+		if (targetMenu.getStore().isOpen()) {
+			throw new NotUpdatableTimeException("가게가 열려있지 않습니다.");
 		}
 
 		// 메뉴의 재고를 변경한다.
