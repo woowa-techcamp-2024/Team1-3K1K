@@ -111,7 +111,7 @@ class MenuApiControllerTest {
 			new NotEqualsOwnerException("매장 주인이 아닙니다."));
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.session(session))

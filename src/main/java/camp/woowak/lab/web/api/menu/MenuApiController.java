@@ -1,7 +1,7 @@
 package camp.woowak.lab.web.api.menu;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +25,7 @@ public class MenuApiController {
 	}
 
 	@ResponseStatus(HttpStatus.OK)
-	@PutMapping("/menus/stock")
+	@PatchMapping("/menus/stock")
 	public UpdateMenuStockResponse updateMenuStock(@AuthenticationPrincipal LoginVendor vendor,
 												   @Valid @RequestBody UpdateMenuStockRequest request) {
 		UpdateMenuStockCommand cmd = new UpdateMenuStockCommand(request.menuId(), request.stock(), vendor.getId());
