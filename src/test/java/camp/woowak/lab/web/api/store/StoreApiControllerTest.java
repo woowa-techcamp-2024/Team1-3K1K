@@ -26,9 +26,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import camp.woowak.lab.common.exception.UnauthorizedException;
 import camp.woowak.lab.infra.date.DateTimeProvider;
+import camp.woowak.lab.menu.exception.MenuOwnerNotMatchException;
 import camp.woowak.lab.menu.exception.UnauthorizedMenuCategoryCreationException;
 import camp.woowak.lab.menu.service.MenuCategoryRegistrationService;
+import camp.woowak.lab.menu.service.MenuPriceUpdateService;
 import camp.woowak.lab.menu.service.command.MenuCategoryRegistrationCommand;
+import camp.woowak.lab.menu.service.command.MenuPriceUpdateCommand;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
 import camp.woowak.lab.store.exception.NotFoundStoreCategoryException;
@@ -43,6 +46,7 @@ import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
+import camp.woowak.lab.web.dto.request.store.MenuPriceUpdateRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
@@ -71,6 +75,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private SessionVendorArgumentResolver sessionVendorArgumentResolver;
+
+	@MockBean
+	private MenuPriceUpdateService menuPriceUpdateService;
 
 	DateTimeProvider fixedStartTime = () -> LocalDateTime.of(2024, 8, 24, 1, 0, 0);
 	DateTimeProvider fixedEndTime = () -> LocalDateTime.of(2024, 8, 24, 5, 0, 0);
@@ -248,6 +255,140 @@ class StoreApiControllerTest {
 				.andExpect(status().isForbidden());
 
 			verify(menuCategoryRegistrationService).register(any(MenuCategoryRegistrationCommand.class));
+		}
+	}
+
+	@Nested
+	@DisplayName("메뉴 가격 수정 : PUT /stores/menus/{menuId}/price")
+	class MenuPriceUpdate {
+		@Test
+		@DisplayName("[Success] 200 OK")
+		void success() throws Exception {
+			//given
+			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
+			Long updatePrice = 10000L;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenReturn(loginVendor);
+			when(menuPriceUpdateService.updateMenuPrice(any(MenuPriceUpdateCommand.class)))
+				.thenReturn(updatePrice);
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.updatedPrice").value(updatePrice));
+		}
+
+		@Test
+		@DisplayName("[Exception] 400 BadRequest with null price")
+		void badRequestWithNullPrice() throws Exception {
+			//given
+			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
+			Long updatePrice = null;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenReturn(loginVendor);
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("[Exception] 400 BadRequest with zero price")
+		void badRequestWithZeroPrice() throws Exception {
+			//given
+			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
+			Long updatePrice = 0L;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenReturn(loginVendor);
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("[Exception] 400 BadRequest with negative price")
+		void badRequestWithNegativePrice() throws Exception {
+			//given
+			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
+			Long updatePrice = -1000L;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenReturn(loginVendor);
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("[Exception] 401 Unauthorized")
+		void unAuthorizedException() throws Exception {
+			//given
+			Long updatePrice = -1000L;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenThrow(
+					new UnauthorizedException(AuthenticationErrorCode.UNAUTHORIZED, "Vendor가 세션에 저장되어 있지 않습니다."));
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request)))
+				.andExpect(status().isUnauthorized());
+		}
+
+		@Test
+		@DisplayName("[Exception] 403 Forbidden")
+		void forbidden() throws Exception {
+			//given
+			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
+			Long updatePrice = 1000L;
+			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
+
+			when(sessionVendorArgumentResolver.supportsParameter(any()))
+				.thenReturn(true);
+			when(sessionVendorArgumentResolver.resolveArgument(any(), any(), any(), any()))
+				.thenReturn(loginVendor);
+			when(menuPriceUpdateService.updateMenuPrice(any(MenuPriceUpdateCommand.class)))
+				.thenThrow(new MenuOwnerNotMatchException("메뉴 주인이 아닙니다."));
+
+			//when & then
+			mockMvc.perform(patch("/stores/menus/" + new Random().nextLong() + "/price")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.sessionAttr(SessionConst.SESSION_VENDOR_KEY, loginVendor))
+				.andExpect(status().isForbidden());
 		}
 	}
 

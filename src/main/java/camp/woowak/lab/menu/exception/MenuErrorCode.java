@@ -18,6 +18,9 @@ public enum MenuErrorCode implements ErrorCode {
 
 	NOT_FOUND_MENU(HttpStatus.BAD_REQUEST, "m_8", "메뉴를 찾을 수 없습니다."),
 	NOT_FOUND_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "m_9", "메뉴 카테고리를 찾을 수 없습니다."),
+
+	MENU_OWNER_NOT_MATCH(HttpStatus.FORBIDDEN, "m_10", "메뉴는 가게의 점주만 수정할 수 있습니다."),
+
 	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "M4", "재고가 부족합니다.");
 
 	private final int status;
