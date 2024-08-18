@@ -18,7 +18,7 @@ import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.exception.InvalidMenuStockUpdateException;
 import camp.woowak.lab.menu.exception.NotEqualsOwnerException;
-import camp.woowak.lab.menu.exception.StoreNotOpenException;
+import camp.woowak.lab.menu.exception.NotUpdatableTimeException;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.menu.service.command.UpdateMenuStockCommand;
 import camp.woowak.lab.store.domain.Store;
@@ -123,7 +123,7 @@ class UpdateMenuStockServiceTest {
 
 		// when
 		// then
-		assertThrows(StoreNotOpenException.class, () -> updateMenuStockService.updateMenuStock(cmd));
+		assertThrows(NotUpdatableTimeException.class, () -> updateMenuStockService.updateMenuStock(cmd));
 		verify(menuRepository, times(1)).findByIdForUpdate(anyLong());
 		verify(fakeMenu, times(2)).getStore();
 		verify(fakeStore, times(1)).isOwnedBy(any(UUID.class));

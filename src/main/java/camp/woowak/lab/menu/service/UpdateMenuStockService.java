@@ -7,7 +7,7 @@ import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.exception.InvalidMenuStockUpdateException;
 import camp.woowak.lab.menu.exception.NotEqualsOwnerException;
-import camp.woowak.lab.menu.exception.StoreNotOpenException;
+import camp.woowak.lab.menu.exception.NotUpdatableTimeException;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.menu.service.command.UpdateMenuStockCommand;
 
@@ -23,7 +23,7 @@ public class UpdateMenuStockService {
 	 *
 	 * @throws MenuNotFoundException 메뉴를 찾을 수 없는 경우 발생한다.
 	 * @throws NotEqualsOwnerException 메뉴를 소유한 가게의 주인이 아닌 경우 발생한다.
-	 * @throws StoreNotOpenException 가게가 열려있지 않은 경우 발생한다.
+	 * @throws NotUpdatableTimeException 가게가 열려있지 않은 경우 발생한다.
 	 * @throws InvalidMenuStockUpdateException 메뉴의 재고를 변경할 수 없는 경우 발생한다.
 	 */
 	@Transactional
