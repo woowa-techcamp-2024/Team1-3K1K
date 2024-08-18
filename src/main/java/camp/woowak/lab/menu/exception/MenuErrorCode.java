@@ -17,7 +17,13 @@ public enum MenuErrorCode implements ErrorCode {
 	INVALID_STOCK_COUNT(HttpStatus.BAD_REQUEST, "m_7", "메뉴의 재고 개수는 1개 이상이어야 합니다."),
 
 	NOT_FOUND_MENU_CATEGORY(HttpStatus.BAD_REQUEST, "M3", "메뉴 카테고리를 찾을 수 없습니다."),
-	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "M4", "재고가 부족합니다.");
+	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "M4", "재고가 부족합니다."),
+	INVALID_UPDATE_MENU_STOCK(HttpStatus.CONFLICT, "m_9", "메뉴의 재고를 변경할 수 없습니다."),
+
+	NOT_EQUALS_OWNER(HttpStatus.BAD_REQUEST, "m_10", "매장의 점주와 일치하지 않습니다."),
+	NOT_OPEN_STORE(HttpStatus.CONFLICT, "m_11", "가게가 열려있지 않습니다."),
+
+	;
 
 	private final int status;
 	private final String errorCode;
