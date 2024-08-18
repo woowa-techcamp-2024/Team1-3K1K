@@ -41,6 +41,7 @@ import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.resolver.session.SessionConst;
@@ -64,6 +65,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private VendorRepository vendorRepository;
+
+	@MockBean
+	private StoreDao storeDao;
 
 	@MockBean
 	private SessionVendorArgumentResolver sessionVendorArgumentResolver;
