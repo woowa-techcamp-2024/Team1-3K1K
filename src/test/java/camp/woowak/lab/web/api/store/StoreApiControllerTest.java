@@ -2,9 +2,11 @@ package camp.woowak.lab.web.api.store;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -17,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,8 +45,10 @@ import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import camp.woowak.lab.web.dao.MenuDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
+import camp.woowak.lab.web.dto.response.store.MenuCategoryResponse;
 import camp.woowak.lab.web.resolver.session.SessionConst;
 import camp.woowak.lab.web.resolver.session.SessionVendorArgumentResolver;
 
@@ -64,6 +70,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private VendorRepository vendorRepository;
+
+	@MockBean
+	private MenuDao menuDao;
 
 	@MockBean
 	private SessionVendorArgumentResolver sessionVendorArgumentResolver;
@@ -244,6 +253,38 @@ class StoreApiControllerTest {
 				.andExpect(status().isForbidden());
 
 			verify(menuCategoryRegistrationService).register(any(MenuCategoryRegistrationCommand.class));
+		}
+	}
+
+	@Nested
+	@DisplayName("메뉴 카테고리 생성: GET /stores/{storeId}/category")
+	class MenuCategoryQuery {
+		@Test
+		@DisplayName("[Success] 200 OK")
+		void success() throws Exception {
+			// given
+			long fakeStoreId = new Random().nextLong();
+			List<MenuCategoryResponse> queryResult = List.of(
+				new MenuCategoryResponse(1L, "Category 1"), new MenuCategoryResponse(2L, "Category 2"),
+				new MenuCategoryResponse(3L, "Category 3"));
+
+			// when
+			PageRequest pageRequest = PageRequest.of(0, 3);
+			when(menuDao.findAllCategoriesByStoreId(any(), any())).thenReturn(
+				new PageImpl<>(queryResult, pageRequest, 10));
+
+			// then
+			mockMvc.perform(get("/stores/{storedId}/category", fakeStoreId)
+					.param("page", "0")
+					.param("size", "3"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.totalElements").value(10))
+				.andExpect(jsonPath("$.data.totalPages").value(4))
+				.andExpect(jsonPath("$.data.size").value(3))
+				.andExpect(jsonPath("$.data.content").isArray())
+				.andDo(print());
+
+			verify(menuDao).findAllCategoriesByStoreId(fakeStoreId, pageRequest);
 		}
 	}
 
