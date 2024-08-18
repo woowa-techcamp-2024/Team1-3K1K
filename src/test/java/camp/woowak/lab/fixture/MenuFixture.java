@@ -3,7 +3,9 @@ package camp.woowak.lab.fixture;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import camp.woowak.lab.menu.TestMenu;
 import camp.woowak.lab.menu.TestMenuCategory;
+import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
@@ -56,5 +58,9 @@ public interface MenuFixture {
 
 	default StoreCategory createStoreCategory() {
 		return new StoreCategory("양식");
+	}
+
+	default Menu createMenu(Long id, Store store, MenuCategory menuCategory, String name, int price) {
+		return new TestMenu(id, store, menuCategory, name, price);
 	}
 }
