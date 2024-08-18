@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -277,6 +278,14 @@ class StoreApiControllerTest {
 			String menName = "Test Menu";
 			int menuPrice = 15000;
 
+			List<StoreDisplayResponse.MenuDisplayResponse> menuDisplayResponses = List.of(
+				new StoreDisplayResponse.MenuDisplayResponse(
+					menuCategoryId,
+					menuCategoryName,
+					menuId,
+					menName,
+					menuPrice
+				));
 			StoreDisplayResponse mockResponse = new StoreDisplayResponse(
 				storeId,
 				storeName,
@@ -289,18 +298,12 @@ class StoreApiControllerTest {
 				LocalTime.of(22, 0),
 				UUID.randomUUID(),
 				vendorName,
-				List.of(new StoreDisplayResponse.MenuDisplayResponse(
-					menuCategoryId,
-					menuCategoryName,
-					menuId,
-					menName,
-					menuPrice
-				))
+				menuDisplayResponses
 			);
 			given(storeDisplayService.displayStore(storeId)).willReturn(mockResponse);
 
 			// When & Then
-			mockMvc.perform(get("/stores/{storeId}", storeId))
+			ResultActions resultActions = mockMvc.perform(get("/stores/{storeId}", storeId))
 				.andDo(MockMvcResultHandlers.print())
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.storeId").value(storeId))
@@ -312,12 +315,18 @@ class StoreApiControllerTest {
 				.andExpect(jsonPath("$.data.storeCategoryName").value(storeCategoryName))
 				.andExpect(jsonPath("$.data.storeStartTime").value("09:00:00"))
 				.andExpect(jsonPath("$.data.storeEndTime").value("22:00:00"))
-				.andExpect(jsonPath("$.data.vendorName").value(vendorName))
-				.andExpect(jsonPath("$.data.menus[0].menuCategoryId").value(1))
-				.andExpect(jsonPath("$.data.menus[0].menuCategoryName").value(menuCategoryName))
-				.andExpect(jsonPath("$.data.menus[0].menuId").value(1))
-				.andExpect(jsonPath("$.data.menus[0].menuName").value(menName))
-				.andExpect(jsonPath("$.data.menus[0].menuPrice").value(menuPrice));
+				.andExpect(jsonPath("$.data.vendorName").value(vendorName));
+
+			// 메뉴 리스트 검증
+			for (int i = 0; i < menuDisplayResponses.size(); i++) {
+				StoreDisplayResponse.MenuDisplayResponse menu = menuDisplayResponses.get(i);
+				resultActions
+					.andExpect(jsonPath("$.data.menus[" + i + "].menuCategoryId").value(menu.menuCategoryId()))
+					.andExpect(jsonPath("$.data.menus[" + i + "].menuCategoryName").value(menu.menuCategoryName()))
+					.andExpect(jsonPath("$.data.menus[" + i + "].menuId").value(menu.menuId()))
+					.andExpect(jsonPath("$.data.menus[" + i + "].menuName").value(menu.menuName()))
+					.andExpect(jsonPath("$.data.menus[" + i + "].menuPrice").value(menu.menuPrice()));
+			}
 		}
 	}
 
