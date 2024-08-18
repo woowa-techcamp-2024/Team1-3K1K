@@ -8,7 +8,7 @@ public class TestMenu extends Menu {
 	private Long id;
 
 	public TestMenu(Long id, Store store, MenuCategory menuCategory,
-					String name, Integer price) {
+					String name, Long price) {
 		super(store, menuCategory, name, price, 50L, "imageUrl");
 		this.id = id;
 	}
