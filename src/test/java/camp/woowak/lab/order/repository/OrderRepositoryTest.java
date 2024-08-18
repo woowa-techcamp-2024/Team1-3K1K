@@ -98,10 +98,10 @@ class OrderRepositoryTest {
 			new Store(vendor, storeCategory, "store", "송파", "010-1234-5678", 10000, LocalDate.now().atTime(9, 0),
 				LocalDate.now().atTime(21, 0)));
 		menu1 = menuRepository.saveAndFlush(
-			new Menu(store1, menuCategoryRepository.saveAndFlush(new MenuCategory(store1, "메인")), "menu1", 10000, 100L,
+			new Menu(store1, menuCategoryRepository.saveAndFlush(new MenuCategory(store1, "메인")), "menu1", 10000L, 100L,
 				"image"));
 		menu2 = menuRepository.saveAndFlush(
-			new Menu(store2, menuCategoryRepository.saveAndFlush(new MenuCategory(store2, "메인")), "menu2", 10000, 100L,
+			new Menu(store2, menuCategoryRepository.saveAndFlush(new MenuCategory(store2, "메인")), "menu2", 10000L, 100L,
 				"image"));
 	}
 
