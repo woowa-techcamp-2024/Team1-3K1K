@@ -53,7 +53,7 @@ class MenuApiControllerTest {
 		given(updateMenuStockService.updateMenuStock(any(UpdateMenuStockCommand.class))).willReturn(menuId);
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.session(session))
@@ -72,7 +72,7 @@ class MenuApiControllerTest {
 		UpdateMenuStockRequest request = new UpdateMenuStockRequest(menuId, stock);
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.session(session))
@@ -90,7 +90,7 @@ class MenuApiControllerTest {
 		UpdateMenuStockRequest request = new UpdateMenuStockRequest(menuId, stock);
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.session(session))
@@ -127,7 +127,7 @@ class MenuApiControllerTest {
 		UpdateMenuStockRequest request = new UpdateMenuStockRequest(menuId, stock);
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isUnauthorized());
@@ -147,7 +147,7 @@ class MenuApiControllerTest {
 			new NotUpdatableTimeException("매장이 열려있습니다."));
 
 		// when
-		mockMvc.perform(put("/menus/stock")
+		mockMvc.perform(patch("/menus/stock")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.session(session))
