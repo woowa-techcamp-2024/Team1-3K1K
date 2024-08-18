@@ -2,10 +2,12 @@ package camp.woowak.lab.web.api.store;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.menu.service.MenuCategoryRegistrationService;
@@ -18,12 +20,15 @@ import camp.woowak.lab.store.service.command.StoreMenuRegistrationCommand;
 import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
+import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.MenuPriceUpdateRequest;
+import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreMenuRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
 import camp.woowak.lab.web.dto.response.store.MenuCategoryRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.MenuPriceUpdateResponse;
+import camp.woowak.lab.web.dto.response.store.StoreInfoListResponse;
 import camp.woowak.lab.web.dto.response.store.StoreMenuRegistrationResponse;
 import camp.woowak.lab.web.dto.response.store.StoreRegistrationResponse;
 import jakarta.validation.Valid;
@@ -37,6 +42,19 @@ public class StoreApiController {
 	private final StoreMenuRegistrationService storeMenuRegistrationService;
 	private final MenuCategoryRegistrationService menuCategoryRegistrationService;
 	private final MenuPriceUpdateService menuPriceUpdateService;
+	private final StoreDao storeDao;
+
+	@GetMapping("/stores")
+	public StoreInfoListResponse getStoreInfos(
+		@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+		@RequestParam(name = "sortBy", required = false, defaultValue = "") String sortBy,
+		@RequestParam(name = "order", required = false, defaultValue = "0") int order,
+		@RequestParam(name = "filterBy", required = false, defaultValue = "") String filterBy,
+		@RequestParam(name = "filterValue", required = false, defaultValue = "") String filterValue
+	) {
+		StoreInfoListRequest request = new StoreInfoListRequest(page, sortBy, order, filterBy, filterValue);
+		return storeDao.findAllStoreList(request);
+	}
 
 	@PostMapping("/stores")
 	public StoreRegistrationResponse storeRegistration(@AuthenticationPrincipal final LoginVendor loginVendor,
@@ -79,7 +97,7 @@ public class StoreApiController {
 	) {
 		MenuPriceUpdateCommand command = new MenuPriceUpdateCommand(loginVendor.getId(), menuId, request.price());
 
-		int updatedPrice = menuPriceUpdateService.updateMenuPrice(command);
+		long updatedPrice = menuPriceUpdateService.updateMenuPrice(command);
 		return new MenuPriceUpdateResponse(updatedPrice);
 	}
 

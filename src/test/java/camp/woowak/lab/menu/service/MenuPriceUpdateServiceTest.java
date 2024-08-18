@@ -55,13 +55,13 @@ class MenuPriceUpdateServiceTest implements MenuFixture {
 		@DisplayName("[성공] 해당 메뉴의 price가 정상적으로 업데이트 된다.")
 		void success() {
 			//given
-			int updatePrice = menuPrice + 1000;
+			long updatePrice = menuPrice + 1000;
 			MenuPriceUpdateCommand command = new MenuPriceUpdateCommand(vendor.getId(), menu.getId(), updatePrice);
 
 			when(menuRepository.findByIdWithStore(menu.getId())).thenReturn(Optional.of(menu));
 
 			//when
-			int updatedMenuPrice = menuPriceUpdateService.updateMenuPrice(command);
+			long updatedMenuPrice = menuPriceUpdateService.updateMenuPrice(command);
 
 			//then
 			assertThat(updatedMenuPrice).isEqualTo(updatePrice);
@@ -72,7 +72,7 @@ class MenuPriceUpdateServiceTest implements MenuFixture {
 		@DisplayName("[Exception] 다른 가게 사장님이 다른 가게의 메뉴 가격을 수정하려는 경우 UnauthorizedMenuCategoryCreationException 를 던진다.")
 		void otherVendorUpdateOtherStorePriceTest() {
 			//given
-			int updatePrice = menuPrice + 1000;
+			long updatePrice = menuPrice + 1000;
 			MenuPriceUpdateCommand command = new MenuPriceUpdateCommand(otherVendor.getId(), menu.getId(), updatePrice);
 
 			when(menuRepository.findByIdWithStore(menu.getId())).thenReturn(Optional.of(menu));
@@ -86,7 +86,7 @@ class MenuPriceUpdateServiceTest implements MenuFixture {
 		@DisplayName("[Exception] 업데이트 하려는 가격이 0인경우 InvalidMenuPriceUpdateException을 던진다.")
 		void invalidNegativePrice() {
 			//given
-			int updatePrice = -1;
+			long updatePrice = -1;
 			MenuPriceUpdateCommand command = new MenuPriceUpdateCommand(vendor.getId(), menu.getId(), updatePrice);
 
 			when(menuRepository.findByIdWithStore(menu.getId())).thenReturn(Optional.of(menu));
@@ -100,7 +100,7 @@ class MenuPriceUpdateServiceTest implements MenuFixture {
 		@DisplayName("[Exception] 업데이트 하려는 가격이 0인경우 InvalidMenuPriceUpdateException을 던진다.")
 		void invalidZeroPrice() {
 			//given
-			int updatePrice = 0;
+			long updatePrice = 0;
 			MenuPriceUpdateCommand command = new MenuPriceUpdateCommand(vendor.getId(), menu.getId(), updatePrice);
 
 			when(menuRepository.findByIdWithStore(menu.getId())).thenReturn(Optional.of(menu));

@@ -62,7 +62,7 @@ class StoreMenuRegistrationServiceTest {
 		Long storeId = 1L;
 		UUID vendorId = UUID.randomUUID();
 		List<MenuLineItem> menuItems = List.of(
-			new MenuLineItem("메뉴1", 50L, "image1.jpg", "카테고리1", 10000)
+			new MenuLineItem("메뉴1", 50L, "image1.jpg", "카테고리1", 10000L)
 		);
 
 		StoreMenuRegistrationCommand request = new StoreMenuRegistrationCommand(vendorId, storeId, menuItems);
@@ -88,7 +88,7 @@ class StoreMenuRegistrationServiceTest {
 		Long storeId = 1L;
 		UUID vendorId = UUID.randomUUID();
 		List<MenuLineItem> menuItems = List.of(
-			new MenuLineItem("메뉴1", 50L, "image1.jpg", "카테고리1", 10000)
+			new MenuLineItem("메뉴1", 50L, "image1.jpg", "카테고리1", 10000L)
 		);
 		StoreMenuRegistrationCommand command = new StoreMenuRegistrationCommand(vendorId, storeId, menuItems);
 

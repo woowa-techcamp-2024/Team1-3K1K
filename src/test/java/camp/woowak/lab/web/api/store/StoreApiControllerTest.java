@@ -44,6 +44,7 @@ import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.MenuPriceUpdateRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
@@ -68,6 +69,9 @@ class StoreApiControllerTest {
 
 	@MockBean
 	private VendorRepository vendorRepository;
+
+	@MockBean
+	private StoreDao storeDao;
 
 	@MockBean
 	private SessionVendorArgumentResolver sessionVendorArgumentResolver;
@@ -262,7 +266,7 @@ class StoreApiControllerTest {
 		void success() throws Exception {
 			//given
 			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
-			Integer updatePrice = 10000;
+			Long updatePrice = 10000L;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))
@@ -286,7 +290,7 @@ class StoreApiControllerTest {
 		void badRequestWithNullPrice() throws Exception {
 			//given
 			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
-			Integer updatePrice = null;
+			Long updatePrice = null;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))
@@ -307,7 +311,7 @@ class StoreApiControllerTest {
 		void badRequestWithZeroPrice() throws Exception {
 			//given
 			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
-			Integer updatePrice = 0;
+			Long updatePrice = 0L;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))
@@ -328,7 +332,7 @@ class StoreApiControllerTest {
 		void badRequestWithNegativePrice() throws Exception {
 			//given
 			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
-			Integer updatePrice = -1000;
+			Long updatePrice = -1000L;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))
@@ -348,7 +352,7 @@ class StoreApiControllerTest {
 		@DisplayName("[Exception] 401 Unauthorized")
 		void unAuthorizedException() throws Exception {
 			//given
-			Integer updatePrice = -1000;
+			Long updatePrice = -1000L;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))
@@ -369,7 +373,7 @@ class StoreApiControllerTest {
 		void forbidden() throws Exception {
 			//given
 			LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
-			Integer updatePrice = 1000;
+			Long updatePrice = 1000L;
 			MenuPriceUpdateRequest request = new MenuPriceUpdateRequest(updatePrice);
 
 			when(sessionVendorArgumentResolver.supportsParameter(any()))

@@ -39,7 +39,7 @@ public class Menu {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer price;
+	private Long price;
 
 	@Column(nullable = false)
 	private Long stockCount;
@@ -48,7 +48,7 @@ public class Menu {
 	private String imageUrl;
 
 	public Menu(Store store, MenuCategory menuCategory, String name,
-				Integer price, Long stockCount, String imageUrl
+				Long price, Long stockCount, String imageUrl
 	) {
 		MenuValidator.validate(store, menuCategory, name, price, stockCount, imageUrl);
 		this.store = store;
@@ -70,7 +70,7 @@ public class Menu {
 		stockCount -= amount;
 	}
 
-	public int updatePrice(int uPrice) {
+	public long updatePrice(long uPrice) {
 		if (uPrice <= 0) {
 			throw new InvalidMenuPriceUpdateException("메뉴의 가격은 0원보다 커야합니다. 입력값 : " + uPrice);
 		}

@@ -10,6 +10,6 @@ import java.util.UUID;
 public record MenuPriceUpdateCommand(
 	UUID vendorId,
 	Long menuId,
-	int updatePrice
+	Long updatePrice
 ) {
 }

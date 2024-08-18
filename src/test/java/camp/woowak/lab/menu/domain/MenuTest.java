@@ -43,7 +43,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(null, menuCategoryFixture, "1234", 1000, 50L, "image"));
+					() -> new Menu(null, menuCategoryFixture, "1234", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -63,7 +63,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, null, "1234", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, null, "1234", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -79,7 +79,7 @@ class MenuTest {
 			@DisplayName("[Success] 10글자 이하만 가능하다")
 			void success() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1000, 50L, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1000L, 50L, "image"))
 					.doesNotThrowAnyException();
 			}
 
@@ -91,7 +91,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, null, 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -105,7 +105,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -119,7 +119,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -133,7 +133,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "12345678901", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "12345678901", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -149,7 +149,7 @@ class MenuTest {
 			@DisplayName("[Success] 양수만 가능하다")
 			void success() {
 				// given & when & then
-				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1, 50L, "image"))
+				assertThatCode(() -> new Menu(storeFixture, menuCategoryFixture, "1234567890", 1L, 50L, "image"))
 					.doesNotThrowAnyException();
 			}
 
@@ -175,7 +175,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", -1, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", -1L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -189,7 +189,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 0, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 0L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -209,7 +209,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, null, 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, null, 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -223,7 +223,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -237,7 +237,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000, 50L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "   ", 1000L, 50L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -256,7 +256,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, null, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000L, null, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -270,7 +270,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, -1L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000L, -1L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -284,7 +284,7 @@ class MenuTest {
 
 				// when
 				Throwable thrown = catchThrowable(
-					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000, 0L, "image"));
+					() -> new Menu(storeFixture, menuCategoryFixture, "메뉴이름", 1000L, 0L, "image"));
 
 				// then
 				assertExceptionAndErrorCode(thrown, expected);
@@ -296,7 +296,7 @@ class MenuTest {
 	@Nested
 	@DisplayName("메뉴 가격 업데이트는")
 	class UpdatePriceTest {
-		private int menuPrice = 10000;
+		private long menuPrice = 10000;
 		private Menu menu = new Menu(storeFixture, menuCategoryFixture, "메뉴1", menuPrice, 10L, "imageUrl");
 
 		@Nested
@@ -306,7 +306,7 @@ class MenuTest {
 			@DisplayName("[Exception] 음수이면 InvalidMenuPriceUpdateException이 발생한다.")
 			void negativeUpdatePrice() {
 				//given
-				int updatePrice = -1;
+				long updatePrice = -1;
 
 				//when & then
 				HttpStatusException throwable = (HttpStatusException)catchThrowable(
@@ -319,7 +319,7 @@ class MenuTest {
 			@DisplayName("[Exception] 0이면 InvalidMenuPriceUpdateException이 발생한다.")
 			void zeroUpdatePrice() {
 				//given
-				int updatePrice = 0;
+				long updatePrice = 0;
 
 				//when & then
 				HttpStatusException throwable = (HttpStatusException)catchThrowable(
@@ -332,10 +332,10 @@ class MenuTest {
 			@DisplayName("[success] 양수면 가격이 update되고 update된 가격이 return된다.")
 			void positiveUpdatePrice() {
 				//given
-				int updatePrice = 9000;
+				long updatePrice = 9000;
 
 				//when
-				int updatedPrice = menu.updatePrice(updatePrice);
+				long updatedPrice = menu.updatePrice(updatePrice);
 
 				//then
 				assertThat(updatedPrice).isEqualTo(updatePrice);

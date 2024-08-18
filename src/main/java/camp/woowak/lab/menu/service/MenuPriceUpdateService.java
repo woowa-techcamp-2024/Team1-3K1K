@@ -27,7 +27,7 @@ public class MenuPriceUpdateService {
 	 * @throws NotFoundMenuException                                          존재하지 않는 메뉴의 가격을 업데이트 하려는 경우
 	 */
 	@Transactional
-	public int updateMenuPrice(MenuPriceUpdateCommand cmd) {
+	public long updateMenuPrice(MenuPriceUpdateCommand cmd) {
 		Menu menu = menuRepository.findByIdWithStore(cmd.menuId())
 			.orElseThrow(() -> {
 				log.info("등록되지 않은 메뉴 {}의 가격 수정을 시도했습니다.", cmd.menuId());
@@ -40,7 +40,7 @@ public class MenuPriceUpdateService {
 			throw new MenuOwnerNotMatchException("권한없는 사용자가 메뉴 가격 수정을 시도했습니다.");
 		}
 
-		int updatedPrice = menu.updatePrice(cmd.updatePrice());
+		long updatedPrice = menu.updatePrice(cmd.updatePrice());
 		log.info("Store({}) 의 메뉴({}) 가격을 ({})로 수정했습니다.", store.getId(), menu.getId(), cmd.updatePrice());
 
 		return updatedPrice;

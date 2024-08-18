@@ -60,7 +60,7 @@ public interface MenuFixture {
 		return new StoreCategory("양식");
 	}
 
-	default Menu createMenu(Long id, Store store, MenuCategory menuCategory, String name, int price) {
+	default Menu createMenu(Long id, Store store, MenuCategory menuCategory, String name, long price) {
 		return new TestMenu(id, store, menuCategory, name, price);
 	}
 }

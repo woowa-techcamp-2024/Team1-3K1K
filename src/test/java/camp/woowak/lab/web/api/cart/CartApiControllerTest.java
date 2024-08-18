@@ -100,7 +100,7 @@ class CartApiControllerTest {
 
 		@BeforeEach
 		void setUp() throws Exception {
-			menu = createMenu(store, menuCategory, "짜장면", 90000);
+			menu = createMenu(store, menuCategory, "짜장면", 90000L);
 		}
 
 		@Test
@@ -143,7 +143,7 @@ class CartApiControllerTest {
 			LocalDateTime closedEndTime = LocalDateTime.now().minusMinutes(1).withSecond(0).withNano(0);
 			Store closedStore = createStore(vendor, "닫힌 가게", minOrderPrice, closedStartTime, closedEndTime);
 			MenuCategory closedStoreMenuCategory = createMenuCategory(closedStore, "닫힌 카테고리");
-			Menu closedStoresMenu = createMenu(closedStore, closedStoreMenuCategory, "닫힌 가게의 메뉴", 1000);
+			Menu closedStoresMenu = createMenu(closedStore, closedStoreMenuCategory, "닫힌 가게의 메뉴", 1000L);
 
 			AddCartRequest request = new AddCartRequest(closedStoresMenu.getId());
 			String content = mapper.writeValueAsString(request);
@@ -164,7 +164,7 @@ class CartApiControllerTest {
 			//given
 			Store otherStore = createStore(vendor, "옆집 가게", minOrderPrice, startTime, endTime);
 			MenuCategory otherStoreMenuCategory = createMenuCategory(otherStore, "옆집 카테고리");
-			Menu otherStoreMenu = createMenu(otherStore, otherStoreMenuCategory, "옆집 가게 메뉴", 10000);
+			Menu otherStoreMenu = createMenu(otherStore, otherStoreMenuCategory, "옆집 가게 메뉴", 10000L);
 
 			AddCartRequest givenRequest = new AddCartRequest(menu.getId());
 			String givenContent = mapper.writeValueAsString(givenRequest);
@@ -212,15 +212,15 @@ class CartApiControllerTest {
 			//given
 			Cart cart = new Cart(customer.getId().toString());
 
-			int price1 = 1000;
+			Long price1 = 1000L;
 			Menu menu1 = createMenu(store, menuCategory, "짜장면1", price1);
 			cart.addMenu(menu1);
 
-			int price2 = 2000;
+			Long price2 = 2000L;
 			Menu menu2 = createMenu(store, menuCategory, "짬뽕1", price2);
 			cart.addMenu(menu2);
 
-			int price3 = Integer.MAX_VALUE;
+			Long price3 = Long.MAX_VALUE;
 			Menu menu3 = createMenu(store, menuCategory, "황제정식", price3);
 			cart.addMenu(menu3);
 			cartRepository.save(cart);
@@ -241,7 +241,7 @@ class CartApiControllerTest {
 		return menuCategoryRepository.saveAndFlush(menuCategory);
 	}
 
-	private Menu createMenu(Store store, MenuCategory menuCategory, String name, int price) {
+	private Menu createMenu(Store store, MenuCategory menuCategory, String name, Long price) {
 		Menu menu1 = new Menu(store, menuCategory, name, price, 1L, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
