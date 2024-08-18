@@ -25,7 +25,7 @@ public interface CartFixture {
 		return new TestStore(id, vendor, name, "송파", "010-1234-5678", minOrderPrice, startTIme, endTime);
 	}
 
-	default Menu createSavedMenu(Long id, Store store, MenuCategory menuCategory, String name, int price) {
+	default Menu createSavedMenu(Long id, Store store, MenuCategory menuCategory, String name, Long price) {
 		return new TestMenu(id, store, menuCategory, name, price);
 	}
 }

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -52,15 +53,19 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 	private final String pageKey = "page";
 	private final String orderKey = "order";
 
+	private final MenuRepository menuRepository;
+
 	@Autowired
 	public StoreApiControllerWithDaoTest(PayAccountRepository payAccountRepository, StoreRepository storeRepository,
 										 StoreCategoryRepository storeCategoryRepository,
 										 VendorRepository vendorRepository,
 										 OrderRepository orderRepository,
 										 CustomerRepository customerRepository,
+										 MenuRepository menuRepository,
 										 ObjectMapper objectMapper, MockMvc mvc) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			customerRepository);
+			customerRepository,menuRepository);
+		this.menuRepository = menuRepository;
 		this.objectMapper = objectMapper;
 		this.mvc = mvc;
 	}

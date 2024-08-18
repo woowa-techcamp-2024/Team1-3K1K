@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -42,9 +43,10 @@ class StoreDaoTest extends StoreDummiesFixture {
 						StoreCategoryRepository storeCategoryRepository,
 						VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
 						OrderRepository orderRepository,
-						CustomerRepository customerRepository) {
+						CustomerRepository customerRepository,
+						MenuRepository menuRepository) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			customerRepository);
+			customerRepository, menuRepository);
 		this.storeDao = storeDao;
 		this.dummyCount = 105;
 	}

@@ -6,9 +6,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.PriceChecker;
+import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
+import camp.woowak.lab.order.domain.StockRequester;
+import camp.woowak.lab.order.domain.WithdrawPointService;
+import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.repository.PayAccountRepository;
@@ -25,6 +32,7 @@ import camp.woowak.lab.web.authentication.PasswordEncoder;
 public abstract class StoreDummiesFixture {
 	protected final StoreRepository storeRepository;
 	protected final StoreCategoryRepository storeCategoryRepository;
+	protected final MenuRepository menuRepository;
 	protected final VendorRepository vendorRepository;
 	protected final PayAccountRepository payAccountRepository;
 	protected final OrderRepository orderRepository;
@@ -34,7 +42,7 @@ public abstract class StoreDummiesFixture {
 	public StoreDummiesFixture(StoreRepository storeRepository, StoreCategoryRepository storeCategoryRepository,
 							   VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
 							   OrderRepository orderRepository,
-							   CustomerRepository customerRepository) {
+							   CustomerRepository customerRepository, MenuRepository menuRepository) {
 		this.storeRepository = storeRepository;
 		this.storeCategoryRepository = storeCategoryRepository;
 		this.vendorRepository = vendorRepository;
@@ -42,6 +50,7 @@ public abstract class StoreDummiesFixture {
 		this.orderRepository = orderRepository;
 		this.customerRepository = customerRepository;
 		this.passwordEncoder = new NoOpPasswordEncoder();
+		this.menuRepository = menuRepository;
 	}
 
 	protected List<Customer> createDummyCustomers(int numberOfCustomers) {
@@ -67,10 +76,13 @@ public abstract class StoreDummiesFixture {
 		}
 		for (int i = 0; i < store.size(); i++) {
 			Store s = store.get(i);
+			SingleStoreOrderValidator singleStoreOrderValidator = new TestSingleStoreOrderValidator(s, storeRepository);
 			for (int j = 0; j < orderCount[i]; j++) {
 				Customer customer = dummyCustomers.get(
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
-				Order order = new Order(customer, s);
+				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
+					new StockRequester(menuRepository), new TestPriceChecker(menuRepository),
+					new TestWithdrawPointService(payAccountRepository));
 				orders.add(order);
 			}
 		}
@@ -109,5 +121,42 @@ public abstract class StoreDummiesFixture {
 
 	protected StoreCategory createRandomDummyStoreCategory() {
 		return storeCategoryRepository.saveAndFlush(new StoreCategory(UUID.randomUUID().toString()));
+	}
+
+	private class TestPriceChecker extends PriceChecker {
+		public TestPriceChecker(MenuRepository menuRepository) {
+			super(menuRepository);
+		}
+
+		@Override
+		public List<OrderItem> check(Store store, List<CartItem> cartItems) {
+			return List.of();
+		}
+	}
+
+	private class TestWithdrawPointService extends WithdrawPointService {
+
+		public TestWithdrawPointService(PayAccountRepository payAccountRepository) {
+			super(payAccountRepository);
+		}
+
+		@Override
+		public List<OrderItem> withdraw(Customer customer, List<OrderItem> orderItems) {
+			return List.of();
+		}
+	}
+
+	private class TestSingleStoreOrderValidator extends SingleStoreOrderValidator {
+		private Store store;
+
+		public TestSingleStoreOrderValidator(Store store, StoreRepository storeRepository) {
+			super(storeRepository);
+			this.store = store;
+		}
+
+		@Override
+		public Store check(List<CartItem> cartItems) {
+			return store;
+		}
 	}
 }

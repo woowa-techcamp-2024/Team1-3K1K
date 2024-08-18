@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import camp.woowak.lab.cart.domain.Cart;
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.cart.exception.OtherStoreMenuException;
 import camp.woowak.lab.cart.exception.StoreNotOpenException;
@@ -81,7 +82,7 @@ class CartServiceTest {
 
 		menuCategory = createMenuCategory(store, "중식");
 
-		menu = createMenu(store, menuCategory, "짜장면", 90000);
+		menu = createMenu(store, menuCategory, "짜장면", 90000L);
 	}
 
 	@Nested
@@ -100,7 +101,7 @@ class CartServiceTest {
 			Optional<Cart> cart = cartRepository.findByCustomerId(customer.getId().toString());
 			assertThat(cart).isPresent();
 			Cart cartList = cart.get();
-			assertThat(cartList.getMenuList()).contains(menu);
+			assertThat(cartList.getCartItems()).contains(new CartItem(menu.getId(), store.getId(), 1));
 		}
 
 		@Test
@@ -123,7 +124,7 @@ class CartServiceTest {
 			LocalDateTime endTime = LocalDateTime.now().minusMinutes(1).withSecond(0).withNano(0);
 			Store closedStore = createStore(vendor, "오픈 전의 중화반점", 8000, startTime, endTime);
 			MenuCategory closedMenuCategory = createMenuCategory(closedStore, "닫힌 카테고리");
-			Menu menu = createMenu(closedStore, closedMenuCategory, "닫힌 가게의 메뉴", 1000);
+			Menu menu = createMenu(closedStore, closedMenuCategory, "닫힌 가게의 메뉴", 1000L);
 
 			AddCartCommand command = new AddCartCommand(customer.getId().toString(), menu.getId());
 
@@ -138,7 +139,7 @@ class CartServiceTest {
 			//given
 			Store otherStore = createStore(vendor, "다른집", 8000, startTime, endTime);
 			MenuCategory otherMenuCategory = createMenuCategory(otherStore, "다른집 카테고리");
-			Menu otherStoresMenu = createMenu(otherStore, otherMenuCategory, "다른집 짜장면", 9000);
+			Menu otherStoresMenu = createMenu(otherStore, otherMenuCategory, "다른집 짜장면", 9000L);
 
 			AddCartCommand command1 = new AddCartCommand(customer.getId().toString(), menu.getId());
 			cartService.addMenu(command1);
@@ -173,15 +174,15 @@ class CartServiceTest {
 			@DisplayName("현재 장바구니에 담긴 모든 메뉴의 총 금액을 return 받는다.")
 			void getTotalPriceTest() {
 				//given
-				int price1 = 1000;
+				Long price1 = 1000L;
 				Menu menu1 = createMenu(store, menuCategory, "짜장면1", price1);
 				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu1.getId()));
 
-				int price2 = 2000;
+				Long price2 = 2000L;
 				Menu menu2 = createMenu(store, menuCategory, "짬뽕1", price2);
 				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu2.getId()));
 
-				int price3 = Integer.MAX_VALUE;
+				Long price3 = Long.MAX_VALUE;
 				Menu menu3 = createMenu(store, menuCategory, "황제정식", price3);
 				cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu3.getId()));
 
@@ -201,7 +202,7 @@ class CartServiceTest {
 		return menuCategoryRepository.saveAndFlush(menuCategory1);
 	}
 
-	private Menu createMenu(Store store, MenuCategory menuCategory, String name, int price) {
+	private Menu createMenu(Store store, MenuCategory menuCategory, String name, Long price) {
 		Menu menu1 = new Menu(store, menuCategory, name, price, 1L, "imageUrl");
 		menuRepository.saveAndFlush(menu1);
 
