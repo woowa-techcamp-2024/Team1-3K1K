@@ -1,6 +1,8 @@
 package camp.woowak.lab.order.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import camp.woowak.lab.cart.domain.vo.CartItem;
@@ -15,6 +17,7 @@ import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
+import camp.woowak.lab.vendor.domain.Vendor;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -26,11 +29,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ORDERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Order {
 
 	@Id
@@ -74,6 +79,11 @@ public class Order {
 	}
 
 	public List<OrderItem> getOrderItems() {
-		return orderItems;
+		return Collections.unmodifiableList(orderItems);
 	}
+
+	public Vendor getVendor() {
+		return store.getOwner();
+	}
+
 }
