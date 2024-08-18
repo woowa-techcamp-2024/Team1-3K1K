@@ -30,7 +30,7 @@ class CartTest implements CartFixture {
 	private List<CartItem> cartItemList;
 	private Cart cart;
 	private Menu menu;
-	private int minPrice = 8000;
+	private final int minPrice = 8000;
 	private Store store;
 	private Vendor vendor;
 
