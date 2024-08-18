@@ -32,13 +32,17 @@ import lombok.NoArgsConstructor;
 @Table(name = "ORDERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer requester;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Store store;
+
 	@CollectionTable(name = "ORDER_ITEMS", joinColumns = @JoinColumn(name = "order_id"))
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
