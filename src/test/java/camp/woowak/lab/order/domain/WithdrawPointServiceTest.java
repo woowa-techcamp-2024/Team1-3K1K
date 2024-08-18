@@ -54,8 +54,8 @@ class WithdrawPointServiceTest {
 
 		OrderItem orderItem1 = mock(OrderItem.class);
 		OrderItem orderItem2 = mock(OrderItem.class);
-		when(orderItem1.getTotalPrice()).thenReturn(500);
-		when(orderItem2.getTotalPrice()).thenReturn(1500);
+		when(orderItem1.getTotalPrice()).thenReturn(500L);
+		when(orderItem2.getTotalPrice()).thenReturn(1500L);
 
 		List<OrderItem> orderItems = List.of(orderItem1, orderItem2);
 
