@@ -48,9 +48,9 @@ public class OrderDTO {
 	@Getter
 	public static class OrderItemDTO {
 		private final Long menuId;
-		private final int price;
+		private final long price;
 		private final int quantity;
-		private final int totalPrice;
+		private final long totalPrice;
 
 		public OrderItemDTO(OrderItem orderItem) {
 			this.menuId = orderItem.getMenuId();
