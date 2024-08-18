@@ -21,6 +21,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 	List<Menu> findAllByIdForUpdate(List<Long> ids);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT m FROM Menu m WHERE m.id = :id")
 	Optional<Menu> findByIdForUpdate(Long id);
 
 	/**
