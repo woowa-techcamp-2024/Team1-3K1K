@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.exception.MenuOwnerNotMatchException;
 import camp.woowak.lab.menu.exception.UnauthorizedMenuCategoryCreationException;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.menu.service.command.MenuPriceUpdateCommand;
@@ -36,7 +37,7 @@ public class MenuPriceUpdateService {
 		Store store = menu.getStore();
 		if (!store.isOwnedBy(cmd.vendorId())) {
 			log.info("권한없는 사용자 {}가 점포 {}의 메뉴 가격 수정을 시도했습니다.", cmd.vendorId(), store.getId());
-			throw new UnauthorizedMenuCategoryCreationException("권한없는 사용자가 메뉴 가격 수정을 시도했습니다.");
+			throw new MenuOwnerNotMatchException("권한없는 사용자가 메뉴 가격 수정을 시도했습니다.");
 		}
 
 		int updatedPrice = menu.updatePrice(cmd.updatePrice());
