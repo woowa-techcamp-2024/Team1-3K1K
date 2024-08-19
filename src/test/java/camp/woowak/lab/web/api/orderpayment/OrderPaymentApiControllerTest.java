@@ -31,7 +31,7 @@ class OrderPaymentApiControllerTest {
 	void adjustment_ShouldReturnSuccessResponse() throws Exception {
 		// Given
 		// orderPaymentAdjustmentService.adjustment() 호출 시 아무 일도 발생하지 않도록 설정
-		doNothing().when(orderPaymentSettlementService).adjustment();
+		doNothing().when(orderPaymentSettlementService).settleToAllVendors();
 
 		// When
 		ResultActions resultActions = mockMvc.perform(post("/orderPayments/adjustment")
@@ -43,6 +43,6 @@ class OrderPaymentApiControllerTest {
 			.andExpect(jsonPath("$.data.resultMessage").value("모든 정산을 완료하였습니다."));
 
 		// orderPaymentAdjustmentService.adjustment()가 한 번 호출되었는지 검증
-		verify(orderPaymentSettlementService, times(1)).adjustment();
+		verify(orderPaymentSettlementService, times(1)).settleToAllVendors();
 	}
 }

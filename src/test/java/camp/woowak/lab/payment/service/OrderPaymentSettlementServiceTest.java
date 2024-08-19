@@ -92,7 +92,7 @@ class OrderPaymentSettlementServiceTest {
 			given(settlementAmountCalculator.calculate(paymentsVendor2)).willReturn(1000L);
 
 			// When
-			orderPaymentSettlementService.adjustment();
+			orderPaymentSettlementService.settleToAllVendors();
 
 			// Then
 			then(vendorRepository).should().findAll();
@@ -124,7 +124,7 @@ class OrderPaymentSettlementServiceTest {
 				.willThrow(new NotFoundVendorException());
 
 			// When & Then
-			assertThatThrownBy(() -> orderPaymentSettlementService.adjustment())
+			assertThatThrownBy(() -> orderPaymentSettlementService.settleToAllVendors())
 				.isInstanceOf(NotFoundVendorException.class);
 
 			// 예외 발생 후에도 기존 금액이 유지되는지 확인

@@ -15,7 +15,7 @@ public class OrderPaymentApiController {
 
 	@PostMapping("/orderPayments/adjustment")
 	public OrderPaymentAdjustmentResponse adjustment() {
-		orderPaymentSettlementService.adjustment();
+		orderPaymentSettlementService.settleToAllVendors();
 
 		return new OrderPaymentAdjustmentResponse("모든 정산을 완료하였습니다.");
 	}

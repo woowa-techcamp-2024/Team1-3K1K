@@ -28,7 +28,7 @@ public class OrderPaymentSettlementService {
 	 * @throws NotFoundVendorException vendorId에 해당하는 점주를 찾을 수 없을 떄
 	 */
 	@Transactional
-	public void adjustment() {
+	public void settleToAllVendors() {
 		// 모든 점주 조회
 		List<Vendor> vendors = findAllVendors();
 		for (Vendor vendor : vendors) {
