@@ -27,7 +27,7 @@ import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-class OrderPaymentAdjustmentServiceTest {
+class OrderPaymentSettlementServiceTest {
 
 	@Mock
 	private VendorRepository vendorRepository;
@@ -39,7 +39,7 @@ class OrderPaymentAdjustmentServiceTest {
 	private SettlementAmountCalculator settlementAmountCalculator;
 
 	@InjectMocks
-	private OrderPaymentAdjustmentService orderPaymentAdjustmentService;
+	private OrderPaymentSettlementService orderPaymentSettlementService;
 
 	private static PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
 
@@ -92,7 +92,7 @@ class OrderPaymentAdjustmentServiceTest {
 			given(settlementAmountCalculator.calculate(paymentsVendor2)).willReturn(1000L);
 
 			// When
-			orderPaymentAdjustmentService.adjustment();
+			orderPaymentSettlementService.adjustment();
 
 			// Then
 			then(vendorRepository).should().findAll();
@@ -124,7 +124,7 @@ class OrderPaymentAdjustmentServiceTest {
 				.willThrow(new NotFoundVendorException());
 
 			// When & Then
-			assertThatThrownBy(() -> orderPaymentAdjustmentService.adjustment())
+			assertThatThrownBy(() -> orderPaymentSettlementService.adjustment())
 				.isInstanceOf(NotFoundVendorException.class);
 
 			// 예외 발생 후에도 기존 금액이 유지되는지 확인
