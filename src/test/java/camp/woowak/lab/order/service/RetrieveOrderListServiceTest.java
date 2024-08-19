@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
@@ -38,14 +42,16 @@ class RetrieveOrderListServiceTest {
 	void testRetrieveOrderList() {
 		// given
 		given(orderRepository.findAllByOwner(any(UUID.class))).willReturn(new ArrayList<>());
+		given(orderRepository.findAllByStore_Owner_Id(any(UUID.class), any(Pageable.class))).willReturn(new PageImpl<>(
+			List.of()));
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(UUID.randomUUID());
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(UUID.randomUUID(), PageRequest.of(0, 10));
 
 		// when
 		retrieveOrderListService.retrieveOrderListOfVendorStores(command);
 
 		// then
-		verify(orderRepository).findAllByOwner(any(UUID.class));
+		verify(orderRepository).findAllByStore_Owner_Id(any(UUID.class), any(Pageable.class));
 	}
 
 	@Test
@@ -59,7 +65,7 @@ class RetrieveOrderListServiceTest {
 		given(storeRepository.findById(storeId)).willReturn(Optional.of(fakeStore));
 		given(fakeStore.isOwnedBy(vendorId)).willReturn(true);
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId);
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
 
 		// when
 		retrieveOrderListService.retrieveOrderListOfStore(command);
@@ -78,7 +84,7 @@ class RetrieveOrderListServiceTest {
 		UUID vendorId = UUID.randomUUID();
 		given(storeRepository.findById(storeId)).willReturn(Optional.empty());
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId);
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
 
 		// when & then
 		assertThrows(NotFoundStoreException.class,
@@ -95,7 +101,7 @@ class RetrieveOrderListServiceTest {
 		given(storeRepository.findById(storeId)).willReturn(Optional.of(fakeStore));
 		given(fakeStore.isOwnedBy(vendorId)).willReturn(false);
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId);
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
 
 		// when & then
 		assertThrows(NotEqualsOwnerException.class,
