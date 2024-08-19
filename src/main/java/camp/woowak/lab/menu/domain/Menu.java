@@ -78,4 +78,13 @@ public class Menu {
 
 		return this.price;
 	}
+
+	public Long getMenuCategoryId() {
+		return menuCategory.getId();
+	}
+
+	public String getMenuCategoryName() {
+		return menuCategory.getName();
+	}
+
 }

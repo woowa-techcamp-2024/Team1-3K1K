@@ -20,4 +20,7 @@ public class StoreAddress {
 		this.district = district;
 	}
 
+	public String getDistrict() {
+		return district;
+	}
 }

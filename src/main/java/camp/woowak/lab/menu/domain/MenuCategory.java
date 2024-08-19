@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 		@UniqueConstraint(name = "unique_store_name", columnNames = {"store_id", "name"})
 	}
 )
+@Getter
 public class MenuCategory {
 
 	@Id
@@ -41,8 +43,5 @@ public class MenuCategory {
 		this.name = name;
 	}
 
-	public Long getId() {
-		return id;
-	}
 }
 
