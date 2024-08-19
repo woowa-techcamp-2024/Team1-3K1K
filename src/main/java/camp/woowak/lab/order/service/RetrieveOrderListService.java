@@ -1,7 +1,6 @@
 package camp.woowak.lab.order.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,9 @@ public class RetrieveOrderListService {
 		this.storeRepository = storeRepository;
 	}
 
-	public List<OrderDTO> retrieveOrderListOfVendorStores(RetrieveOrderListCommand command) {
+	public Page<OrderDTO> retrieveOrderListOfVendorStores(RetrieveOrderListCommand command) {
 		// 점주 매장 주문 조회 권한 검증은 필요없다.
-		return orderRepository.findAllByOwner(command.vendorId()).stream().map(OrderDTO::new).toList();
+		return orderRepository.findAllByStore_Owner_Id(command.vendorId(), command.pageable()).map(OrderDTO::new);
 	}
 
 	/**
@@ -34,7 +33,7 @@ public class RetrieveOrderListService {
 	 * @throws NotFoundStoreException 매장이 존재하지 않을 경우
 	 * @throws NotEqualsOwnerException 매장의 주인이 아닐 경우
 	 */
-	public List<OrderDTO> retrieveOrderListOfStore(RetrieveOrderListCommand command) {
+	public Page<OrderDTO> retrieveOrderListOfStore(RetrieveOrderListCommand command) {
 		// 점주 매장 주문 조회 권한 검증
 		// 점주가 소유한 매장인지 확인
 		Store targetStore = storeRepository.findById(command.storeId())
@@ -44,6 +43,6 @@ public class RetrieveOrderListService {
 			throw new NotEqualsOwnerException(command.vendorId() + "는 " + targetStore.getId() + " 매장의 주인이 아닙니다.");
 		}
 
-		return orderRepository.findByStore(command.storeId(), command.vendorId()).stream().map(OrderDTO::new).toList();
+		return orderRepository.findByStore_Id(command.storeId(), command.pageable()).map(OrderDTO::new);
 	}
 }
