@@ -19,7 +19,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("SELECT o FROM Order o JOIN FETCH o.store s WHERE s.id = :storeId AND s.owner.id = :vendorId")
 	List<Order> findByStore(Long storeId, UUID vendorId);
 
+	@Deprecated
 	Page<Order> findAllByStore_Owner_Id(UUID vendorId, Pageable pageable);
 
+	@Deprecated
 	Page<Order> findByStore_Id(Long storeId, Pageable pageable);
 }
