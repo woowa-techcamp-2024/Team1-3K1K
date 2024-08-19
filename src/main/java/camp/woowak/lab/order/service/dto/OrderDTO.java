@@ -72,7 +72,7 @@ public class OrderDTO {
 			this.id = store.getId();
 			this.name = store.getName();
 			this.ownerName = store.getOwner().getName();
-			this.address = store.getStoreAddress().getDistrict();
+			this.address = store.getStoreAddress();
 			this.phoneNumber = store.getPhoneNumber();
 		}
 	}

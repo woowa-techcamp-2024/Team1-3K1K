@@ -287,7 +287,7 @@ class StoreApiControllerTest {
 			String menuCategoryName = "Test Menu Category";
 			long menuId = 1L;
 			String menName = "Test Menu";
-			int menuPrice = 15000;
+			long menuPrice = 15000;
 
 			List<StoreDisplayResponse.MenuDisplayResponse> menuDisplayResponses = List.of(
 				new StoreDisplayResponse.MenuDisplayResponse(

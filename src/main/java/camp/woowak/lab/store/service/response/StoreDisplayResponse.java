@@ -53,7 +53,7 @@ public record StoreDisplayResponse(
 
 		Long menuId,
 		String menuName,
-		Integer menuPrice
+		Long menuPrice
 	) {
 
 		public static MenuDisplayResponse of(final Menu menu) {

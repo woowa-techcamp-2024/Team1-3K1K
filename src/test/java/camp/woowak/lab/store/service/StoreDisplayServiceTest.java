@@ -135,7 +135,7 @@ class StoreDisplayServiceTest {
 		}
 
 		private Menu createMenu(Store store, MenuCategory menuCategory, String name) {
-			return new Menu(store, menuCategory, name, 10000, 50L, "image");
+			return new Menu(store, menuCategory, name, 10000L, 50L, "image");
 		}
 
 	}
