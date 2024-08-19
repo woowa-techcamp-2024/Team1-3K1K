@@ -3,7 +3,6 @@ package camp.woowak.lab.order.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,7 +40,6 @@ class RetrieveOrderListServiceTest {
 	@DisplayName("점주 주문 리스트 조회 테스트 - 성공")
 	void testRetrieveOrderList() {
 		// given
-		given(orderRepository.findAllByOwner(any(UUID.class))).willReturn(new ArrayList<>());
 		given(orderRepository.findAllByStore_Owner_Id(any(UUID.class), any(Pageable.class))).willReturn(new PageImpl<>(
 			List.of()));
 
@@ -61,17 +59,18 @@ class RetrieveOrderListServiceTest {
 		long storeId = 1L;
 		UUID vendorId = UUID.randomUUID();
 		Store fakeStore = Mockito.mock(Store.class);
-		given(orderRepository.findByStore(storeId, vendorId)).willReturn(new ArrayList<>());
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		given(orderRepository.findByStore_Id(storeId, pageRequest)).willReturn(new PageImpl<>(List.of()));
 		given(storeRepository.findById(storeId)).willReturn(Optional.of(fakeStore));
 		given(fakeStore.isOwnedBy(vendorId)).willReturn(true);
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, pageRequest);
 
 		// when
 		retrieveOrderListService.retrieveOrderListOfStore(command);
 
 		// then
-		verify(orderRepository).findByStore(storeId, vendorId);
+		verify(orderRepository).findByStore_Id(storeId, pageRequest);
 		verify(storeRepository).findById(storeId);
 		verify(fakeStore).isOwnedBy(vendorId);
 	}
