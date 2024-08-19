@@ -71,8 +71,15 @@ public class OrderPaymentAdjustmentService {
 	// OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
 	private void updateOrderPaymentStatus(List<OrderPayment> orderPayments) {
 		orderPaymentRepository.updateOrderPaymentStatus(
-			orderPayments.stream().map(OrderPayment::getId).toList(),
+			mapToIds(orderPayments),
 			OrderPaymentStatus.ADJUSTMENT_SUCCESS);
+	}
+
+	private List<Long> mapToIds(List<OrderPayment> orderPayments) {
+		return orderPayments
+			.stream()
+			.map(OrderPayment::getId)
+			.toList();
 	}
 
 }
