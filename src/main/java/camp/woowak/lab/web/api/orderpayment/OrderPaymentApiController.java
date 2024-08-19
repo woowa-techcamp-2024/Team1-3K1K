@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.payment.service.OrderPaymentSettlementService;
-import camp.woowak.lab.web.dto.response.orderpayment.OrderPaymentAdjustmentResponse;
+import camp.woowak.lab.web.dto.response.orderpayment.OrderPaymentSettlementResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -14,9 +14,9 @@ public class OrderPaymentApiController {
 	private final OrderPaymentSettlementService orderPaymentSettlementService;
 
 	@PostMapping("/orderPayments/adjustment")
-	public OrderPaymentAdjustmentResponse adjustment() {
+	public OrderPaymentSettlementResponse adjustment() {
 		orderPaymentSettlementService.settleToAllVendors();
 
-		return new OrderPaymentAdjustmentResponse("모든 정산을 완료하였습니다.");
+		return new OrderPaymentSettlementResponse("모든 정산을 완료하였습니다.");
 	}
 }
