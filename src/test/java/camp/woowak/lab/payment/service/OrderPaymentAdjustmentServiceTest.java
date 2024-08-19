@@ -36,7 +36,7 @@ class OrderPaymentAdjustmentServiceTest {
 	private OrderPaymentRepository orderPaymentRepository;
 
 	@Mock
-	private AdjustmentCalculator adjustmentCalculator;
+	private SettlementAmountCalculator settlementAmountCalculator;
 
 	@InjectMocks
 	private OrderPaymentAdjustmentService orderPaymentAdjustmentService;
@@ -88,8 +88,8 @@ class OrderPaymentAdjustmentServiceTest {
 				.willReturn(List.of());
 
 			// vendor1의 payments에 대해서는 정산금액 2000L을 반환하고, vendor2에게는 정산금액 1000L을 반환
-			given(adjustmentCalculator.calculate(paymentsVendor1)).willReturn(2000L);
-			given(adjustmentCalculator.calculate(paymentsVendor2)).willReturn(1000L);
+			given(settlementAmountCalculator.calculate(paymentsVendor1)).willReturn(2000L);
+			given(settlementAmountCalculator.calculate(paymentsVendor2)).willReturn(1000L);
 
 			// When
 			orderPaymentAdjustmentService.adjustment();
@@ -98,7 +98,7 @@ class OrderPaymentAdjustmentServiceTest {
 			then(vendorRepository).should().findAll();
 			then(orderPaymentRepository).should()
 				.findByRecipientIdAndOrderPaymentStatus(vendor1.getId(), OrderPaymentStatus.ORDER_SUCCESS);
-			then(adjustmentCalculator).should().calculate(payments);
+			then(settlementAmountCalculator).should().calculate(payments);
 			then(orderPaymentRepository).should()
 				.updateOrderPaymentStatus(List.of(orderPayment1.getId(), orderPayment2.getId()),
 					OrderPaymentStatus.ADJUSTMENT_SUCCESS);

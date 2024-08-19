@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import camp.woowak.lab.payment.domain.OrderPayment;
 
 @Component
-public class AdjustmentCalculator {
+public class SettlementAmountCalculator {
 
 	public Long calculate(final List<OrderPayment> orderPayments) {
 		Long totalOrderPrice = calculateTotalOrderPrice(orderPayments);

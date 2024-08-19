@@ -14,9 +14,9 @@ import org.mockito.MockitoAnnotations;
 
 import camp.woowak.lab.payment.domain.OrderPayment;
 
-class AdjustmentCalculatorTest {
+class SettlementAmountCalculatorTest {
 
-	private AdjustmentCalculator adjustmentCalculator;
+	private SettlementAmountCalculator settlementAmountCalculator;
 
 	@Mock
 	private OrderPayment orderPayment1;
@@ -27,7 +27,7 @@ class AdjustmentCalculatorTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		adjustmentCalculator = new AdjustmentCalculator();
+		settlementAmountCalculator = new SettlementAmountCalculator();
 	}
 
 	@Test
@@ -38,7 +38,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Arrays.asList(orderPayment1, orderPayment2);
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		Long expectedTotalPrice = 30000L;
@@ -55,7 +55,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Collections.singletonList(orderPayment1);
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		assertThat(result).isZero();
@@ -68,7 +68,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Collections.singletonList(orderPayment1);
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		Long expectedCommission = 50000000L; // 5% of 10억원
@@ -83,7 +83,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Collections.emptyList();
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		assertThat(result).isZero();
@@ -96,7 +96,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Collections.singletonList(orderPayment1);
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		Long expectedCommission = 500L; // 5% of 10001 = 500.05, but it's rounded down to 500
@@ -113,7 +113,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Arrays.asList(orderPayment1, orderPayment2);
 
 		// When
-		Long result = adjustmentCalculator.calculate(orderPayments);
+		Long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		Long expectedTotalPrice = 30003L;
@@ -131,7 +131,7 @@ class AdjustmentCalculatorTest {
 		List<OrderPayment> orderPayments = Collections.singletonList(orderPayment1);
 
 		// When
-		long result = adjustmentCalculator.calculate(orderPayments);
+		long result = settlementAmountCalculator.calculate(orderPayments);
 
 		// Then
 		long expectedCommission = (long)(largeAmount * 0.05);

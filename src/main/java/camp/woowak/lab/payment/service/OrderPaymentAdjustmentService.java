@@ -22,7 +22,7 @@ public class OrderPaymentAdjustmentService {
 
 	private final VendorRepository vendorRepository;
 	private final OrderPaymentRepository orderPaymentRepository;
-	private final AdjustmentCalculator adjustmentCalculator;
+	private final SettlementAmountCalculator settlementAmountCalculator;
 
 	/**
 	 * @throws NotFoundVendorException vendorId에 해당하는 점주를 찾을 수 없을 떄
@@ -36,7 +36,7 @@ public class OrderPaymentAdjustmentService {
 			List<OrderPayment> orderPayments = findOrderPaymentsToAdjustment(vendor);
 
 			// 수수료를 제외한 정산 금액을 계산
-			Long totalAdjustmentPrice = adjustmentCalculator.calculate(orderPayments);
+			Long totalAdjustmentPrice = settlementAmountCalculator.calculate(orderPayments);
 
 			// 정산금을 점주에게 송금
 			vendor.getPayAccount().deposit(totalAdjustmentPrice);
