@@ -33,15 +33,15 @@ public class OrderPaymentSettlementService {
 		List<Vendor> vendors = findAllVendors();
 		for (Vendor vendor : vendors) {
 			// 각 점주의 정산해야할 OrderPayment 목록을 조회
-			List<OrderPayment> orderPayments = findOrderPaymentsToAdjustment(vendor);
+			List<OrderPayment> orderPayments = findOrderPaymentsToSettlement(vendor);
 
 			// 수수료를 제외한 정산 금액을 계산
-			Long totalAdjustmentPrice = settlementAmountCalculator.calculate(orderPayments);
+			Long totalSettlementAmount = settlementAmountCalculator.calculate(orderPayments);
 
 			// 정산금을 점주에게 송금
-			vendor.getPayAccount().deposit(totalAdjustmentPrice);
+			vendor.getPayAccount().deposit(totalSettlementAmount);
 
-			// 송금을 성공하면, OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
+			// 송금을 성공하면, OrderPayment 목록의 OrderPaymentStatus 상태를 SETTLEMENT_SUCCESS 로 갱신
 			updateOrderPaymentStatus(orderPayments);
 		}
 	}
@@ -52,23 +52,23 @@ public class OrderPaymentSettlementService {
 	}
 
 	// 각 점주의 정산해야할 OrderPayment 목록을 조회
-	private List<OrderPayment> findOrderPaymentsToAdjustment(final Vendor vendor) {
+	private List<OrderPayment> findOrderPaymentsToSettlement(final Vendor vendor) {
 		List<OrderPayment> orderPayments = orderPaymentRepository.findByRecipientIdAndOrderPaymentStatus(
 			vendor.getId(), OrderPaymentStatus.ORDER_SUCCESS);
 
 		for (OrderPayment orderPayment : orderPayments) {
 			// 정산해야할 OrderPayment 가 맞는지 검증
-			orderPayment.validateReadyToAdjustment(vendor);
+			orderPayment.validateAbleToSettle(vendor);
 		}
 
 		return orderPayments;
 	}
 
-	// OrderPayment 목록의 OrderPaymentStatus 상태를 ADJUSTMENT_SUCCESS 로 갱신
+	// OrderPayment 목록의 OrderPaymentStatus 상태를 SETTLEMENT_SUCCESS 로 갱신
 	private void updateOrderPaymentStatus(List<OrderPayment> orderPayments) {
 		orderPaymentRepository.updateOrderPaymentStatus(
 			mapToIds(orderPayments),
-			OrderPaymentStatus.ADJUSTMENT_SUCCESS);
+			OrderPaymentStatus.SETTLEMENT_SUCCESS);
 	}
 
 	private List<Long> mapToIds(List<OrderPayment> orderPayments) {

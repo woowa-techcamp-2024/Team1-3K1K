@@ -47,8 +47,8 @@ class OrderPaymentSettlementServiceTest {
 	private Vendor vendor2;
 
 	@Nested
-	@DisplayName("주문 금액을 정산하는 기능은")
-	class AdjustmentTest {
+	@DisplayName("모든 점주에게 주문 금액을 정산하는 기능은")
+	class SettleToAllVendorsTest {
 
 		@BeforeEach
 		void setup() {
@@ -65,14 +65,14 @@ class OrderPaymentSettlementServiceTest {
 
 		@Test
 		@DisplayName("[Success] 정산에 성공하면 정산금액만큼 점주에게 송금된다.")
-		void adjustment_ShouldProcessAllVendorsAndUpdateOrderPayments() {
+		void settlement_ShouldProcessAllVendorsAndUpdateOrderPayments() {
 			// given
 			OrderPayment orderPayment1 = mock(OrderPayment.class);
 			OrderPayment orderPayment2 = mock(OrderPayment.class);
 
 			// Mocking behavior 추가
-			doNothing().when(orderPayment1).validateReadyToAdjustment(any(Vendor.class));
-			doNothing().when(orderPayment2).validateReadyToAdjustment(any(Vendor.class));
+			doNothing().when(orderPayment1).validateAbleToSettle(any(Vendor.class));
+			doNothing().when(orderPayment2).validateAbleToSettle(any(Vendor.class));
 
 			List<Vendor> vendors = List.of(vendor1, vendor2);
 			List<OrderPayment> payments = List.of(orderPayment1, orderPayment2);
@@ -101,7 +101,7 @@ class OrderPaymentSettlementServiceTest {
 			then(settlementAmountCalculator).should().calculate(payments);
 			then(orderPaymentRepository).should()
 				.updateOrderPaymentStatus(List.of(orderPayment1.getId(), orderPayment2.getId()),
-					OrderPaymentStatus.ADJUSTMENT_SUCCESS);
+					OrderPaymentStatus.SETTLEMENT_SUCCESS);
 
 			assertThat(vendor1.getPayAccount().getBalance()).isEqualTo(2000L);
 			assertThat(vendor2.getPayAccount().getBalance()).isEqualTo(1000L);
@@ -109,7 +109,7 @@ class OrderPaymentSettlementServiceTest {
 
 		@Test
 		@DisplayName("[Exception] 정산도중 예외가 발생하면 점주의 원래 금액에는 변화가 없다.")
-		void adjustment_ShouldThrowExceptionWhenVendorNotFound() {
+		void settlement_ShouldThrowExceptionWhenVendorNotFound() {
 			// given
 			PayAccount payAccount1 = new PayAccount();
 			payAccount1.charge(5000L); // 기존 금액 설정

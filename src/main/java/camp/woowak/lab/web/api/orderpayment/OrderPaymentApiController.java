@@ -13,8 +13,8 @@ public class OrderPaymentApiController {
 
 	private final OrderPaymentSettlementService orderPaymentSettlementService;
 
-	@PostMapping("/orderPayments/adjustment")
-	public OrderPaymentSettlementResponse adjustment() {
+	@PostMapping("/orderPayments/settlement")
+	public OrderPaymentSettlementResponse settlementToAllVendors() {
 		orderPaymentSettlementService.settleToAllVendors();
 
 		return new OrderPaymentSettlementResponse("모든 정산을 완료하였습니다.");

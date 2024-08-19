@@ -52,8 +52,8 @@ public class OrderPayment {
 		this.createdAt = createdAt;
 	}
 
-	public void validateReadyToAdjustment(final Vendor adjustmentTarget) {
-		if (isEqualsRecipient(adjustmentTarget) && orderPaymentStatusIsSuccess()) {
+	public void validateAbleToSettle(final Vendor settlementTarget) {
+		if (isEqualsRecipient(settlementTarget) && orderPaymentStatusIsSuccess()) {
 			return;
 		}
 		throw new IllegalArgumentException();
