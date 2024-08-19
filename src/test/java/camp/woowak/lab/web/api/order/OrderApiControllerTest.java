@@ -227,8 +227,8 @@ class OrderApiControllerTest implements CustomerFixture, VendorFixture, StoreFix
 
 		// then
 		ra.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.orders").isArray())
-			.andExpect(jsonPath("$.data.orders.length()").value(orders.size()))// 주문의 개수 확인
+			.andExpect(jsonPath("$.data.content").isArray())
+			.andExpect(jsonPath("$.data.content.length()").value(orders.size()))// 주문의 개수 확인
 		;
 	}
 
@@ -256,23 +256,27 @@ class OrderApiControllerTest implements CustomerFixture, VendorFixture, StoreFix
 
 		// then
 		ra.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.orders").isArray());
+			.andExpect(jsonPath("$.data.content").isArray());
 		for (int orderIndex = 0; orderIndex < orders.size(); orderIndex++) {
-			ra.andExpect(jsonPath("$.data.orders[" + orderIndex + "].id").value(orders.get(orderIndex).getId()))
-				.andExpect(jsonPath("$.data.orders[" + orderIndex + "].orderItems").isArray());
+			ra.andExpect(jsonPath("$.data.content[" + orderIndex + "].id").value(orders.get(orderIndex).getId()))
+				.andExpect(jsonPath("$.data.content[" + orderIndex + "].orderItems").isArray());
 			for (int orderItemIndex = 0; orderItemIndex < orderItems.size(); orderItemIndex++) {
 				ra.andExpect(
-						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].menuId").value(
+						jsonPath(
+							"$.data.content[" + orderIndex + "].orderItems[" + orderItemIndex + "].menuId").value(
 							orderItems.get(orderItemIndex).getMenuId()))
 					.andExpect(
-						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].price").value(
+						jsonPath(
+							"$.data.content[" + orderIndex + "].orderItems[" + orderItemIndex + "].price").value(
 							orderItems.get(orderItemIndex).getPrice()))
 					.andExpect(
-						jsonPath("$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].quantity").value(
+						jsonPath("$.data.content[" + orderIndex + "].orderItems[" + orderItemIndex
+							+ "].quantity").value(
 							orderItems.get(orderItemIndex).getQuantity()))
 					.andExpect(
 						jsonPath(
-							"$.data.orders[" + orderIndex + "].orderItems[" + orderItemIndex + "].totalPrice").value(
+							"$.data.content[" + orderIndex + "].orderItems[" + orderItemIndex
+								+ "].totalPrice").value(
 							orderItems.get(orderItemIndex).getTotalPrice()));
 			}
 		}
