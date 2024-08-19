@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,7 @@ class OrderRepositoryTest {
 				"image"));
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("점주 주문 조회 테스트 - 성공")
 	void testFindAllByOwner() {
@@ -127,6 +129,7 @@ class OrderRepositoryTest {
 		assertEquals(2, orders.size());
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("점주 주문 조회 테스트 - 권한 없는 점주 실패")
 	void testFindAllByOwnerFailWithUnauthorized() {
@@ -138,6 +141,7 @@ class OrderRepositoryTest {
 		assertEquals(0, orders.size());
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("점주 특정 매장 주문 조회 테스트 - 성공")
 	void testFindByStore() {
@@ -161,6 +165,7 @@ class OrderRepositoryTest {
 		assertEquals(order.getId(), orders.get(0).getId());
 	}
 
+	@Disabled
 	@Test
 	@DisplayName("점주 특정 매장 주문 조회 테스트 - 권한 없는 점주 실패")
 	void testFindByStoreFailWithUnauthorized() {

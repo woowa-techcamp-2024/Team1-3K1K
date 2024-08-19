@@ -11,9 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 import camp.woowak.lab.order.domain.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+	@Deprecated
 	@Query("SELECT o FROM Order o JOIN FETCH o.store s WHERE s.owner.id = :vendorId")
 	List<Order> findAllByOwner(UUID vendorId);
 
+	@Deprecated
 	@Query("SELECT o FROM Order o JOIN FETCH o.store s WHERE s.id = :storeId AND s.owner.id = :vendorId")
 	List<Order> findByStore(Long storeId, UUID vendorId);
 
