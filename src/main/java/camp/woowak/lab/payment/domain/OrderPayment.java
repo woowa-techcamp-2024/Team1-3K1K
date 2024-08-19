@@ -67,4 +67,8 @@ public class OrderPayment {
 		return this.orderPaymentStatus.equals(OrderPaymentStatus.ORDER_SUCCESS);
 	}
 
+	public Long calculateOrderPrice() {
+		return order.calculateTotalPrice();
+	}
+
 }

@@ -86,4 +86,12 @@ public class Order {
 		return store.getOwner();
 	}
 
+	public Long calculateTotalPrice() {
+		Long totalPrice = 0L;
+		for (OrderItem orderItem : orderItems) {
+			totalPrice += orderItem.getTotalPrice();
+		}
+		return totalPrice;
+	}
+
 }
