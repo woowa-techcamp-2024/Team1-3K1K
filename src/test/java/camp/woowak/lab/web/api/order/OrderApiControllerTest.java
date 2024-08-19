@@ -16,6 +16,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -215,7 +216,7 @@ class OrderApiControllerTest implements CustomerFixture, VendorFixture, StoreFix
 				orderItems),
 			new TestOrderDTO(1L, createCustomer(UUID.randomUUID()), createTestStore(2L, createTestVendor()),
 				orderItems));
-		given(retrieveOrderListService.retrieveOrderListOfVendorStores(any())).willReturn(orders);
+		given(retrieveOrderListService.retrieveOrderListOfVendorStores(any())).willReturn(new PageImpl<>(orders));
 		MockHttpSession session = new MockHttpSession();
 		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		session.setAttribute(SessionConst.SESSION_VENDOR_KEY, loginVendor);
@@ -243,7 +244,7 @@ class OrderApiControllerTest implements CustomerFixture, VendorFixture, StoreFix
 			new TestOrderDTO(2L, createCustomer(UUID.randomUUID()), createTestStore(1L, createTestVendor()),
 				orderItems));
 		given(retrieveOrderListService.retrieveOrderListOfStore(any(RetrieveOrderListCommand.class))).willReturn(
-			orders);
+			new PageImpl<>(orders));
 		MockHttpSession session = new MockHttpSession();
 		LoginVendor loginVendor = new LoginVendor(UUID.randomUUID());
 		session.setAttribute(SessionConst.SESSION_VENDOR_KEY, loginVendor);
