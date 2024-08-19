@@ -21,7 +21,13 @@ public enum MenuErrorCode implements ErrorCode {
 
 	MENU_OWNER_NOT_MATCH(HttpStatus.FORBIDDEN, "m_10", "메뉴는 가게의 점주만 수정할 수 있습니다."),
 
-	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "M4", "재고가 부족합니다.");
+	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "M4", "재고가 부족합니다."),
+
+	INVALID_UPDATE_MENU_STOCK(HttpStatus.CONFLICT, "m_11", "메뉴의 재고를 변경할 수 없습니다."),
+
+	NOT_EQUALS_OWNER(HttpStatus.BAD_REQUEST, "m_12", "매장의 점주와 일치하지 않습니다."),
+	NOT_UPDATABLE_TIME(HttpStatus.CONFLICT, "m_13", "메뉴를 변경할 수 없는 시간입니다."),
+	;
 
 	private final int status;
 	private final String errorCode;
