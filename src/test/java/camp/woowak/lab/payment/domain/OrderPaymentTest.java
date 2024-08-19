@@ -60,7 +60,7 @@ class OrderPaymentTest {
 		WithdrawPointService withdrawPointService;
 
 		@Test
-		@DisplayName("[Success] 주문 아이템들의 총 가격을 정확히 계산해야 한다")
+		@DisplayName("[Success] 주문 아이템들의 가격과 수량에 대한 총 가격을 계산해야 한다")
 		void shouldCalculateTotalPriceCorrectly() {
 			// given
 			long order1Price = 10000L;
