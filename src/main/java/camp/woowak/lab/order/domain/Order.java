@@ -69,6 +69,14 @@ public class Order {
 		return id;
 	}
 
+	public Customer getRequester() {
+		return requester;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
 	}

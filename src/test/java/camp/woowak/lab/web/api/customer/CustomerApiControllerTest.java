@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -26,9 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import camp.woowak.lab.customer.exception.CustomerAuthenticationException;
 import camp.woowak.lab.customer.exception.CustomerErrorCode;
 import camp.woowak.lab.customer.exception.DuplicateEmailException;
+import camp.woowak.lab.customer.service.RetrieveCustomerService;
 import camp.woowak.lab.customer.service.SignInCustomerService;
 import camp.woowak.lab.customer.service.SignUpCustomerService;
 import camp.woowak.lab.customer.service.command.SignInCustomerCommand;
+import camp.woowak.lab.customer.service.dto.CustomerDTO;
+import camp.woowak.lab.fixture.CustomerFixture;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.dto.request.customer.SignInCustomerRequest;
 import camp.woowak.lab.web.dto.request.customer.SignUpCustomerRequest;
@@ -37,7 +41,7 @@ import jakarta.servlet.http.HttpSession;
 
 @WebMvcTest(CustomerApiController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-class CustomerApiControllerTest {
+class CustomerApiControllerTest implements CustomerFixture {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -47,6 +51,9 @@ class CustomerApiControllerTest {
 
 	@MockBean
 	private SignInCustomerService signInCustomerService;
+
+	@MockBean
+	private RetrieveCustomerService retrieveCustomerService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -274,4 +281,19 @@ class CustomerApiControllerTest {
 			.andExpect(jsonPath("$.errorCode").value(CustomerErrorCode.AUTHENTICATION_FAILED.getErrorCode()));
 	}
 
+	@Test
+	@DisplayName("전체 구매자 조회 테스트 - 성공")
+	void testRetrieveCustomers() throws Exception {
+		// given
+		given(retrieveCustomerService.retrieveAllCustomers()).willReturn(
+			List.of(createCustomer(UUID.randomUUID()), createCustomer(UUID.randomUUID()))
+				.stream()
+				.map(CustomerDTO::new)
+				.toList());
+		// when & then
+		mockMvc.perform(get("/customers")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.customers").isArray());
+	}
 }

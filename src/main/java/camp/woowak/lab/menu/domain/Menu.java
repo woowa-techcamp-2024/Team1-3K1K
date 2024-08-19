@@ -1,5 +1,8 @@
 package camp.woowak.lab.menu.domain;
 
+import org.hibernate.annotations.DynamicUpdate;
+
+import camp.woowak.lab.menu.exception.InvalidMenuPriceUpdateException;
 import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.store.domain.Store;
 import jakarta.persistence.Column;
@@ -17,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@DynamicUpdate
 public class Menu {
 
 	@Id
@@ -35,7 +39,7 @@ public class Menu {
 	private String name;
 
 	@Column(nullable = false)
-	private Integer price;
+	private Long price;
 
 	@Column(nullable = false)
 	private Long stockCount;
@@ -44,7 +48,7 @@ public class Menu {
 	private String imageUrl;
 
 	public Menu(Store store, MenuCategory menuCategory, String name,
-				Integer price, Long stockCount, String imageUrl
+				Long price, Long stockCount, String imageUrl
 	) {
 		MenuValidator.validate(store, menuCategory, name, price, stockCount, imageUrl);
 		this.store = store;
@@ -64,6 +68,15 @@ public class Menu {
 			throw new NotEnoughStockException("메뉴(id=" + id + "의 재고가 부족합니다.");
 		}
 		stockCount -= amount;
+	}
+
+	public long updatePrice(long uPrice) {
+		if (uPrice <= 0) {
+			throw new InvalidMenuPriceUpdateException("메뉴의 가격은 0원보다 커야합니다. 입력값 : " + uPrice);
+		}
+		this.price = uPrice;
+
+		return this.price;
 	}
 
 	public Long getMenuCategoryId() {
