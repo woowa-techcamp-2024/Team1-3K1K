@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import camp.woowak.lab.cart.domain.vo.CartItem;
+import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
@@ -24,6 +25,8 @@ import camp.woowak.lab.order.domain.StockRequester;
 import camp.woowak.lab.order.domain.WithdrawPointService;
 import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.payaccount.domain.PayAccount;
+import camp.woowak.lab.payment.exception.CantSettleOrderPayment;
+import camp.woowak.lab.payment.exception.OrderPaymentErrorCode;
 import camp.woowak.lab.store.TestStore;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.domain.StoreAddress;
@@ -32,32 +35,32 @@ import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
+@ExtendWith(MockitoExtension.class)
 class OrderPaymentTest {
+
+	PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
+	Customer customer;
+	Vendor vendor;
+	Store store;
+	List<Menu> menus;
+	List<OrderItem> orderItems;
+	List<CartItem> cartItems;
+
+	@Mock
+	SingleStoreOrderValidator singleStoreOrderValidator;
+
+	@Mock
+	StockRequester stockRequester;
+
+	@Mock
+	PriceChecker priceChecker;
+
+	@Mock
+	WithdrawPointService withdrawPointService;
 
 	@Nested
 	@DisplayName("총 주문 금액을 계산하는 기능은")
-	@ExtendWith(MockitoExtension.class)
 	class CalculateOrderPriceTest {
-
-		private static PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
-		Customer customer;
-		Vendor vendor;
-		Store store;
-		List<Menu> menus;
-		List<OrderItem> orderItems;
-		List<CartItem> cartItems;
-
-		@Mock
-		SingleStoreOrderValidator singleStoreOrderValidator;
-
-		@Mock
-		StockRequester stockRequester;
-
-		@Mock
-		PriceChecker priceChecker;
-
-		@Mock
-		WithdrawPointService withdrawPointService;
 
 		@Test
 		@DisplayName("[Success] 주문 아이템들의 가격과 수량에 대한 총 가격을 계산해야 한다")
@@ -149,40 +152,114 @@ class OrderPaymentTest {
 			assertThat(price).isZero();
 		}
 
-		private PayAccount createPayAccount() {
-			return new PayAccount();
+	}
+
+	@Nested
+	@DisplayName("정산 가능여부를 검증하는 기능은")
+	class ValidateAbleToSettleTest {
+
+		@Test
+		@DisplayName("[Success] 정산 대상 Vendor가 수령자이고 상태가 ORDER_SUCCESS이면 예외가 발생하지 않는다.")
+		void test1() {
+			// given
+			customer = createCustomer(createPayAccount());
+			Vendor recipientVendor = createVendor(createPayAccount());
+
+			given(singleStoreOrderValidator.check(cartItems)).willReturn(store);
+			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
+
+			LocalDateTime now = LocalDateTime.now();
+			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService, now);
+			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
+				OrderPaymentStatus.ORDER_SUCCESS,
+				now);
+			// when & then
+			orderPayment.validateAbleToSettle(recipientVendor);  // 예외 발생 안함
 		}
 
-		private Customer createCustomer(PayAccount payAccount) {
-			return new Customer("customerName", "customerEmail@example.com", "customerPassword", "010-0000-0000",
-				payAccount,
-				passwordEncoder);
+		@Test
+		@DisplayName("[Exception] 정산 대상 Vendor가 수령자가 아니면 IllegalArgumentException이 발생한다.")
+		void test2() {
+			// given
+			Vendor recipientVendor = createVendor(createPayAccount());
+			Vendor anotherVendor = createVendor(createPayAccount());
+			customer = createCustomer(createPayAccount());
+
+			given(singleStoreOrderValidator.check(cartItems)).willReturn(store);
+			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
+
+			LocalDateTime now = LocalDateTime.now();
+			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService, now);
+			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
+				OrderPaymentStatus.ORDER_SUCCESS, now);
+
+			// when & then
+			Throwable thrown = catchThrowable(() -> orderPayment.validateAbleToSettle(anotherVendor));
+			assertExceptionAndErrorCode(thrown, OrderPaymentErrorCode.INVALID_SETTLEMENT_TARGET);
 		}
 
-		private Vendor createVendor(PayAccount payAccount) {
-			return new Vendor("customerName", "customerEmail@example.com", "customerPassword", "010-0000-0000",
-				payAccount,
-				passwordEncoder);
+		@Test
+		@DisplayName("[Exception] OrderPayment 상태가 ORDER_SUCCESS가 아니면 IllegalArgumentException이 발생한다.")
+		void test3() {
+			// given
+			Vendor recipientVendor = createVendor(createPayAccount());
+
+			given(singleStoreOrderValidator.check(cartItems)).willReturn(store);
+			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
+
+			LocalDateTime now = LocalDateTime.now();
+			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService, now);
+			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
+				OrderPaymentStatus.SETTLEMENT_SUCCESS, now);
+
+			// when & then
+			Throwable thrown = catchThrowable(() -> orderPayment.validateAbleToSettle(recipientVendor));
+			assertExceptionAndErrorCode(thrown, OrderPaymentErrorCode.INVALID_ORDER_PAYMENT_STATUS);
 		}
 
-		private Store createStore(Vendor owner, Long storeId) {
-			LocalDateTime validStartDateFixture = LocalDateTime.of(2020, 1, 1, 1, 1);
-			LocalDateTime validEndDateFixture = LocalDateTime.of(2020, 1, 1, 2, 1);
-			String validNameFixture = "3K1K 가게";
-			String validAddressFixture = StoreAddress.DEFAULT_DISTRICT;
-			String validPhoneNumberFixture = "02-1234-5678";
-			Integer validMinOrderPriceFixture = 5000;
-
-			return new TestStore(storeId, owner, createStoreCategory(), validNameFixture, validAddressFixture,
-				validPhoneNumberFixture,
-				validMinOrderPriceFixture,
-				validStartDateFixture, validEndDateFixture);
+		private void assertExceptionAndErrorCode(Throwable thrown, ErrorCode expected) {
+			assertThat(thrown).isInstanceOf(CantSettleOrderPayment.class);
+			CantSettleOrderPayment exception = (CantSettleOrderPayment)thrown;
+			assertThat(exception.errorCode()).isEqualTo(expected);
 		}
 
-		private StoreCategory createStoreCategory() {
-			return new StoreCategory("양식");
-		}
+	}
 
+	private PayAccount createPayAccount() {
+		return new PayAccount();
+	}
+
+	private Customer createCustomer(PayAccount payAccount) {
+		return new Customer("customerName", "customerEmail@example.com", "customerPassword", "010-0000-0000",
+			payAccount,
+			passwordEncoder);
+	}
+
+	private Vendor createVendor(PayAccount payAccount) {
+		return new Vendor("customerName", "customerEmail@example.com", "customerPassword", "010-0000-0000",
+			payAccount,
+			passwordEncoder);
+	}
+
+	private Store createStore(Vendor owner, Long storeId) {
+		LocalDateTime validStartDateFixture = LocalDateTime.of(2020, 1, 1, 1, 1);
+		LocalDateTime validEndDateFixture = LocalDateTime.of(2020, 1, 1, 2, 1);
+		String validNameFixture = "3K1K 가게";
+		String validAddressFixture = StoreAddress.DEFAULT_DISTRICT;
+		String validPhoneNumberFixture = "02-1234-5678";
+		Integer validMinOrderPriceFixture = 5000;
+
+		return new TestStore(storeId, owner, createStoreCategory(), validNameFixture, validAddressFixture,
+			validPhoneNumberFixture,
+			validMinOrderPriceFixture,
+			validStartDateFixture, validEndDateFixture);
+	}
+
+	private StoreCategory createStoreCategory() {
+		return new StoreCategory("양식");
 	}
 
 }
