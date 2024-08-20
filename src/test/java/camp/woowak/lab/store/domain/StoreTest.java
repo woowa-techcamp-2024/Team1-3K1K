@@ -302,6 +302,61 @@ class StoreTest {
 
 		}
 
+		@Nested
+		@DisplayName("isOpen 메서드는")
+		class IsOpen {
+			private Vendor vendor = createVendor();
+			private StoreCategory storeCategory = createStoreCategory();
+
+			@Test
+			@DisplayName("오픈시간 이내의 시간이면 true이다.")
+			void success() {
+				//given
+				LocalDateTime startTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
+				LocalDateTime endTime = LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0);
+				Store store = createStore(startTime, endTime);
+
+				//when
+				boolean open = store.isOpen();
+
+				//then
+				assertThat(open).isTrue();
+			}
+
+			@Test
+			@DisplayName("오픈시간 이전이면 false이다.")
+			void failWhenBeforeOpen() {
+				//given
+				LocalDateTime startTime = LocalDateTime.now().minusMinutes(30).withSecond(0).withNano(0);
+				LocalDateTime endTime = LocalDateTime.now().minusMinutes(10).withSecond(0).withNano(0);
+				Store store = createStore(startTime, endTime);
+
+				//when
+				boolean open = store.isOpen();
+
+				//then
+				assertThat(open).isFalse();
+			}
+
+			@Test
+			@DisplayName("폐점시간 이후면 false이다.")
+			void failWhenAfterClose() {
+				//given
+				LocalDateTime startTime = LocalDateTime.now().plusMinutes(10).withSecond(0).withNano(0);
+				LocalDateTime endTime = LocalDateTime.now().plusMinutes(30).withSecond(0).withNano(0);
+				Store store = createStore(startTime, endTime);
+
+				//when
+				boolean open = store.isOpen();
+
+				//then
+				assertThat(open).isFalse();
+			}
+
+			private Store createStore(LocalDateTime startTime, LocalDateTime endTime) {
+				return new Store(vendor, storeCategory, "store1", "송파", "010-1111-2222", 8000, startTime, endTime);
+			}
+		}
 	}
 
 	private Vendor createVendor() {
