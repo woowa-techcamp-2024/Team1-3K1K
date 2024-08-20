@@ -2,6 +2,7 @@ package camp.woowak.lab.cart.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import camp.woowak.lab.cart.domain.Cart;
@@ -18,7 +19,7 @@ public class CartService {
 	private final CartRepository cartRepository;
 	private final MenuRepository menuRepository;
 
-	public CartService(CartRepository cartRepository, MenuRepository menuRepository) {
+	public CartService(@Qualifier("redisCartRepository") CartRepository cartRepository, MenuRepository menuRepository) {
 		this.cartRepository = cartRepository;
 		this.menuRepository = menuRepository;
 	}
