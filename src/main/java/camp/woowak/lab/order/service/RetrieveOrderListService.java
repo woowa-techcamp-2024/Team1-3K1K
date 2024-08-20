@@ -14,6 +14,7 @@ import camp.woowak.lab.store.repository.StoreRepository;
 
 @Service
 @Transactional(readOnly = true)
+@Deprecated
 public class RetrieveOrderListService {
 	private final OrderRepository orderRepository;
 	private final StoreRepository storeRepository;
