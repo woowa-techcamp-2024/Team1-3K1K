@@ -71,6 +71,7 @@ public class OrderCreationService {
 		);
 
 		saveOrderPayment(savedOrder);
+		cartRepository.delete(cart);
 		return savedOrder.getId();
 	}
 
