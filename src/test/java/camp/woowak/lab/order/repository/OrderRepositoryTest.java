@@ -3,6 +3,7 @@ package camp.woowak.lab.order.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -115,12 +116,12 @@ class OrderRepositoryTest {
 		orderRepository.saveAndFlush(
 			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
 				new StockRequester(menuRepository), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository)));
+				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
 			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
 				new StockRequester(menuRepository), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository)));
+				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 
 		// when
 		List<Order> orders = orderRepository.findAllByOwner(vendor.getId());
@@ -150,12 +151,12 @@ class OrderRepositoryTest {
 		Order order = orderRepository.saveAndFlush(
 			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
 				new StockRequester(menuRepository), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository)));
+				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
 			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
 				new StockRequester(menuRepository), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository)));
+				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 
 		// when
 		List<Order> orders = orderRepository.findByStore(store1.getId(), vendor.getId());

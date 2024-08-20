@@ -11,6 +11,7 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.domain.PriceChecker;
@@ -25,6 +26,9 @@ import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
 import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
 import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
+import camp.woowak.lab.payment.domain.OrderPayment;
+import camp.woowak.lab.payment.domain.OrderPaymentStatus;
+import camp.woowak.lab.payment.repository.OrderPaymentRepository;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +43,9 @@ public class OrderCreationService {
 	private final StockRequester stockRequester;
 	private final WithdrawPointService withdrawPointService;
 	private final PriceChecker priceChecker;
+	private final OrderPaymentRepository orderPaymentRepository;
+
+	private final DateTimeProvider dateTimeProvider;
 
 	/**
 	 * @throws EmptyCartException 카트가 비어 있는 경우
@@ -50,7 +57,7 @@ public class OrderCreationService {
 	 * @throws NotFoundAccountException 구매자의 계좌가 조회되지 않는 경우
 	 * @throws InsufficientBalanceException 구매자의 계좌에 잔액이 충분하지 않은 경우
 	 */
-	public Long create(OrderCreationCommand cmd) {
+	public Long create(final OrderCreationCommand cmd) {
 		UUID requesterId = cmd.requesterId();
 		Customer requester = customerRepository.findByIdOrThrow(requesterId);
 
@@ -60,8 +67,18 @@ public class OrderCreationService {
 
 		Order savedOrder = orderRepository.save(
 			new Order(requester, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService)
+				withdrawPointService, dateTimeProvider.now())
 		);
+
+		saveOrderPayment(savedOrder);
 		return savedOrder.getId();
+	}
+
+	private void saveOrderPayment(final Order savedOrder) {
+		orderPaymentRepository.save(
+			new OrderPayment(savedOrder, savedOrder.getRequester(), savedOrder.getVendor(),
+				OrderPaymentStatus.ORDER_SUCCESS, savedOrder.getCreatedAt()
+			)
+		);
 	}
 }

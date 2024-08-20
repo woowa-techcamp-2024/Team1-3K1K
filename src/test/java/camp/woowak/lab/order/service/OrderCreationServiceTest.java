@@ -2,8 +2,9 @@ package camp.woowak.lab.order.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
@@ -28,6 +30,7 @@ import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
+import camp.woowak.lab.payment.repository.OrderPaymentRepository;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.repository.StoreRepository;
 
@@ -50,9 +53,13 @@ class OrderCreationServiceTest {
 	private WithdrawPointService withdrawPointService;
 	@Mock
 	private PriceChecker priceChecker;
+	@Mock
+	private OrderPaymentRepository orderPaymentRepository;
 
 	@InjectMocks
 	private OrderCreationService orderCreationService;
+
+	private DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
 
 	@BeforeEach
 	void setUp() {
@@ -81,7 +88,7 @@ class OrderCreationServiceTest {
 
 		// When
 		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-			withdrawPointService);
+			withdrawPointService, fixedDateTime.now());
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());

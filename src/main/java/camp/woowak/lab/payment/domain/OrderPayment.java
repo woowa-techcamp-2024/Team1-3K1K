@@ -1,9 +1,12 @@
 package camp.woowak.lab.payment.domain;
 
+import static camp.woowak.lab.payment.exception.OrderPaymentErrorCode.*;
+
 import java.time.LocalDateTime;
 
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.payment.exception.CantSettleOrderPayment;
 import camp.woowak.lab.vendor.domain.Vendor;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,11 +55,15 @@ public class OrderPayment {
 		this.createdAt = createdAt;
 	}
 
-	public void validateReadyToAdjustment(final Vendor adjustmentTarget) {
-		if (isEqualsRecipient(adjustmentTarget) && orderPaymentStatusIsSuccess()) {
-			return;
+	public void validateAbleToSettle(final Vendor settlementTarget) {
+		if (!isEqualsRecipient(settlementTarget)) {
+			throw new CantSettleOrderPayment(INVALID_SETTLEMENT_TARGET,
+				"OrderPayment 의 Vendor " + this.recipient + "와 정산 대상의 Vendor " + settlementTarget + "이 일치하지 않습니다.");
 		}
-		throw new IllegalArgumentException();
+		if (!orderPaymentStatusIsSuccess()) {
+			throw new CantSettleOrderPayment(INVALID_ORDER_PAYMENT_STATUS,
+				"OrderPayment 의 상태 " + orderPaymentStatus + "는 이미 정산된 상태입니다.");
+		}
 	}
 
 	private boolean isEqualsRecipient(Vendor recipient) {
@@ -65,6 +72,10 @@ public class OrderPayment {
 
 	private boolean orderPaymentStatusIsSuccess() {
 		return this.orderPaymentStatus.equals(OrderPaymentStatus.ORDER_SUCCESS);
+	}
+
+	public Long calculateOrderPrice() {
+		return order.calculateTotalPrice();
 	}
 
 }

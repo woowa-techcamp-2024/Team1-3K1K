@@ -82,7 +82,7 @@ public abstract class StoreDummiesFixture {
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
 				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
 					new StockRequester(menuRepository), new TestPriceChecker(menuRepository),
-					new TestWithdrawPointService(payAccountRepository));
+					new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
 				orders.add(order);
 			}
 		}
