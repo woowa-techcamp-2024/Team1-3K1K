@@ -1,5 +1,7 @@
 package camp.woowak.lab.web.api.order;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +13,11 @@ import camp.woowak.lab.order.service.OrderCreationService;
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
+import camp.woowak.lab.order.service.dto.OrderDTO;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import camp.woowak.lab.web.dto.response.order.OrderCreationResponse;
-import camp.woowak.lab.web.dto.response.order.RetrieveOrderListResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -31,16 +33,17 @@ public class OrderApiController {
 	}
 
 	@GetMapping("/orders")
-	public RetrieveOrderListResponse retrieveOrderList(@AuthenticationPrincipal LoginVendor loginVendor) {
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(loginVendor.getId());
-		return new RetrieveOrderListResponse(retrieveOrderListService.retrieveOrderListOfVendorStores(command));
+	public Page<OrderDTO> retrieveOrderList(@AuthenticationPrincipal LoginVendor loginVendor, Pageable pageable) {
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(loginVendor.getId(), pageable);
+		return retrieveOrderListService.retrieveOrderListOfVendorStores(command);
 	}
 
 	@GetMapping("/orders/stores/{storeId}")
-	public RetrieveOrderListResponse retrieveOrderListByStore(@AuthenticationPrincipal LoginVendor loginVendor,
-															  @PathVariable(name = "storeId") Long storeId) {
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, loginVendor.getId());
-		return new RetrieveOrderListResponse(retrieveOrderListService.retrieveOrderListOfStore(command));
+	public Page<OrderDTO> retrieveOrderListByStore(@AuthenticationPrincipal LoginVendor loginVendor,
+												   @PathVariable(name = "storeId") Long storeId,
+												   Pageable pageable) {
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, loginVendor.getId(), pageable);
+		return retrieveOrderListService.retrieveOrderListOfStore(command);
 	}
 
 	@PostMapping("/orders")
