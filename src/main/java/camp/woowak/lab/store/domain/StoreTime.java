@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -20,8 +19,6 @@ public class StoreTime {
 	private int endHour;
 	@Column(nullable = false)
 	private int endMinute;
-	@Transient
-	private boolean overDay;
 
 	public StoreTime(final LocalDateTime startTime, final LocalDateTime endTime) {
 		this.startHour = startTime.getHour();
@@ -29,8 +26,6 @@ public class StoreTime {
 
 		this.endHour = endTime.getHour();
 		this.endMinute = endTime.getMinute();
-
-		this.overDay = startTime.toLocalDate().isBefore(endTime.toLocalDate());
 	}
 
 	public LocalDateTime getStartTime() {
@@ -42,10 +37,17 @@ public class StoreTime {
 	}
 
 	public LocalDateTime getEndTime() {
-		LocalDateTime now = LocalDateTime.now().plusDays(overDay ? 1 : 0);
+		LocalDateTime startTime = getStartTime();
+
+		LocalDateTime now = LocalDateTime.now();
 		int year = now.getYear();
 		int month = now.getMonthValue();
 		int day = now.getDayOfMonth();
-		return LocalDateTime.of(year, month, day, endHour, endMinute, 0, 0);
+		LocalDateTime endTime = LocalDateTime.of(year, month, day, endHour, endMinute, 0, 0);
+		if (endTime.isBefore(startTime)) {
+			endTime = endTime.plusDays(1);
+		}
+
+		return endTime;
 	}
 }
