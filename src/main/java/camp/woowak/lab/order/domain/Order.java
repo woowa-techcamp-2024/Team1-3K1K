@@ -78,6 +78,14 @@ public class Order {
 		this.createdAt = createdAt;
 	}
 
+	public Customer getRequester() {
+		return requester;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
 	public List<OrderItem> getOrderItems() {
 		return Collections.unmodifiableList(orderItems);
 	}

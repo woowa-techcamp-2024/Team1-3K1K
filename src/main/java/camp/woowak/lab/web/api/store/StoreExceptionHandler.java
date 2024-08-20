@@ -10,6 +10,7 @@ import camp.woowak.lab.common.exception.ErrorCode;
 import camp.woowak.lab.common.exception.HttpStatusException;
 import camp.woowak.lab.menu.exception.InvalidMenuCategoryCreationException;
 import camp.woowak.lab.menu.exception.InvalidMenuCreationException;
+import camp.woowak.lab.menu.exception.MenuOwnerNotMatchException;
 import camp.woowak.lab.menu.exception.NotFoundMenuCategoryException;
 import camp.woowak.lab.store.exception.InvalidStoreCreationException;
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
@@ -37,6 +38,15 @@ public class StoreExceptionHandler {
 		ProblemDetail problemDetail = getProblemDetail(exception, badRequest);
 
 		return ResponseEntity.status(badRequest).body(problemDetail);
+	}
+
+	@ExceptionHandler(MenuOwnerNotMatchException.class)
+	public ProblemDetail handleException(MenuOwnerNotMatchException exception) {
+		log.warn("Forbidden",exception);
+		HttpStatus forbidden = HttpStatus.FORBIDDEN;
+		ProblemDetail problemDetail = getProblemDetail(exception, forbidden);
+
+		return problemDetail;
 	}
 
 	@ExceptionHandler(NotFoundStoreCategoryException.class)

@@ -3,8 +3,10 @@ package camp.woowak.lab.store.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreAddress {
@@ -18,4 +20,7 @@ public class StoreAddress {
 		this.district = district;
 	}
 
+	public String getDistrict() {
+		return district;
+	}
 }
