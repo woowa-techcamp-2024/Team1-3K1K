@@ -7,6 +7,7 @@ import static camp.woowak.lab.vendor.domain.QVendor.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,12 +57,12 @@ public class QueryDslOrderDao implements OrderDao {
 				)
 			))
 			.from(order)
-			.join(order.requester, customer)
-			.join(order.store, store)
-			.join(store.owner, vendor)
+			.join(order.requester, customer).fetchJoin()
+			.join(order.store, store).fetchJoin()
+			.join(store.owner, vendor).fetchJoin()
 			.where(
-				// 예시로 들어갈 수 있는 조건. 필요에 따라 OrderQuery의 필터링 조건 추가 가능
 				isStore(query.getStoreId()),
+				isVendor(query.getVendorId()),
 				createdAtAfter(query.getCreatedAfter()),
 				createdAtBefore(query.getCreatedBefore())
 			)
@@ -72,12 +73,10 @@ public class QueryDslOrderDao implements OrderDao {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(order.count())
 			.from(order)
-			.join(order.requester, customer)
-			.join(order.store, store)
-			.join(store.owner, vendor)
+			.join(order.store, store)  // 필요한 조인만 추가
 			.where(
-				// 예시로 들어갈 수 있는 조건. 필요에 따라 OrderQuery의 필터링 조건 추가 가능
 				isStore(query.getStoreId()),
+				isVendor(query.getVendorId()),
 				createdAtAfter(query.getCreatedAfter()),
 				createdAtBefore(query.getCreatedBefore())
 			);
@@ -96,5 +95,9 @@ public class QueryDslOrderDao implements OrderDao {
 
 	private BooleanExpression createdAtBefore(LocalDateTime createdBefore) {
 		return createdBefore != null ? order.createdAt.before(createdBefore) : null;
+	}
+
+	private BooleanExpression isVendor(UUID vendorId) {
+		return vendorId != null ? vendor.id.eq(vendorId) : null;
 	}
 }
