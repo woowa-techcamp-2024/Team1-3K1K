@@ -1,6 +1,7 @@
 package camp.woowak.lab.store.domain;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
@@ -14,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public class Store {
 	@JoinColumn(name = "vendor_id", nullable = false)
 	private Vendor owner;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "store_category_id", nullable = false)
 	private StoreCategory storeCategory;
 
@@ -82,4 +82,33 @@ public class Store {
 
 		return (now.isEqual(openTime) || now.isAfter(openTime)) && now.isBefore(closeTime);
 	}
+
+	public String getStoreAddress() {
+		return storeAddress.getDistrict();
+	}
+
+	public Long getStoreCategoryId() {
+		return storeCategory.getId();
+	}
+
+	public String getStoreCategoryName() {
+		return storeCategory.getName();
+	}
+
+	public LocalTime getStoreStartTime() {
+		return storeTime.getStartTime().toLocalTime();
+	}
+
+	public LocalTime getStoreEndTime() {
+		return storeTime.getEndTime().toLocalTime();
+	}
+
+	public UUID getVendorId() {
+		return owner.getId();
+	}
+
+	public String getVendorName() {
+		return owner.getName();
+	}
+
 }

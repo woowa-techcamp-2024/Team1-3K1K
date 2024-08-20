@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import camp.woowak.lab.common.exception.ErrorCode;
+import camp.woowak.lab.common.exception.HttpStatusException;
 import camp.woowak.lab.menu.exception.InvalidMenuCreationException;
+import camp.woowak.lab.menu.exception.InvalidMenuPriceUpdateException;
 import camp.woowak.lab.menu.exception.MenuErrorCode;
 import camp.woowak.lab.payaccount.domain.PayAccount;
 import camp.woowak.lab.payaccount.domain.TestPayAccount;
@@ -289,6 +291,57 @@ class MenuTest {
 			}
 		}
 
+	}
+
+	@Nested
+	@DisplayName("메뉴 가격 업데이트는")
+	class UpdatePriceTest {
+		private long menuPrice = 10000;
+		private Menu menu = new Menu(storeFixture, menuCategoryFixture, "메뉴1", menuPrice, 10L, "imageUrl");
+
+		@Nested
+		@DisplayName("업데이트 하려는 가격이")
+		class UpdatePrice {
+			@Test
+			@DisplayName("[Exception] 음수이면 InvalidMenuPriceUpdateException이 발생한다.")
+			void negativeUpdatePrice() {
+				//given
+				long updatePrice = -1;
+
+				//when & then
+				HttpStatusException throwable = (HttpStatusException)catchThrowable(
+					() -> menu.updatePrice(updatePrice));
+				assertThat(throwable).isInstanceOf(InvalidMenuPriceUpdateException.class);
+				assertThat(throwable.errorCode()).isEqualTo(MenuErrorCode.INVALID_PRICE);
+			}
+
+			@Test
+			@DisplayName("[Exception] 0이면 InvalidMenuPriceUpdateException이 발생한다.")
+			void zeroUpdatePrice() {
+				//given
+				long updatePrice = 0;
+
+				//when & then
+				HttpStatusException throwable = (HttpStatusException)catchThrowable(
+					() -> menu.updatePrice(updatePrice));
+				assertThat(throwable).isInstanceOf(InvalidMenuPriceUpdateException.class);
+				assertThat(throwable.errorCode()).isEqualTo(MenuErrorCode.INVALID_PRICE);
+			}
+
+			@Test
+			@DisplayName("[success] 양수면 가격이 update되고 update된 가격이 return된다.")
+			void positiveUpdatePrice() {
+				//given
+				long updatePrice = 9000;
+
+				//when
+				long updatedPrice = menu.updatePrice(updatePrice);
+
+				//then
+				assertThat(updatedPrice).isEqualTo(updatePrice);
+				assertThat(menu.getPrice()).isEqualTo(updatePrice);
+			}
+		}
 	}
 
 	private void assertExceptionAndErrorCode(Throwable thrown, ErrorCode expected) {
