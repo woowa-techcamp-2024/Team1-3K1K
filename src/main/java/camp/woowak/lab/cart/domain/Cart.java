@@ -1,10 +1,14 @@
 package camp.woowak.lab.cart.domain;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.OtherStoreMenuException;
@@ -15,7 +19,7 @@ import camp.woowak.lab.store.domain.StoreTime;
 import lombok.Getter;
 
 @Getter
-public class Cart {
+public class Cart implements Serializable {
 	private final String customerId;
 	private final List<CartItem> cartItems;
 
@@ -32,9 +36,10 @@ public class Cart {
 	 * 해당 Domain을 사용하는 같은 패키지내의 클래스, 혹은 자식 클래스는 List를 커스텀할 수 있습니다.
 	 *
 	 * @param customerId 장바구니 소유주의 ID값입니다.
-	 * @param cartItems   장바구니에 사용될 List입니다.
+	 * @param cartItems  장바구니에 사용될 List입니다.
 	 */
-	protected Cart(String customerId, List<CartItem> cartItems) {
+	@JsonCreator
+	protected Cart(@JsonProperty("customerId") String customerId, @JsonProperty("cartItems") List<CartItem> cartItems) {
 		this.customerId = customerId;
 		this.cartItems = cartItems;
 	}

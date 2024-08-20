@@ -1,13 +1,19 @@
 package camp.woowak.lab.cart.domain.vo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CartItem {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class CartItem implements Serializable {
 	private final Long menuId;
 	private final Long storeId;
 	private final int amount;
 
-	public CartItem(Long menuId, Long storeId, Integer amount) {
+	@JsonCreator
+	public CartItem(@JsonProperty("menuId") Long menuId, @JsonProperty("storeId") Long storeId,
+					@JsonProperty("amount") Integer amount) {
 		this.menuId = menuId;
 		this.storeId = storeId;
 		this.amount = amount;
