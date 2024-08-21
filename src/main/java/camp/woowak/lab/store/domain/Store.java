@@ -80,7 +80,7 @@ public class Store {
 
 		LocalDateTime now = LocalDateTime.now();
 
-		return (now.isEqual(openTime) || now.isAfter(openTime)) && now.isBefore(closeTime);
+		return openTime.isBefore(now) && now.isBefore(closeTime);
 	}
 
 	public String getStoreAddress() {
