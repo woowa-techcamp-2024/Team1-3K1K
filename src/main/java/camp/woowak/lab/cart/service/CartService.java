@@ -55,6 +55,6 @@ public class CartService {
 
 	private Cart getCart(String customerId) {
 		return cartRepository.findByCustomerId(customerId)
-			.orElse(cartRepository.save(new Cart(customerId)));
+			.orElseGet(() -> cartRepository.save(new Cart(customerId)));
 	}
 }
