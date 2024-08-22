@@ -24,11 +24,11 @@ public class CartItemEntity {
 	}
 
 	public static CartItemEntity fromDomain(CartItem cartItem) {
-		CartItemEntity cartItemEntity = new CartItemEntity();
-		cartItemEntity.id = cartItem.getId();
-		cartItemEntity.menuId = cartItem.getMenuId();
-		cartItemEntity.storeId = cartItem.getStoreId();
-		cartItemEntity.amount = cartItem.getAmount();
-		return cartItemEntity;
+		CartItemEntity entity = new CartItemEntity();
+		entity.id = cartItem.getId();
+		entity.menuId = cartItem.getMenuId();
+		entity.storeId = cartItem.getStoreId();
+		entity.amount = cartItem.getAmount();
+		return entity;
 	}
 }
