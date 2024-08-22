@@ -9,7 +9,6 @@ import camp.woowak.lab.order.domain.vo.OrderItem;
 import camp.woowak.lab.store.domain.Store;
 import lombok.Getter;
 
-@Deprecated
 @Getter
 public class OrderDTO {
 	private final Long id;
