@@ -15,12 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import camp.woowak.lab.web.dto.response.order.OrderResponse;
+import camp.woowak.lab.order.domain.Order;
 
 @Repository
 public class QueryDslOrderDao implements OrderDao {
@@ -31,37 +30,14 @@ public class QueryDslOrderDao implements OrderDao {
 	}
 
 	@Override
-	public Page<OrderResponse> findAll(OrderQuery query, Pageable pageable) {
-		List<OrderResponse> content = queryFactory
-			.select(Projections.constructor(OrderResponse.class,
-				order.id,
-				Projections.constructor(OrderResponse.RequesterInfo.class,
-					customer.id,
-					customer.name,
-					customer.email,
-					customer.phone
-				),
-				Projections.constructor(OrderResponse.StoreInfo.class,
-					store.id,
-					store.name,
-					vendor.name,
-					store.storeAddress.district,
-					store.phoneNumber
-				),
-				Projections.list(
-					Projections.constructor(OrderResponse.OrderItemInfo.class,
-						orderItem.menuId,
-						orderItem.price,
-						orderItem.quantity,
-						orderItem.totalPrice
-					)
-				)
-			))
+	public Page<Order> findAll(OrderQuery query, Pageable pageable) {
+		List<Order> content = queryFactory
+			.select(order)
 			.from(order)
-			.join(order.requester, customer)
-			.join(order.store, store)
-			.join(store.owner, vendor)
-			.join(order.orderItems, orderItem)
+			.join(order.requester, customer).fetchJoin()
+			.join(order.store, store).fetchJoin()
+			.join(store.owner, vendor).fetchJoin()
+			.join(order.orderItems, orderItem).fetchJoin()
 			.where(
 				isStore(query.getStoreId()),
 				isOwner(query.getVendorId()),
@@ -75,7 +51,8 @@ public class QueryDslOrderDao implements OrderDao {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(order.count())
 			.from(order)
-			.join(order.store, store)  // 필요한 조인만 추가
+			.join(order.store, store)
+			.join(store.owner, vendor)
 			.where(
 				isStore(query.getStoreId()),
 				isOwner(query.getVendorId()),
