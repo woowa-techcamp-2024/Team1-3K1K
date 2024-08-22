@@ -22,6 +22,7 @@ public class CartResponse {
 		this.menus = menus;
 	}
 
+	@Getter
 	public static class CartItemInfo {
 		private Long menuId;
 		private String menuName;
