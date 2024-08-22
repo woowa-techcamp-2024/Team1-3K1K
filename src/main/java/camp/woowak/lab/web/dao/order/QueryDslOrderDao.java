@@ -2,6 +2,7 @@ package camp.woowak.lab.web.dao.order;
 
 import static camp.woowak.lab.customer.domain.QCustomer.*;
 import static camp.woowak.lab.order.domain.QOrder.*;
+import static camp.woowak.lab.order.domain.vo.QOrderItem.*;
 import static camp.woowak.lab.store.domain.QStore.*;
 import static camp.woowak.lab.vendor.domain.QVendor.*;
 
@@ -49,20 +50,21 @@ public class QueryDslOrderDao implements OrderDao {
 				),
 				Projections.list(
 					Projections.constructor(OrderResponse.OrderItemInfo.class,
-						order.orderItems.any().menuId,
-						order.orderItems.any().price,
-						order.orderItems.any().quantity,
-						order.orderItems.any().totalPrice
+						orderItem.menuId,
+						orderItem.price,
+						orderItem.quantity,
+						orderItem.totalPrice
 					)
 				)
 			))
 			.from(order)
-			.join(order.requester, customer).fetchJoin()
-			.join(order.store, store).fetchJoin()
-			.join(store.owner, vendor).fetchJoin()
+			.join(order.requester, customer)
+			.join(order.store, store)
+			.join(store.owner, vendor)
+			.join(order.orderItems, orderItem)
 			.where(
 				isStore(query.getStoreId()),
-				isVendor(query.getVendorId()),
+				isOwner(query.getVendorId()),
 				createdAtAfter(query.getCreatedAfter()),
 				createdAtBefore(query.getCreatedBefore())
 			)
@@ -76,7 +78,7 @@ public class QueryDslOrderDao implements OrderDao {
 			.join(order.store, store)  // 필요한 조인만 추가
 			.where(
 				isStore(query.getStoreId()),
-				isVendor(query.getVendorId()),
+				isOwner(query.getVendorId()),
 				createdAtAfter(query.getCreatedAfter()),
 				createdAtBefore(query.getCreatedBefore())
 			);
@@ -97,7 +99,7 @@ public class QueryDslOrderDao implements OrderDao {
 		return createdBefore != null ? order.createdAt.before(createdBefore) : null;
 	}
 
-	private BooleanExpression isVendor(UUID vendorId) {
-		return vendorId != null ? vendor.id.eq(vendorId) : null;
+	private BooleanExpression isOwner(UUID vendorId) {
+		return vendorId != null ? order.store.owner.id.eq(vendorId) : null;
 	}
 }
