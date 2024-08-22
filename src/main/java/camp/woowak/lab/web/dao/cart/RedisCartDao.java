@@ -83,7 +83,7 @@ public class RedisCartDao implements CartDao {
 				tuple.get(menu.id),
 				tuple.get(menu.name),
 				tuple.get(menu.price),
-				Integer.toUnsignedLong(menuIdsCount.get(tuple.get(menu.id))), // amount 대신 stockCount 사용
+				menuIdsCount.get(tuple.get(menu.id)), // amount 대신 stockCount 사용
 				tuple.get(menu.stockCount)
 			))
 			.collect(Collectors.toList());

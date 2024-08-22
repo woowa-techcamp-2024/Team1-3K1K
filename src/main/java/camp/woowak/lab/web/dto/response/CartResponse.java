@@ -27,10 +27,10 @@ public class CartResponse {
 		private Long menuId;
 		private String menuName;
 		private Long menuPrice;
-		private Long amount;
+		private Integer amount;
 		private Long leftAmount;
 
-		public CartItemInfo(Long menuId, String menuName, Long menuPrice, Long amount, Long leftAmount) {
+		public CartItemInfo(Long menuId, String menuName, Long menuPrice, Integer amount, Long leftAmount) {
 			this.menuId = menuId;
 			this.menuName = menuName;
 			this.menuPrice = menuPrice;
