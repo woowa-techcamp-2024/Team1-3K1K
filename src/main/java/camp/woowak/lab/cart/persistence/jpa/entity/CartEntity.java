@@ -30,7 +30,7 @@ public class CartEntity {
 
 	public Cart toDomain() {
 		List<CartItem> cartItems = this.cartItems.stream().map(CartItemEntity::toDomain).collect(Collectors.toList());
-		return new Cart(customerId, cartItems);
+		return new Cart(id, customerId, cartItems);
 	}
 
 	public static CartEntity fromDomain(Cart cart) {

@@ -25,7 +25,7 @@ public class CartItem {
 	}
 
 	public CartItem add(Integer increment) {
-		return new CartItem(menuId, storeId, amount + increment);
+		return new CartItem(id, menuId, storeId, amount + increment);
 	}
 
 	@Override
