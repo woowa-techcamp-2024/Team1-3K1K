@@ -11,12 +11,7 @@ import camp.woowak.lab.cart.repository.CartRepository;
 public interface RedisCartRepository extends CrudRepository<RedisCartEntity, String>, CartRepository {
 	@Override
 	default Optional<Cart> findByCustomerId(String customerId) {
-		return findById(customerId).map((cart)->{
-			// RedisCartEntity::toDomain
-			System.out.println("cart = " + cart);
-			System.out.println("cart.getCartItems() = " + cart.getCartItems());
-			return cart.toDomain();
-		});
+		return findById(customerId).map(RedisCartEntity::toDomain);
 	}
 
 	@Override

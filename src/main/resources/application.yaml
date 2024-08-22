@@ -21,3 +21,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+  data:
+    redis:
+      host: localhost #변경예정
+      port: 6379
