@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.repository.CartRepository;
@@ -28,6 +29,7 @@ import camp.woowak.lab.web.dao.store.StoreDummiesFixture;
 import camp.woowak.lab.web.dto.response.CartResponse;
 
 @SpringBootTest
+@Transactional
 class RedisCartDaoTest extends StoreDummiesFixture {
 	private final CartRepository cartRepository;
 	@Autowired
