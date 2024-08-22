@@ -42,7 +42,8 @@ public class OrderApiController {
 	public Page<OrderDTO> retrieveOrderListByStore(@AuthenticationPrincipal LoginVendor loginVendor,
 												   @PathVariable(name = "storeId") Long storeId,
 												   Pageable pageable) {
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, loginVendor.getId(), pageable);
+		RetrieveOrderListCommand command =
+			new RetrieveOrderListCommand(storeId, loginVendor.getId(), null,null,pageable);
 		return retrieveOrderListService.retrieveOrderListOfStore(command);
 	}
 
