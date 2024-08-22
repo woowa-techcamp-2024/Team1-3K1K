@@ -18,12 +18,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import camp.woowak.lab.order.repository.OrderRepository;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
+import camp.woowak.lab.web.dao.order.OrderDao;
+import camp.woowak.lab.web.dao.order.OrderQuery;
 
 @ExtendWith(MockitoExtension.class)
 class RetrieveOrderListServiceTest {
@@ -31,16 +32,16 @@ class RetrieveOrderListServiceTest {
 	private RetrieveOrderListService retrieveOrderListService;
 
 	@Mock
-	private OrderRepository orderRepository;
+	private StoreRepository storeRepository;
 
 	@Mock
-	private StoreRepository storeRepository;
+	private OrderDao orderDao;
 
 	@Test
 	@DisplayName("점주 주문 리스트 조회 테스트 - 성공")
 	void testRetrieveOrderList() {
 		// given
-		given(orderRepository.findAllByStore_Owner_Id(any(UUID.class), any(Pageable.class))).willReturn(new PageImpl<>(
+		given(orderDao.findAll(any(OrderQuery.class), any(Pageable.class))).willReturn(new PageImpl<>(
 			List.of()));
 
 		RetrieveOrderListCommand command = new RetrieveOrderListCommand(UUID.randomUUID(), PageRequest.of(0, 10));
@@ -49,7 +50,7 @@ class RetrieveOrderListServiceTest {
 		retrieveOrderListService.retrieveOrderListOfVendorStores(command);
 
 		// then
-		verify(orderRepository).findAllByStore_Owner_Id(any(UUID.class), any(Pageable.class));
+		verify(orderDao).findAll(any(OrderQuery.class), any(Pageable.class));
 	}
 
 	@Test
@@ -60,17 +61,17 @@ class RetrieveOrderListServiceTest {
 		UUID vendorId = UUID.randomUUID();
 		Store fakeStore = Mockito.mock(Store.class);
 		PageRequest pageRequest = PageRequest.of(0, 10);
-		given(orderRepository.findByStore_Id(storeId, pageRequest)).willReturn(new PageImpl<>(List.of()));
+		given(orderDao.findAll(any(OrderQuery.class), any(Pageable.class))).willReturn(new PageImpl<>(List.of()));
 		given(storeRepository.findById(storeId)).willReturn(Optional.of(fakeStore));
 		given(fakeStore.isOwnedBy(vendorId)).willReturn(true);
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, pageRequest);
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, null, null, pageRequest);
 
 		// when
 		retrieveOrderListService.retrieveOrderListOfStore(command);
 
 		// then
-		verify(orderRepository).findByStore_Id(storeId, pageRequest);
+		verify(orderDao).findAll(any(OrderQuery.class), any(Pageable.class));
 		verify(storeRepository).findById(storeId);
 		verify(fakeStore).isOwnedBy(vendorId);
 	}
@@ -83,7 +84,7 @@ class RetrieveOrderListServiceTest {
 		UUID vendorId = UUID.randomUUID();
 		given(storeRepository.findById(storeId)).willReturn(Optional.empty());
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, null, null, PageRequest.of(0, 10));
 
 		// when & then
 		assertThrows(NotFoundStoreException.class,
@@ -100,7 +101,7 @@ class RetrieveOrderListServiceTest {
 		given(storeRepository.findById(storeId)).willReturn(Optional.of(fakeStore));
 		given(fakeStore.isOwnedBy(vendorId)).willReturn(false);
 
-		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, PageRequest.of(0, 10));
+		RetrieveOrderListCommand command = new RetrieveOrderListCommand(storeId, vendorId, null, null, PageRequest.of(0, 10));
 
 		// when & then
 		assertThrows(NotEqualsOwnerException.class,
