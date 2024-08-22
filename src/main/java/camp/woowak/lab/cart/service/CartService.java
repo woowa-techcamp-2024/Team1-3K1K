@@ -3,6 +3,7 @@ package camp.woowak.lab.cart.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.domain.vo.CartItem;
@@ -14,6 +15,7 @@ import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 
 @Service
+@Transactional
 public class CartService {
 	private final CartRepository cartRepository;
 	private final MenuRepository menuRepository;

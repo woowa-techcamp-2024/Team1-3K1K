@@ -2,7 +2,11 @@ package camp.woowak.lab.cart.domain.vo;
 
 import java.util.Objects;
 
+import lombok.Getter;
+
+@Getter
 public class CartItem {
+	private Long id;
 	private final Long menuId;
 	private final Long storeId;
 	private final int amount;
@@ -13,20 +17,15 @@ public class CartItem {
 		this.amount = amount;
 	}
 
-	public Long getMenuId() {
-		return menuId;
-	}
-
-	public Long getStoreId() {
-		return storeId;
-	}
-
-	public int getAmount() {
-		return amount;
+	public CartItem(Long id, Long menuId, Long storeId, int amount) {
+		this.id = id;
+		this.menuId = menuId;
+		this.storeId = storeId;
+		this.amount = amount;
 	}
 
 	public CartItem add(Integer increment) {
-		return new CartItem(menuId, storeId, amount + increment);
+		return new CartItem(id, menuId, storeId, amount + increment);
 	}
 
 	@Override

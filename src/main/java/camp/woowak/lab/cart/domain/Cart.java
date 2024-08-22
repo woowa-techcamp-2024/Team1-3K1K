@@ -16,6 +16,7 @@ import lombok.Getter;
 
 @Getter
 public class Cart {
+	private Long id;
 	private final String customerId;
 	private final List<CartItem> cartItems;
 
@@ -33,6 +34,12 @@ public class Cart {
 	 * @param cartItems   장바구니에 사용될 List입니다.
 	 */
 	public Cart(String customerId, List<CartItem> cartItems) {
+		this.customerId = customerId;
+		this.cartItems = cartItems;
+	}
+
+	public Cart(Long id, String customerId, List<CartItem> cartItems) {
+		this.id = id;
 		this.customerId = customerId;
 		this.cartItems = cartItems;
 	}
