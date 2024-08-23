@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${store.storeName}">가게 이름</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .store-info {
+            margin-bottom: 20px;
+        }
+
+        .store-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .store-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .menu-list {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .menu-details {
+            flex: 1;
+        }
+
+        .menu-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .menu-price {
+            color: #e91e63;
+        }
+
+        .cart-info {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #2ac1bc;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .cart-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .cart-icon {
+            font-size: 48px;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="store-info">
+        <h1 class="store-name" th:text="${store.storeName}">가게 이름</h1>
+        <div class="store-details" th:text="'주소: ' + ${store.storeAddress}">주소: 가게 주소</div>
+        <div class="store-details" th:text="'전화번호: ' + ${store.storePhoneNumber}">전화번호: 가게 전화번호</div>
+        <div class="store-details" th:text="'최소 주문 금액: ' + ${store.storeMinOrderPrice} + '원'">최소 주문 금액: 10,000원</div>
+        <div class="store-details" th:text="'카테고리: ' + ${store.storeCategoryName}">카테고리: 한식</div>
+        <div class="store-details" th:text="'영업 시간: ' + ${store.storeStartTime} + ' - ' + ${store.storeEndTime}">영업 시간:
+            09:00 - 22:00
+        </div>
+        <div class="store-details" th:text="'판매자: ' + ${store.vendorName}">판매자: 판매자 이름</div>
+    </div>
+    <div class="menu-list">
+        <h2>메뉴</h2>
+        <div th:each="menu : ${store.menus}" class="menu-item" th:onclick="'addToCart(' + ${menu.menuId} + ')'">
+            <div class="menu-details">
+                <div class="menu-name" th:text="${menu.menuName}">메뉴 이름</div>
+                <div class="menu-price" th:text="${menu.menuPrice} + '원'">10,000원</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- cartInfo 부분 수정 -->
+<div id="cartInfo" class="cart-info" style="display: none;" onclick="placeOrder()">
+    <span id="cartItemCount"></span>개 메뉴
+    <span id="cartTotalPrice"></span>원
+</div>
+
+<!-- 주문 성공 애니메이션을 위한 요소 추가 -->
+<div id="orderAnimation" class="cart-animation">
+    <span class="cart-icon">🛒</span>
+    <span id="orderMessage">주문이 완료되었습니다!</span>
+</div>
+
+<div id="addToCartModal" class="modal">
+    <div class="modal-content">
+        <p>장바구니에 메뉴를 추가했습니다.</p>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function addToCart(menuId) {
+        fetch('/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ menuId: menuId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    showModal();
+                    updateCartInfo();
+                } else {
+                    if (data.status === 401) {
+                        alert('로그인이 필요합니다.');
+                        location.href = '/view/login';
+                        return;
+                    }
+                    alert('장바구니에 추가하지 못했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+
+    function updateCartInfo() {
+        fetch('/cart')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cartItemCount').textContent = data['data']['totalAmount'];
+                document.getElementById('cartTotalPrice').textContent = data['data']['totalPrice'];
+                document.getElementById('cartInfo').style.display = 'block';
+            })
+            .catch(error => {
+                if (error.status === 401) {
+                    alert('로그인이 필요합니다.');
+                    location.href = '/view/login';
+                    return;
+                }
+
+                console.error('Error:', error);
+            });
+    }
+
+    function showModal() {
+        var modal = document.getElementById('addToCartModal');
+        modal.style.display = "block";
+        setTimeout(function() {
+            modal.style.display = "none";
+        }, 2000);
+    }
+
+    // 페이지 로드 시 장바구니 정보 업데이트
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartInfo();
+    });
+
+    function placeOrder() {
+        fetch('/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 201) {
+                    showOrderAnimation();
+                    updateCartInfo(); // 주문 후 장바구니 정보 갱신
+                } else {
+                    if (data.status === 401) {
+                        alert('로그인이 필요합니다.');
+                        location.href = '/view/login';
+                        return;
+                    }
+                    alert('주문에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+
+    function showOrderAnimation() {
+        const orderAnimation = document.getElementById('orderAnimation');
+        orderAnimation.style.display = 'block';
+
+        setTimeout(() => {
+            orderAnimation.style.display = 'none';
+        }, 1500);
+    }
+</script>
+</body>
+</html>
