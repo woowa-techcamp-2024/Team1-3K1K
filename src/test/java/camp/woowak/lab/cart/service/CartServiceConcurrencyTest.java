@@ -1,6 +1,7 @@
 package camp.woowak.lab.cart.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 			});
 
 		// 동시성 테스트 : 주문/결제을 동시에 요청한다.
-		int numberOfThreads = 2;
+		int numberOfThreads = 10;
 		ExecutorService ex = Executors.newFixedThreadPool(numberOfThreads);
 		CountDownLatch latch = new CountDownLatch(numberOfThreads);
 		List<Exception> expectedException = Collections.synchronizedList(
@@ -110,6 +111,7 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 
 		//when
 		//같은 사람이 동시에 numberOfThreads 만큼의 요청을 보내는 상황
+		long totalStartTime = System.currentTimeMillis();
 		for (int i = 0; i < numberOfThreads; i++) {
 			ex.submit(() -> {
 				long startTime = System.currentTimeMillis();
@@ -128,6 +130,8 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 		}
 
 		latch.await();
+		long totalEndTime = System.currentTimeMillis();
+		log.info("{}개 쓰레드의 총 소요시간 : {} ms", numberOfThreads, (totalEndTime - totalStartTime));
 
 		//then
 		/**
@@ -135,17 +139,12 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 		 * 2. 사용자의 계좌에서 메뉴의 총 가격이 단 한번만 빠져나갔는지?
 		 * 3. 재고가 1~50까지 1개씩만 차감됐는지?
 		 */
-		assertThat(expectedException.size()).isEqualTo(numberOfThreads - 1); // 첫번째 주문 빼고는 모두 exception을 발생시켜야함
-		assertThat(expectedException)
-			.allMatch((exception) -> exception
-				.getClass()
-				.isAssignableFrom(DuplicatedOrderException.class)
-			);
-		verify(originBalance, originStocks);
+		verify(numberOfThreads, originBalance, originStocks, expectedException);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void verify(long originBalance, Map<Long, Long> originStocks) {
+	public void verify(int numberOfThreads, long originBalance, Map<Long, Long> originStocks,
+					   List<Exception> expectedException) {
 		List<Order> all = orderRepository.findAll();
 
 		long totalPrice = menus.stream()
@@ -153,15 +152,23 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 			.reduce(0L, Long::sum);
 
 		PayAccount updated = payAccountRepository.findById(payAccount.getId()).get();
-
-		assertThat(all.size()).isEqualTo(1L);//주문은 단 한번만 저장되어야 한다.
-		assertThat(all.get(0).getRequester().getId()).isEqualTo(customer.getId());//저장된 order의 requester는 주문한 customer다.
-		assertThat(updated.getBalance()).isEqualTo(originBalance - totalPrice);//주문 이후 Customer의 잔고는 단 한번 차감되어야한다.
-		//사용자가 주문했던 메뉴들의 재고수는 단 한번 차감되어야한다.
-		menuRepository.findAll()
-			.stream()
-			.forEach(menu -> {
-				assertThat(menu.getStockCount()).isEqualTo(originStocks.get(menu.getId()) - 1);
-			});
+		assertAll("verify values",
+				  // 첫번째 주문 빼고는 모두 exception을 발생시켜야함
+				  () -> assertThat(expectedException.size()).isEqualTo(numberOfThreads - 1),
+				  () -> expectedException
+					  .forEach(
+						  (exception) -> assertThat(exception).isExactlyInstanceOf(DuplicatedOrderException.class)),
+				  //주문은 단 한번만 저장되어야 한다.
+				  () -> assertThat(all.size()).isEqualTo(1L),
+				  //저장된 order의 requester는 주문한 customer다.,
+				  () -> assertThat(all.get(0).getRequester().getId()).isEqualTo(customer.getId()),
+				  //주문 이후 Customer의 잔고는 단 한번 차감되어야한다.
+				  () -> assertThat(updated.getBalance()).isEqualTo(originBalance - totalPrice),
+				  //사용자가 주문했던 메뉴들의 재고수는 단 한번 차감되어야한다.
+				  () -> menuRepository.findAll()
+					  .forEach(menu -> {
+						  assertThat(menu.getStockCount()).isEqualTo(originStocks.get(menu.getId()) - 1);
+					  })
+		);
 	}
 }
