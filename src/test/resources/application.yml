@@ -20,4 +20,21 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
+        use_sql_comments: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+cart:
+  dao: jpa
+  repository: jpa

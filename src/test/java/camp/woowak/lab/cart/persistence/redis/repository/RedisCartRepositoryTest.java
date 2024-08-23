@@ -19,6 +19,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestPropertySources;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,6 +31,10 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 @SpringBootTest
 @Testcontainers
 @ContextConfiguration(initializers = {RedisCartRepositoryTest.Initializer.class})
+@TestPropertySources({
+	@TestPropertySource(properties = "cart.dao=redis"),
+	@TestPropertySource(properties = "cart.repository=redis")
+})
 public class RedisCartRepositoryTest {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;

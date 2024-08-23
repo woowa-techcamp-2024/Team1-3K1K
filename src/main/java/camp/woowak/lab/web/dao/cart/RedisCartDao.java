@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.Tuple;
@@ -22,11 +22,12 @@ import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.web.dto.response.CartResponse;
 
 @Repository
+@ConditionalOnProperty(name = "cart.dao", havingValue = "redis")
 public class RedisCartDao implements CartDao {
 	private final CartRepository cartRepository;
 	private final JPAQueryFactory queryFactory;
 
-	public RedisCartDao(@Qualifier("inMemoryCartRepository") CartRepository cartRepository,
+	public RedisCartDao(CartRepository cartRepository,
 						JPAQueryFactory queryFactory) {
 		this.cartRepository = cartRepository;
 		this.queryFactory = queryFactory;

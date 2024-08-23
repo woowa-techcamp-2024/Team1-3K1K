@@ -9,7 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestPropertySources;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.repository.CartRepository;
@@ -30,10 +36,25 @@ import camp.woowak.lab.web.dto.response.CartResponse;
 
 @SpringBootTest
 @Transactional
+@Testcontainers
+@TestPropertySources({
+	@TestPropertySource(properties = "cart.dao=redis"),
+	@TestPropertySource(properties = "cart.repository=redis")
+})
 class RedisCartDaoTest extends StoreDummiesFixture {
 	private final CartRepository cartRepository;
 	@Autowired
-	private RedisCartDao redisCartDao;
+	private CartDao cartDao;
+
+	@Container
+	private static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:latest"))
+		.withExposedPorts(6379);
+
+	static {
+		redis.start();
+		System.setProperty("spring.data.redis.port", String.valueOf(redis.getFirstMappedPort()));
+		System.setProperty("spring.data.redis.host", redis.getHost());
+	}
 
 	@Autowired
 	public RedisCartDaoTest(StoreRepository storeRepository,
@@ -59,13 +80,13 @@ class RedisCartDaoTest extends StoreDummiesFixture {
 	void setUp() {
 		customer = createDummyCustomers(1).get(0);
 		store = createDummyStores(1).get(0);
-		menuCategory = createDummyMenuCategories(store,1).get(0);
-		menus = createDummyMenus(store,menuCategory,5);
+		menuCategory = createDummyMenuCategories(store, 1).get(0);
+		menus = createDummyMenus(store, menuCategory, 5);
 	}
 
 	@Test
 	@DisplayName("findByCustomerId 메서드는 장바구니에 담긴 메뉴의 아이템을 가져온다.")
-	void findByCustomerIdTest(){
+	void findByCustomerIdTest() {
 		//given
 		Cart cart = new Cart(customer.getId().toString());
 		cartRepository.save(cart);
@@ -74,7 +95,7 @@ class RedisCartDaoTest extends StoreDummiesFixture {
 		Cart save = cartRepository.save(cart);
 
 		//when
-		CartResponse response = redisCartDao.findByCustomerId(customer.getId());
+		CartResponse response = cartDao.findByCustomerId(customer.getId());
 
 		//then
 		assertThat(response.getStoreId()).isEqualTo(store.getId());

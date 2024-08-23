@@ -25,3 +25,7 @@ spring:
     redis:
       host: localhost #변경예정
       port: 6379
+
+cart:
+  repository: jpa
+  dao: jpa

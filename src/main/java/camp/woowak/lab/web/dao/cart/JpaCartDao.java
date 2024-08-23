@@ -7,6 +7,7 @@ import static camp.woowak.lab.store.domain.QStore.*;
 
 import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
@@ -15,7 +16,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import camp.woowak.lab.web.dto.response.CartResponse;
 
-// @Repository
+@Repository
+@ConditionalOnProperty(name = "cart.dao", havingValue = "jpa")
 public class JpaCartDao implements CartDao {
 	private final JPAQueryFactory queryFactory;
 
