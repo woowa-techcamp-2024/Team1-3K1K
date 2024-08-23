@@ -6,12 +6,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import camp.woowak.lab.cart.exception.NotFoundCartException;
 import camp.woowak.lab.cart.service.CartService;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
 import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
+import camp.woowak.lab.web.dao.cart.CartDao;
 import camp.woowak.lab.web.dto.request.cart.AddCartRequest;
+import camp.woowak.lab.web.dto.response.CartResponse;
 import camp.woowak.lab.web.dto.response.cart.AddCartResponse;
 import camp.woowak.lab.web.dto.response.cart.CartTotalPriceResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CartApiController {
 	private final CartService cartService;
+	private final CartDao cartDao;
 
-	public CartApiController(CartService cartService) {
+	public CartApiController(CartService cartService, CartDao cartDao) {
 		this.cartService = cartService;
+		this.cartDao = cartDao;
 	}
 
 	@PostMapping
@@ -46,5 +51,14 @@ public class CartApiController {
 
 		log.info("Customer({})'s total price in cart is {}", loginCustomer.getId(), totalPrice);
 		return new CartTotalPriceResponse(totalPrice);
+	}
+
+	@GetMapping
+	public CartResponse getMyCart(@AuthenticationPrincipal LoginCustomer loginCustomer) {
+		CartResponse cartResponse = cartDao.findByCustomerId(loginCustomer.getId());
+		if (cartResponse == null) {
+			throw new NotFoundCartException(loginCustomer.getId() + "의 카트가 조회되지 않았습니다.");
+		}
+		return cartResponse;
 	}
 }
