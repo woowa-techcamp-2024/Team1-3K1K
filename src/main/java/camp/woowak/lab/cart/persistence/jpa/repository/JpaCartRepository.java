@@ -1,6 +1,7 @@
 package camp.woowak.lab.cart.persistence.jpa.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +19,7 @@ public class JpaCartRepository implements CartRepository {
 
 	@Override
 	public Optional<Cart> findByCustomerId(String customerId) {
-		Optional<CartEntity> entity = entityRepository.findByCustomerId(customerId);
+		Optional<CartEntity> entity = entityRepository.findByCustomerId(UUID.fromString(customerId));
 		if (entity.isEmpty()) {
 			return Optional.empty();
 		}

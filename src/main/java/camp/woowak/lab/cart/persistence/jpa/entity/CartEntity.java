@@ -1,6 +1,7 @@
 package camp.woowak.lab.cart.persistence.jpa.entity;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import camp.woowak.lab.cart.domain.Cart;
@@ -24,20 +25,20 @@ public class CartEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column(unique = true, nullable = false)
-	private String customerId;
+	private UUID customerId;
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "cart_id")
 	private List<CartItemEntity> cartItems;
 
 	public Cart toDomain() {
 		List<CartItem> cartItems = this.cartItems.stream().map(CartItemEntity::toDomain).collect(Collectors.toList());
-		return new Cart(id, customerId, cartItems);
+		return new Cart(id, customerId.toString(), cartItems);
 	}
 
 	public static CartEntity fromDomain(Cart cart) {
 		CartEntity entity = new CartEntity();
 		entity.id = cart.getId();
-		entity.customerId = cart.getCustomerId();
+		entity.customerId = UUID.fromString(cart.getCustomerId());
 		entity.cartItems = cart.getCartItems().stream().map(CartItemEntity::fromDomain).collect(Collectors.toList());
 		return entity;
 	}
