@@ -23,12 +23,13 @@ public class CartItemEntity {
 		return new CartItem(id, menuId, storeId, amount);
 	}
 
-	public static CartItemEntity fromDomain(CartItem cartItem) {
+	public static CartItemEntity fromDomain(CartEntity cartEntity, CartItem cartItem) {
 		CartItemEntity entity = new CartItemEntity();
 		entity.id = cartItem.getId();
 		entity.menuId = cartItem.getMenuId();
 		entity.storeId = cartItem.getStoreId();
 		entity.amount = cartItem.getAmount();
+		entity.cart = cartEntity;
 		return entity;
 	}
 }

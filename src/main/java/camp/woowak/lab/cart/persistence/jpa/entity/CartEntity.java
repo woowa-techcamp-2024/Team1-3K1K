@@ -39,7 +39,10 @@ public class CartEntity {
 		CartEntity entity = new CartEntity();
 		entity.id = cart.getId();
 		entity.customerId = UUID.fromString(cart.getCustomerId());
-		entity.cartItems = cart.getCartItems().stream().map(CartItemEntity::fromDomain).collect(Collectors.toList());
+		entity.cartItems = cart.getCartItems()
+			.stream()
+			.map((cartItem) -> CartItemEntity.fromDomain(entity, cartItem))
+			.collect(Collectors.toList());
 		return entity;
 	}
 }
