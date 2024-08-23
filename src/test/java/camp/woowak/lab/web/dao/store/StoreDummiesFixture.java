@@ -68,17 +68,30 @@ public abstract class StoreDummiesFixture {
 		this.menuCategoryRepository = menuCategoryRepository;
 	}
 
+	protected PayAccount createPayAccount(long balance){
+		PayAccount payAccount = new PayAccount();
+		payAccount.charge(balance);
+		return payAccountRepository.saveAndFlush(payAccount);
+	}
+
 	protected List<Customer> createDummyCustomers(int numberOfCustomers) {
 		List<Customer> customers = new ArrayList<>(numberOfCustomers);
 		for (int i = 0; i < numberOfCustomers; i++) {
 			PayAccount payAccount = new PayAccount();
-			payAccountRepository.save(payAccount);
+			payAccount.charge(1000000L);
+			payAccountRepository.saveAndFlush(payAccount);
 			Customer customer = new Customer("customer " + i, "cemail" + i + "@gmail.com", "password1234!",
 											 "010-1234-5678", payAccount, passwordEncoder);
 			customers.add(customer);
 		}
 
 		return customerRepository.saveAllAndFlush(customers);
+	}
+
+	protected Customer createDummyCustomer(PayAccount payAccount) {
+		Customer customer = new Customer("customer ", "cemail@gmail.com", "password1234!",
+										 "010-1234-5678", payAccount, passwordEncoder);
+		return customerRepository.saveAndFlush(customer);
 	}
 
 	protected List<Order> createOrdersWithRandomCount(List<Store> store) {
@@ -142,8 +155,8 @@ public abstract class StoreDummiesFixture {
 		Random random = new Random();
 		for (int i = 0; i < numberOfMenus; i++) {
 			Menu menu = new Menu(store, menuCategory, "메뉴" + i,
-								 Integer.toUnsignedLong(10000 + random.nextInt(1, 10) * 100),
-								 Integer.toUnsignedLong(100 + i), "imageUrl" + i);
+								 Integer.toUnsignedLong(10000 + random.nextInt(1000, 5000)),
+								 Integer.toUnsignedLong(100), "imageUrl" + i);
 			menus.add(menu);
 		}
 		return menuRepository.saveAllAndFlush(menus);
