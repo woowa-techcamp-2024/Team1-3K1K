@@ -15,7 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import camp.woowak.lab.web.dto.response.CartResponse;
 
-@Repository
+// @Repository
 public class JpaCartDao implements CartDao {
 	private final JPAQueryFactory queryFactory;
 
