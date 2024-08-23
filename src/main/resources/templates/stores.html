@@ -16,6 +16,7 @@
             max-width: 480px;
             margin: 0 auto;
             background-color: white;
+            padding-bottom: 60px;
         }
 
         .header {
@@ -26,49 +27,14 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .category-tabs {
-            display: flex;
-            overflow-x: auto;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .category-tab {
-            padding: 10px 15px;
-            white-space: nowrap;
-        }
-
-        .active {
-            border-bottom: 2px solid #2ac1bc;
-            color: #2ac1bc;
-        }
-
-        .filters {
-            display: flex;
-            padding: 10px;
-            overflow-x: auto;
-        }
-
-        .filter {
-            margin-right: 10px;
-            padding: 5px 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 15px;
-            white-space: nowrap;
-        }
-
         .store-list {
             padding: 10px;
         }
 
         .store-item {
             margin-bottom: 20px;
-        }
-
-        .store-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
         }
 
         .store-info {
@@ -78,10 +44,36 @@
         .store-name {
             font-weight: bold;
             font-size: 18px;
+            margin-bottom: 5px;
         }
 
-        .store-rating {
-            color: #ffd700;
+        .store-category {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .store-min-order {
+            font-size: 14px;
+            color: #2ac1bc;
+        }
+
+        .store-status {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .store-open {
+            background-color: #2ac1bc;
+            color: white;
+        }
+
+        .store-closed {
+            background-color: #e0e0e0;
+            color: #666;
         }
 
         .bottom-nav {
@@ -99,6 +91,10 @@
 </head>
 <body>
 <div class="container">
+    <div class="header">
+        <h1>매장 리스트</h1>
+    </div>
+
     <div class="store-list" id="storeList">
         <!-- 스토어 목록이 여기에 동적으로 추가됩니다 -->
     </div>
@@ -135,10 +131,17 @@
         const storeItem = document.createElement('div');
         storeItem.className = 'store-item';
         storeItem.innerHTML = `
-                <div class="store-info">
-                    <div class="store-name">${store.name}</div>
+            <div class="store-info">
+                <div class="store-name">
+                    ${store.name}
+                    <span class="store-status ${store.open ? 'store-open' : 'store-closed'}">
+                        ${store.open ? '영업중' : '영업종료'}
+                    </span>
                 </div>
-            `;
+                <div class="store-category">${store.category}</div>
+                <div class="store-min-order">최소주문금액: ${store.minOrderPrice.toLocaleString()}원</div>
+            </div>
+        `;
         // 클릭 이벤트 추가
         storeItem.addEventListener('click', function () {
             navigateToStoreDetail(store.storeId);
