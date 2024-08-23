@@ -41,14 +41,25 @@ public class DistributedLockAop {
 				log.warn("Failed to acquire lock for method {} with key {}", method.getName(), key);
 				throw new IllegalStateException("Unable to acquire lock");
 			}
-
 			log.info("Acquired lock for method {} with key {}", method.getName(), key);
 			return aopForTransaction.proceed(joinPoint);
+		} catch (InterruptedException e) {    // rLock.tryLock
+			log.warn("Interrupted while trying to acquire lock for method {} with key {}", method.getName(), key);
+			throw e;
 		} finally {
+			releaseLock(rLock, method, key);
+		}
+	}
+
+	private void releaseLock(RLock rLock, Method method, String key) {
+		try {
 			if (rLock.isHeldByCurrentThread()) {
 				rLock.unlock();
 				log.info("Released lock for method {} with key {}", method.getName(), key);
 			}
+		} catch (IllegalMonitorStateException e) {
+			log.warn("Failed to release lock for method {} with key {}", method.getName(), key, e);
+			throw e;
 		}
 	}
 }
