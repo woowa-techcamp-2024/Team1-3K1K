@@ -35,20 +35,19 @@ public class DistributedLockAop {
 		RLock rLock = redissonClient.getLock(key);
 
 		try {
-			boolean available = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(),
+			boolean locked = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(),
 				distributedLock.timeUnit());
-			if (!available) {
-				return false;
+			if (!locked) {
+				log.warn("Failed to acquire lock for method {} with key {}", method.getName(), key);
+				throw new IllegalStateException("Unable to acquire lock");
 			}
 
+			log.info("Acquired lock for method {} with key {}", method.getName(), key);
 			return aopForTransaction.proceed(joinPoint);
-		} catch (InterruptedException e) {
-			throw new InterruptedException();
 		} finally {
-			try {
+			if (rLock.isHeldByCurrentThread()) {
 				rLock.unlock();
-			} catch (IllegalMonitorStateException e) {
-				log.info("Redisson Lock Already UnLock {} {}", method.getName(), key);
+				log.info("Released lock for method {} with key {}", method.getName(), key);
 			}
 		}
 	}
