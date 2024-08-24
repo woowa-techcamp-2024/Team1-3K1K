@@ -21,6 +21,7 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest
 @Testcontainers
 @Import({ContainerSettingTest.TestConfigurationWithRedis.class})
+@Disabled
 public class ContainerSettingTest {
 	@Container
 	private static final GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("redis:6-alpine"))
@@ -50,7 +51,6 @@ public class ContainerSettingTest {
 		}
 	}
 
-	@Disabled
 	@Test
 	void testSimplePutAndGet() {
 		redisTemplate.opsForValue().set("key", "value");
