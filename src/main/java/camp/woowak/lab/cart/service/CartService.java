@@ -10,7 +10,7 @@ import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
-import camp.woowak.lab.infra.cache.redis.RedisMenuStockCacheService;
+import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 public class CartService {
 	private final CartRepository cartRepository;
 	private final MenuRepository menuRepository;
-	private final RedisMenuStockCacheService redisMenuStockCacheService;
+	private final MenuStockCacheService menuStockCacheService;
 
 	public CartService(CartRepository cartRepository, MenuRepository menuRepository,
-					   RedisMenuStockCacheService redisMenuStockCacheService) {
+					   MenuStockCacheService menuStockCacheService) {
 		this.cartRepository = cartRepository;
 		this.menuRepository = menuRepository;
-		this.redisMenuStockCacheService = redisMenuStockCacheService;
+		this.menuStockCacheService = menuStockCacheService;
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class CartService {
 			.orElseThrow(() -> new MenuNotFoundException(command.menuId() + " not found"));
 
 		// 메뉴 cache update
-		redisMenuStockCacheService.updateStock(menu.getId(), menu.getStockCount());
+		menuStockCacheService.updateStock(menu.getId(), menu.getStockCount());
 
 		customerCart.addMenu(menu);
 		cartRepository.save(customerCart);
