@@ -69,13 +69,22 @@ public class Order {
 				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService,
 				 LocalDateTime createdAt) {
 		Store store = singleStoreOrderValidator.check(cartItems);
-		stockRequester.request(cartItems);
-		List<OrderItem> orderItems = priceChecker.check(store, cartItems);
-		withdrawPointService.withdraw(requester, orderItems);
-		this.requester = requester;
-		this.store = store;
-		this.orderItems = orderItems;
-		this.createdAt = createdAt;
+
+		List<CartItem> stockDecreaseSuccessCartItems = null;
+		try {
+			stockDecreaseSuccessCartItems = stockRequester.request(cartItems);
+			List<OrderItem> orderItems = priceChecker.check(store, cartItems);
+			withdrawPointService.withdraw(requester, orderItems);
+			this.requester = requester;
+			this.store = store;
+			this.orderItems = orderItems;
+			this.createdAt = createdAt;
+		} catch (Exception e) {
+			if (stockDecreaseSuccessCartItems != null) {
+				stockRequester.rollback(stockDecreaseSuccessCartItems);
+			}
+			throw e;
+		}
 	}
 
 	public Customer getRequester() {
