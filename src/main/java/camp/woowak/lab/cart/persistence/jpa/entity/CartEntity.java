@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,8 @@ public class CartEntity {
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "cart_id")
 	private List<CartItemEntity> cartItems;
+	@Version
+	private long version;
 
 	public Cart toDomain() {
 		List<CartItem> cartItems = this.cartItems.stream().map(CartItemEntity::toDomain).collect(Collectors.toList());
