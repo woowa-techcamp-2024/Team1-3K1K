@@ -2,6 +2,8 @@ package camp.woowak.lab.cart.service;
 
 import java.util.List;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,10 @@ public class CartService {
 	 * @throws camp.woowak.lab.cart.exception.OtherStoreMenuException 다른 가게의 메뉴를 담은 경우 도메인에서 발생
 	 * @throws camp.woowak.lab.cart.exception.StoreNotOpenException   해당 가게가 열려있지 않은 경우 발생
 	 */
+	@Retryable(
+		maxAttempts = 5,
+		backoff = @Backoff(delay = 1000, multiplier = 2, random = true)
+	)
 	public void addMenu(AddCartCommand command) {
 		Cart customerCart = getCart(command.customerId());
 
