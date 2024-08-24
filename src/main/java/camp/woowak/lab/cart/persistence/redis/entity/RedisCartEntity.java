@@ -3,6 +3,7 @@ package camp.woowak.lab.cart.persistence.redis.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -31,13 +32,13 @@ public class RedisCartEntity implements Serializable {
 	public static RedisCartEntity fromDomain(Cart cart) {
 		List<RedisCartItemEntity> list = cart.getCartItems().stream()
 			.map(RedisCartItemEntity::fromDomain)
-			.toList();
+			.collect(Collectors.toList());
 		return new RedisCartEntity(cart.getCustomerId(), list);
 	}
 
 	public Cart toDomain() {
 		return new Cart(customerId, cartItems.stream()
 			.map(RedisCartItemEntity::toDomain)
-			.toList());
+			.collect(Collectors.toList()));
 	}
 }

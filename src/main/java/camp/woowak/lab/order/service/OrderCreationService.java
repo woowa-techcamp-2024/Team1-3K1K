@@ -11,6 +11,7 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.aop.DistributedLock;
 import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.order.domain.Order;
@@ -57,6 +58,7 @@ public class OrderCreationService {
 	 * @throws NotFoundAccountException 구매자의 계좌가 조회되지 않는 경우
 	 * @throws InsufficientBalanceException 구매자의 계좌에 잔액이 충분하지 않은 경우
 	 */
+	@DistributedLock(key="#cmd.requesterId()")
 	public Long create(final OrderCreationCommand cmd) {
 		UUID requesterId = cmd.requesterId();
 		Customer requester = customerRepository.findByIdOrThrow(requesterId);
