@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
@@ -62,6 +63,9 @@ class OrderRepositoryTest {
 
 	@Autowired
 	private MenuCategoryRepository menuCategoryRepository;
+
+	@Autowired
+	MenuStockCacheService menuStockCacheService;
 
 	private Store store1;
 
@@ -115,12 +119,12 @@ class OrderRepositoryTest {
 		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
 		orderRepository.saveAndFlush(
 			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
 				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
 			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
 				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 
 		// when
@@ -150,12 +154,12 @@ class OrderRepositoryTest {
 		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
 		Order order = orderRepository.saveAndFlush(
 			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
 				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
 			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository), new PriceChecker(menuRepository),
+				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
 				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
 
 		// when

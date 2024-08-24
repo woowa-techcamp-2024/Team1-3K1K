@@ -9,6 +9,8 @@ import java.util.UUID;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
+import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.domain.PriceChecker;
@@ -38,6 +40,7 @@ public abstract class StoreDummiesFixture {
 	protected final OrderRepository orderRepository;
 	protected final CustomerRepository customerRepository;
 	protected final PasswordEncoder passwordEncoder;
+	protected final MenuStockCacheService menuStockCacheService;
 
 	public StoreDummiesFixture(StoreRepository storeRepository, StoreCategoryRepository storeCategoryRepository,
 							   VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
@@ -51,6 +54,7 @@ public abstract class StoreDummiesFixture {
 		this.customerRepository = customerRepository;
 		this.passwordEncoder = new NoOpPasswordEncoder();
 		this.menuRepository = menuRepository;
+		this.menuStockCacheService = new FakeMenuStockCacheService();
 	}
 
 	protected List<Customer> createDummyCustomers(int numberOfCustomers) {
@@ -81,7 +85,7 @@ public abstract class StoreDummiesFixture {
 				Customer customer = dummyCustomers.get(
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
 				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
-					new StockRequester(menuRepository), new TestPriceChecker(menuRepository),
+					new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
 					new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
 				orders.add(order);
 			}
@@ -147,7 +151,7 @@ public abstract class StoreDummiesFixture {
 	}
 
 	private class TestSingleStoreOrderValidator extends SingleStoreOrderValidator {
-		private Store store;
+		private final Store store;
 
 		public TestSingleStoreOrderValidator(Store store, StoreRepository storeRepository) {
 			super(storeRepository);
