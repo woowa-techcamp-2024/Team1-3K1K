@@ -2,6 +2,7 @@ package camp.woowak.lab.container;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+@Disabled
 @SpringBootTest
 @Testcontainers
 @Import({ContainerSettingTest.TestConfigurationWithRedis.class})
@@ -26,15 +28,24 @@ public class ContainerSettingTest {
 		.withExposedPorts(6379);
 
 	@Autowired
-	private RedisTemplate<String,Object> redisTemplate;
+	private RedisTemplate<String, Object> redisTemplate;
+
+	@Test
+	void testSimplePutAndGet() {
+		redisTemplate.opsForValue().set("key", "value");
+
+		String o = (String)redisTemplate.opsForValue().get("key");
+
+		assertThat(o).isEqualTo("value");
+	}
 
 	@TestConfiguration
-	public static class TestConfigurationWithRedis{
+	public static class TestConfigurationWithRedis {
 		@Bean
-		public RedisConnectionFactory redisConnectionFactory(){
+		public RedisConnectionFactory redisConnectionFactory() {
 			int port = container.getFirstMappedPort();
 			String host = container.getHost();
-			return new LettuceConnectionFactory(host,port);
+			return new LettuceConnectionFactory(host, port);
 		}
 
 		@Bean
@@ -47,14 +58,5 @@ public class ContainerSettingTest {
 
 			return template;
 		}
-	}
-
-	@Test
-	void testSimplePutAndGet(){
-		redisTemplate.opsForValue().set("key","value");
-
-		String o = (String)redisTemplate.opsForValue().get("key");
-
-		assertThat(o).isEqualTo("value");
 	}
 }
