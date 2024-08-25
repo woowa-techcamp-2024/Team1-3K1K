@@ -22,7 +22,7 @@ class OrderTest {
 	private StockRequester stockRequester;
 	private PriceChecker priceChecker;
 	private WithdrawPointService withdrawPointService;
-	private DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
+	private final DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
 
 	@BeforeEach
 	void setUp() {
@@ -45,7 +45,7 @@ class OrderTest {
 
 		// Mocking behavior
 		when(singleStoreOrderValidator.check(cartItems)).thenReturn(store);
-		doNothing().when(stockRequester).request(cartItems);
+		when(stockRequester.request(cartItems)).thenReturn(cartItems);
 		when(priceChecker.check(store, cartItems)).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(customer, orderItems)).thenReturn(orderItems);
 
