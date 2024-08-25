@@ -59,7 +59,7 @@ public class OrderCreationService {
 	 * @throws NotFoundAccountException         구매자의 계좌가 조회되지 않는 경우
 	 * @throws InsufficientBalanceException     구매자의 계좌에 잔액이 충분하지 않은 경우
 	 */
-	@DistributedLock(key = "#cmd.requesterId()", throwable = DuplicatedOrderException.class, exceptionMessage = "중복된 요청입니다.", waitTime = 1L)
+	@DistributedLock(key = "#cmd.requesterId()", throwable = DuplicatedOrderException.class, exceptionMessage = "중복된 요청입니다.", waitTime = 0L)
 	public Long create(final OrderCreationCommand cmd) {
 		UUID requesterId = cmd.requesterId();
 		Customer requester = customerRepository.findByIdOrThrow(requesterId);
