@@ -1,5 +1,6 @@
 package camp.woowak.lab.infra.aop;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,7 +11,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
-import camp.woowak.lab.order.exception.DuplicatedOrderException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +28,6 @@ public class DistributedLockAop {
 		MethodSignature signature = (MethodSignature)joinPoint.getSignature();
 		Method method = signature.getMethod();
 		DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
-		Class<? extends RuntimeException> throwable = distributedLock.throwable();
 
 		String key = REDISSON_LOCK_PREFIX + CustomSpringELParser.getDynamicValue(signature.getParameterNames(),
 			joinPoint.getArgs(),
@@ -40,7 +39,13 @@ public class DistributedLockAop {
 				distributedLock.timeUnit());
 			if (!locked) {
 				log.warn("Failed to acquire lock for method {} with key {}", method.getName(), key);
-				throw new DuplicatedOrderException("Unable to acquire lock");
+
+				Class<? extends RuntimeException> throwable = distributedLock.throwable();
+				String exceptionMessage = distributedLock.exceptionMessage();
+				Constructor<? extends RuntimeException> constructor = throwable.getConstructor(String.class);
+				RuntimeException exceptions = constructor.newInstance(exceptionMessage);
+
+				throw exceptions;
 			}
 			log.info("Acquired lock for method {} with key {}", method.getName(), key);
 			return aopForTransaction.proceed(joinPoint);

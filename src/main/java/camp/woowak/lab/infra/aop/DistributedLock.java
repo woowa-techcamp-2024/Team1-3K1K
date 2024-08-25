@@ -29,5 +29,13 @@ public @interface DistributedLock {
 	 */
 	long leaseTime() default 5L;
 
-	Class<? extends RuntimeException> throwable() default IllegalArgumentException.class;
+	/**
+	 * @return 분산락을 획득하지 못한 스레드들이 던져야하는 exception
+	 */
+	Class<? extends RuntimeException> throwable();
+
+	/**
+	 * @return 분산락을 획득하지 못했을 때의 메세지
+	 */
+	String exceptionMessage();
 }
