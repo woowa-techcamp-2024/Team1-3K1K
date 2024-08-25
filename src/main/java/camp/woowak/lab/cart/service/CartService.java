@@ -43,6 +43,7 @@ public class CartService {
 		// 메뉴 cache update
 		menuStockCacheService.updateStock(menu.getId(), menu.getStockCount());
 
+		// TODO: Redis의 최신화된 캐싱된 재고수를 RDB 메뉴 수에 반영
 		customerCart.addMenu(menu);
 		cartRepository.save(customerCart);
 	}
