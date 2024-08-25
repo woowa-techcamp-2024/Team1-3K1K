@@ -61,30 +61,43 @@ public class RedisMenuStockCacheService implements MenuStockCacheService {
 		return newStock;
 	}
 
-	private void releaseLock(RLock lock) {
-		if (lock.isHeldByCurrentThread()) {
-			lock.unlock();
-		}
-	}
-
-	public boolean doWithMenuIdLock(Long menuId, Runnable runnable) {
-		RLock lock = redissonClient.getLock(RedisCacheConstants.LOCK_PREFIX + menuId);
 	public boolean doWithLock(String key, Runnable runnable) {
 		RLock lock = redissonClient.getLock(RedisCacheConstants.LOCK_PREFIX + key);
+		boolean lockAcquired = false;
 		try {
-			boolean available = lock.tryLock(RedisCacheConstants.LOCK_WAIT_TIME,
+			lockAcquired = lock.tryLock(
+				RedisCacheConstants.LOCK_WAIT_TIME,
 				RedisCacheConstants.LOCK_LEASE_TIME,
-				RedisCacheConstants.LOCK_TIME_UNIT); // TODO: 락 임대 시간 조정 필요
+				RedisCacheConstants.LOCK_TIME_UNIT
+			);
 
-			if (!available) {
+			if (!lockAcquired) {
 				return false;
 			}
 			runnable.run();
+			return true;
 		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			throw new RedisLockAcquisitionException("[redis lock] 락 획득에 실패했습니다.", e);
 		} finally {
-			releaseLock(lock);
+			if (lockAcquired) {
+				releaseLock(lock, RedisCacheConstants.LOCK_PREFIX + key);
+			}
 		}
-		return true;
 	}
+
+	private void releaseLock(RLock rLock, String key) {
+		try {
+			if (rLock.isHeldByCurrentThread()) {
+				rLock.unlock();
+				log.info("Released lock with key {}", key);
+			}
+		} catch (IllegalMonitorStateException e) {
+			// 이 예외가 발생하면 심각한 로직 오류일 수 있으므로 ERROR 레벨로 로깅
+			log.error(
+				"Unexpected state: Failed to release lock with key {}. This might indicate a serious logic error.", key,
+				e);
+			// 예외를 다시 던지지 않고, 상위 레벨에서 처리하도록 함
+		}
+	}
+
 }
