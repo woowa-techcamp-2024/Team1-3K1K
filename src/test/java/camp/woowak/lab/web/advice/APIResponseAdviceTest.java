@@ -3,6 +3,9 @@ package camp.woowak.lab.web.advice;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,6 +45,9 @@ class APIResponseAdviceTest {
 
 	@Mock
 	private HttpServletResponse servletResponse;
+
+	@Mock
+	private WebEndpointProperties webEndpointProperties;
 
 	@Nested
 	@DisplayName("supports 메서드는")
@@ -95,8 +102,10 @@ class APIResponseAdviceTest {
 	class BeforeBodyWrite {
 		@Test
 		@DisplayName("body가 null일 때 'No content' 메시지를 포함한 APIResponse를 반환해야 한다")
-		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNull() {
+		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNull() throws URISyntaxException {
 			// Given
+			given(webEndpointProperties.getBasePath()).willReturn("/actuator");
+			given(request.getURI()).willReturn(new URI("/api"));
 			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
 
 			// When
@@ -113,9 +122,11 @@ class APIResponseAdviceTest {
 
 		@Test
 		@DisplayName("body가 APIResponse가 아닐 때 해당 body를 포함한 새로운 APIResponse를 반환해야 한다")
-		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNotAPIResponse() {
+		void beforeBodyWrite_ShouldReturnAPIResponse_WhenBodyIsNotAPIResponse() throws URISyntaxException {
 			// Given
 			String body = "Test Body";
+			given(webEndpointProperties.getBasePath()).willReturn("/actuator");
+			given(request.getURI()).willReturn(new URI("/api"));
 			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
 
 			// When
@@ -132,10 +143,12 @@ class APIResponseAdviceTest {
 
 		@Test
 		@DisplayName("beforeBodyWrite 메서드는 ResponseStatus 어노테이션이 있을 때 해당 상태를 사용해야 한다")
-		void beforeBodyWrite_ShouldUseResponseStatusAnnotation_WhenPresent() {
+		void beforeBodyWrite_ShouldUseResponseStatusAnnotation_WhenPresent() throws URISyntaxException {
 			// Given
 			String body = "Test Body";
 			ResponseStatus responseStatus = mock(ResponseStatus.class);
+			given(webEndpointProperties.getBasePath()).willReturn("/actuator");
+			given(request.getURI()).willReturn(new URI("/api"));
 			given(methodParameter.hasMethodAnnotation(ResponseStatus.class)).willReturn(true);
 			given(methodParameter.getMethodAnnotation(ResponseStatus.class)).willReturn(responseStatus);
 			given(responseStatus.value()).willReturn(HttpStatus.CREATED);
@@ -153,9 +166,11 @@ class APIResponseAdviceTest {
 
 		@Test
 		@DisplayName("beforeBodyWrite 메서드는 ResponseStatus 어노테이션이 없을 때 응답의 상태 코드를 사용해야 한다")
-		void beforeBodyWrite_ShouldUseResponseStatus_WhenNoAnnotationPresent() {
+		void beforeBodyWrite_ShouldUseResponseStatus_WhenNoAnnotationPresent() throws URISyntaxException {
 			// Given
 			String body = "Test Body";
+			given(webEndpointProperties.getBasePath()).willReturn("/actuator");
+			given(request.getURI()).willReturn(new URI("/api"));
 			given(methodParameter.hasMethodAnnotation(ResponseStatus.class)).willReturn(false);
 			given(servletResponse.getStatus()).willReturn(HttpStatus.OK.value());
 
