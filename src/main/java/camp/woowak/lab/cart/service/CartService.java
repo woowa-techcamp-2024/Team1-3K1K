@@ -2,6 +2,7 @@ package camp.woowak.lab.cart.service;
 
 import java.util.List;
 
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class CartService {
 	 * @throws camp.woowak.lab.cart.exception.StoreNotOpenException   해당 가게가 열려있지 않은 경우 발생
 	 */
 	@Retryable(
-		maxAttempts = 5,
+		retryFor = ObjectOptimisticLockingFailureException.class,
+		maxAttempts = 3,
 		backoff = @Backoff(delay = 1000, multiplier = 2, random = true)
 	)
 	public void addMenu(AddCartCommand command) {
