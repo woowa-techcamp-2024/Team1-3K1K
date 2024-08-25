@@ -1,6 +1,7 @@
 package camp.woowak.lab.web.advice;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RestControllerAdvice
 @Slf4j
+@EnableConfigurationProperties(WebEndpointProperties.class)
 public class APIResponseAdvice implements ResponseBodyAdvice<Object> {
 	private final WebEndpointProperties webEndpointProperties;
 
