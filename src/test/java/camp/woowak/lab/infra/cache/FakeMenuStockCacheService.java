@@ -13,7 +13,7 @@ public class FakeMenuStockCacheService implements MenuStockCacheService {
 	}
 
 	@Override
-	public boolean doWithMenuIdLock(Long menuId, Runnable runnable) {
+	public boolean doWithLock(String key, Runnable runnable) {
 
 		return false;
 	}

@@ -90,6 +90,8 @@ public class RedisMenuStockCacheService implements MenuStockCacheService {
 
 	public boolean doWithMenuIdLock(Long menuId, Runnable runnable) {
 		RLock lock = redissonClient.getLock(RedisCacheConstants.LOCK_PREFIX + menuId);
+	public boolean doWithLock(String key, Runnable runnable) {
+		RLock lock = redissonClient.getLock(RedisCacheConstants.LOCK_PREFIX + key);
 		try {
 			boolean available = lock.tryLock(RedisCacheConstants.LOCK_WAIT_TIME,
 				RedisCacheConstants.LOCK_LEASE_TIME,

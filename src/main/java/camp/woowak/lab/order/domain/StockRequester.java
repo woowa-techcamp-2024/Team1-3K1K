@@ -9,6 +9,7 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.infra.cache.exception.CacheMissException;
+import camp.woowak.lab.infra.cache.redis.RedisCacheConstants;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class StockRequester {
 				menuStockCacheService.addAtomicStock(menuId, -cartItem.getAmount());
 				stockDecreaseSuccessCartItems.add(cartItem);
 			} catch (CacheMissException e) {// redis cache miss 면 findById 로 재고 확인 update
-				menuStockCacheService.doWithMenuIdLock(menuId, () -> {
+				menuStockCacheService.doWithLock(RedisCacheConstants.MENU_PREFIX + menuId, () -> {
 					Menu menu = menuRepository.findById(menuId)
 						.orElseThrow(() -> new MenuNotFoundException("메뉴가 존재하지 않습니다."));
 					menuStockCacheService.updateStock(menuId, menu.getStockCount());
