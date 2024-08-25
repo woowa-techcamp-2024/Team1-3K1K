@@ -9,8 +9,8 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.exception.MenuNotFoundException;
 import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.infra.cache.exception.CacheMissException;
-import camp.woowak.lab.infra.cache.redis.RedisCacheConstants;
 import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,10 +63,6 @@ public class StockRequester {
 		// TODO: RDB 비동기 재고 업데이트
 
 		return stockDecreaseSuccessCartItems;
-	}
-
-	private List<Long> extractMenuIds(List<CartItem> cartItems) {
-		return cartItems.stream().map(CartItem::getMenuId).toList();
 	}
 
 	public void rollback(List<CartItem> stockDecreaseSuccessCartItems) {
