@@ -59,7 +59,7 @@ class OrderCreationServiceTest {
 	@InjectMocks
 	private OrderCreationService orderCreationService;
 
-	private DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
+	private final DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
 
 	@BeforeEach
 	void setUp() {
@@ -82,7 +82,7 @@ class OrderCreationServiceTest {
 		when(store.getId()).thenReturn(1L); // Ensure this is mocked
 		when(cartItem.getStoreId()).thenReturn(1L); // Mock the cartItem's storeId
 		when(singleStoreOrderValidator.check(anyList())).thenReturn(store);
-		doNothing().when(stockRequester).request(anyList());
+		when(stockRequester.request(anyList())).thenReturn(cartItems);
 		when(priceChecker.check(any(), anyList())).thenReturn(orderItems);
 		when(withdrawPointService.withdraw(any(Customer.class), anyList())).thenReturn(orderItems);
 
