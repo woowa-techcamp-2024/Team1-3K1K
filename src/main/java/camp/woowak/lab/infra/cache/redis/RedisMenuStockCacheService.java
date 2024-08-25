@@ -49,7 +49,7 @@ public class RedisMenuStockCacheService implements MenuStockCacheService {
 		if (!cachedStock.isExists()) {    // 캐시 미스
 			throw new CacheMissException("메뉴 재고 캐시 미스");
 		}
-		// TODO: 원자적 연산인지 확인 필요
+
 		// cache 원자적 재고감소
 		Long newStock = cachedStock.getAndAdd(-amount);
 
