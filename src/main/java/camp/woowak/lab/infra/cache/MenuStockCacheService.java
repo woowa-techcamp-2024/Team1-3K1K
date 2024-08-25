@@ -5,5 +5,5 @@ public interface MenuStockCacheService {
 
 	Long addAtomicStock(Long menuId, int i);
 
-	boolean doWithMenuIdLock(Long menuId, Runnable runnable);
+	boolean doWithLock(String key, Runnable runnable);
 }
