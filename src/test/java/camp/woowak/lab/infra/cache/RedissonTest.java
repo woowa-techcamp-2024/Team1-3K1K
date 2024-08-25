@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RAtomicLong;
-import org.redisson.api.RBucket;
 import org.redisson.api.RTransaction;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.TransactionOptions;
@@ -24,13 +23,6 @@ class RedissonTest {
 
 	@Autowired
 	RedissonClient redissonClient;
-
-	@Test
-	void test() {
-		RBucket<Long> bucket = redissonClient.getBucket(RedisCacheConstants.MENU_STOCK_PREFIX + 1);
-
-		System.out.println(bucket.get());
-	}
 
 	@Test
 	void testAtomicOp() {
