@@ -1,5 +1,6 @@
 package camp.woowak.lab.web.advice;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 @Slf4j
 public class APIResponseAdvice implements ResponseBodyAdvice<Object> {
+	private final WebEndpointProperties webEndpointProperties;
+
+	public APIResponseAdvice(WebEndpointProperties webEndpointProperties) {
+		this.webEndpointProperties = webEndpointProperties;
+	}
 
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -35,7 +41,7 @@ public class APIResponseAdvice implements ResponseBodyAdvice<Object> {
 								  Class<? extends HttpMessageConverter<?>> selectedConverterType,
 								  ServerHttpRequest request, ServerHttpResponse response
 	) {
-		if (request.getURI().getPath().startsWith("/actuator")) {
+		if (request.getURI().getPath().startsWith(webEndpointProperties.getBasePath())) {
 			return body;
 		}
 		HttpStatus status = getHttpStatus(returnType, (ServletServerHttpResponse)response);
