@@ -13,7 +13,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
@@ -27,8 +26,7 @@ public class CartEntity {
 	private Long id;
 	@Column(unique = true, nullable = false)
 	private UUID customerId;
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "cart_id")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItemEntity> cartItems;
 	@Version
 	private long version;
