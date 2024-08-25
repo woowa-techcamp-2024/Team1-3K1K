@@ -29,3 +29,12 @@ spring:
 cart:
   repository: jpa
   dao: jpa
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

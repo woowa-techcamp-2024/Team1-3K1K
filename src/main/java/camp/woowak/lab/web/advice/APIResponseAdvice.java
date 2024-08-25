@@ -35,6 +35,9 @@ public class APIResponseAdvice implements ResponseBodyAdvice<Object> {
 								  Class<? extends HttpMessageConverter<?>> selectedConverterType,
 								  ServerHttpRequest request, ServerHttpResponse response
 	) {
+		if (request.getURI().getPath().startsWith("/actuator")) {
+			return body;
+		}
 		HttpStatus status = getHttpStatus(returnType, (ServletServerHttpResponse)response);
 		if (body == null) {
 			return new APIResponse<>(status, "No content");
