@@ -9,7 +9,6 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +25,7 @@ public class CartEntity {
 	private Long id;
 	@Column(unique = true, nullable = false)
 	private UUID customerId;
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItemEntity> cartItems;
 	@Version
 	private long version;

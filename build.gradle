@@ -54,6 +54,10 @@ dependencies {
     // Retryable
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'
+
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
