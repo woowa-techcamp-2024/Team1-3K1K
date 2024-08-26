@@ -225,33 +225,228 @@ public class OrderConcurrencyIntegrationTest {
 	}
 
 	/**
-	 * 테스트 시나리오: 계좌 잔액 부족으로 인한 롤백 시나리오
+	 * Test Scenario: 계좌 잔액 부족으로 인한 롤백 시나리오
+	 * 고객1: [메뉴1:3개, 메뉴2:3개, 메뉴3:3개]	잔액: 100000원
+	 * 고객2: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]	잔액: 100000원
+	 * 고객3: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]	잔액: 5000원	--> 잔액 부족으로 실패
+	 * 음식 상품: [메뉴1:5개, 메뉴2:5개, 메뉴3:5개]
+	 *
+	 * expected:
+	 * Redis 음식 재고수: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
+	 * RDB 음식 재고수: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
 	 */
 	@Test
-	@DisplayName("")
-	void test1() {
+	@DisplayName("계좌 잔액 부족으로 주문 실패시, 캐싱된 재고수와 RDB 재고수가 롤백된다.")
+	void insufficientBalanceExceptionThenRollback() throws Throwable {
 		// given
+		int menu1ExpectedCount = 1;
+		int menu2ExpectedCount = 1;
+		int menu3ExpectedCount = 1;
+
+		// given
+		menus = List.of(
+			saveMenu(store, menuCategory, "메뉴1", 10000L, 5L),
+			saveMenu(store, menuCategory, "메뉴2", 10000L, 5L),
+			saveMenu(store, menuCategory, "메뉴3", 10000L, 5L)
+		);
+		Menu menu1 = menus.get(0);
+		Menu menu2 = menus.get(1);
+		Menu menu3 = menus.get(2);
+
+		customers = List.of(
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객1", "고오객1@gmail.com"
+			),
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객2", "고오객2@gmail.com"
+			),
+			saveCustomer(
+				savePayAccount(5000),
+				"고오객3", "고오객3@gmail.com"
+			)
+		);
+		Customer customer1 = customers.get(0);
+		Customer customer2 = customers.get(1);
+		Customer customer3 = customers.get(2);
+
+		// 고객1: [메뉴1:3개, 메뉴2:3개, 메뉴3:3개]
+		setupMenuToCart(customer1, menu1, 3);
+		setupMenuToCart(customer1, menu2, 3);
+		setupMenuToCart(customer1, menu3, 3);
+
+		// 고객2: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
+		setupMenuToCart(customer2, menu1, 1);
+		setupMenuToCart(customer2, menu2, 1);
+		setupMenuToCart(customer2, menu3, 1);
+
+		// 고객3: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
+		setupMenuToCart(customer3, menu1, 1);
+		setupMenuToCart(customer3, menu2, 1);
+		setupMenuToCart(customer3, menu3, 1);
 
 		// when
+		int numberOfThreads = 3;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		CountDownLatch latch = new CountDownLatch(numberOfThreads);
+		for (int personCount = 0; personCount < numberOfThreads; personCount++) {
+			int personIdx = personCount;
+			executorService.submit(() -> executeOrderCreation(latch, customers.get(personIdx)));
+		}
+		latch.await(10, TimeUnit.MINUTES);
+		executorService.shutdown();
 
-		// then
+		// then: verify RDB
+		Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
+		Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
+		Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
+
+		assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
+		assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
+		assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
+
+		// then: verify Redis
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu1.getId()).get()).isEqualTo(menu1ExpectedCount);
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(menu2ExpectedCount);
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(menu3ExpectedCount);
 	}
 
 	/**
-	 * 테스트 시나리오: 가게 최소 주문 금액 미만으로 인한 주문 롤백 시나리오
-	 * 고객1: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
-	 * 고객2: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
-	 * 고객3: [메뉴1:1개, 메뉴2:1개, 메뉴3:1개]
-	 * 음식 상품: [메뉴1:3개, 메뉴2:3개, 메뉴3:2개]
+	 * Test Scenario: 가게 최소 주문 금액 미만으로 인한 주문 롤백 시나리오
+	 * 고객1: [메뉴1:3개, 메뉴2:3개, 메뉴3:3개]
+	 * 고객2: [메뉴1:1개, 메뉴2:1개]	--> 최수 주문 금액 미만으로 실패
+	 * 고객3: [메뉴1:1개]	--> 최수 주문 금액 미만으로 실패
+	 * 고객4: [메뉴1:1개, 메뉴2:2개, 메뉴3:3개]
+	 *
+	 * 가게 최소 주문 금액: 5,000원
+	 * 각 메뉴 가격: 1,000원, 각 메뉴 개수: 10개
+	 *
+	 * expected:
+	 * Redis 음식 재고수: [메뉴1:6개, 메뉴2:5개, 메뉴3:4개]
+	 * RDB 음식 재고수: [메뉴1:6개, 메뉴2:5개, 메뉴3:4개]
 	 */
 	@Test
-	@DisplayName("")
-	void test2() {
+	@DisplayName("최소 주문 금액 미만으로 주문 실패시, 캐싱된 재고수와 RDB 재고수가 롤백된다.")
+	void minOrderPriceExceptionThenRollback() throws Throwable {
 		// given
+		int menu1ExpectedCount = 6;
+		int menu2ExpectedCount = 5;
+		int menu3ExpectedCount = 4;
+
+		// given: 각 메뉴 가격: 1,000원, 각 메뉴 개수: 10개
+		menus = List.of(
+			saveMenu(store, menuCategory, "메뉴1", 1000L, 10L),
+			saveMenu(store, menuCategory, "메뉴2", 1000L, 10L),
+			saveMenu(store, menuCategory, "메뉴3", 1000L, 10L)
+		);
+		Menu menu1 = menus.get(0);
+		Menu menu2 = menus.get(1);
+		Menu menu3 = menus.get(2);
+
+		customers = List.of(
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객1", "고오객1@gmail.com"
+			),
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객2", "고오객2@gmail.com"
+			),
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객3", "고오객3@gmail.com"
+			),
+			saveCustomer(
+				savePayAccount(100000),
+				"고오객4", "고오객4@gmail.com"
+			)
+		);
+		Customer customer1 = customers.get(0);
+		Customer customer2 = customers.get(1);
+		Customer customer3 = customers.get(2);
+		Customer customer4 = customers.get(3);
+
+		// 고객1: [메뉴1:3개, 메뉴2:3개, 메뉴3:3개]
+		setupMenuToCart(customer1, menu1, 3);
+		setupMenuToCart(customer1, menu2, 3);
+		setupMenuToCart(customer1, menu3, 3);
+
+		// 고객2: [메뉴1:1개, 메뉴2:1개]	--> 최수 주문 금액 미만으로 실패
+		setupMenuToCart(customer2, menu1, 1);
+		setupMenuToCart(customer2, menu2, 1);
+
+		// 고객3: [메뉴1:1개]	--> 최수 주문 금액 미만으로 실패
+		setupMenuToCart(customer3, menu1, 1);
+
+		// 고객4: [메뉴1:1개, 메뉴2:2개, 메뉴3:3개]
+		setupMenuToCart(customer4, menu1, 1);
+		setupMenuToCart(customer4, menu2, 2);
+		setupMenuToCart(customer4, menu3, 3);
 
 		// when
+		int numberOfThreads = 4;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		CountDownLatch latch = new CountDownLatch(numberOfThreads);
+		for (int personCount = 0; personCount < numberOfThreads; personCount++) {
+			int personIdx = personCount;
+			executorService.submit(() -> executeOrderCreation(latch, customers.get(personIdx)));
+		}
+		latch.await(10, TimeUnit.MINUTES);
+		executorService.shutdown();
 
-		// then
+		// then: verify RDB
+		Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
+		Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
+		Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
+
+		assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
+		assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
+		assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
+
+		// then: verify Redis
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu1.getId()).get()).isEqualTo(menu1ExpectedCount);
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(menu2ExpectedCount);
+		assertThat(redissonClient.getAtomicLong(
+			RedisCacheConstants.MENU_STOCK_PREFIX + menu3.getId()).get()).isEqualTo(menu3ExpectedCount);
+	}
+
+	void setupMenuToCart(Customer customer, Menu menu, int addCount) {
+		for (int count = 0; count < addCount; count++) {
+			cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu.getId()));
+		}
+	}
+
+	private void executeOrderCreation(CountDownLatch latch, Customer customer) {
+		try {
+			orderCreationService.create(new OrderCreationCommand(customer.getId()));
+		} catch (Exception e) {
+			log.info("exception", e);
+		} finally {
+			latch.countDown();
+		}
+	}
+
+	private void executeAddCartAndOrderCreation(CountDownLatch latch, Customer customer, Menu targetMenu) {
+		try {
+			cartService.addMenu(new AddCartCommand(customer.getId().toString(), targetMenu.getId()));
+			orderCreationService.create(new OrderCreationCommand(customer.getId()));
+		} catch (Exception e) {
+			log.info("exception", e);
+		} finally {
+			latch.countDown();
+		}
+	}
+
+	PayAccount savePayAccount(long chargeAmount) {
+		PayAccount payAccount = new PayAccount();
+		payAccount.charge(chargeAmount);
+		return payAccountRepository.saveAndFlush(payAccount);
 	}
 
 	PayAccount savePayAccount() {
@@ -262,8 +457,8 @@ public class OrderConcurrencyIntegrationTest {
 
 	Vendor saveVendor(PayAccount payAccount) {
 		vendor = new Vendor(
-			"점주1",
-			"점주1@gmail.com",
+			"저엄주1",
+			"저엄주1@gmail.com",
 			"123456789"
 			, "010-1111-1111",
 			payAccount,
@@ -272,13 +467,20 @@ public class OrderConcurrencyIntegrationTest {
 		return vendorRepository.saveAndFlush(vendor);
 	}
 
+	Customer saveCustomer(PayAccount payAccount, String name, String email) {
+		Customer customer = new Customer(name, email, "123456789", "010-1111-1111", payAccount,
+			new NoOpPasswordEncoder());
+
+		return customerRepository.saveAndFlush(customer);
+	}
+
 	List<Customer> saveCustomers(List<PayAccount> payAccounts) {
 		List<Customer> customers = new ArrayList<>();
 		for (int id = 0; id < payAccounts.size(); id++) {
 			PayAccount payAccount = payAccounts.get(id);
 			Customer customer = new Customer(
 				id + "고객",
-				id + "@gmail.com",
+				id + "고오오객@gmail.com",
 				"123456789",
 				"010-1111-1111",
 				payAccount,
