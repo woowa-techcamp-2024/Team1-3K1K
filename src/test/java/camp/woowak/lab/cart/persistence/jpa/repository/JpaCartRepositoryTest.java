@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.repository.CartRepository;
@@ -24,6 +25,9 @@ import camp.woowak.lab.cart.repository.CartRepository;
 @DataJpaTest
 @Transactional
 class JpaCartRepositoryTest {
+	@Autowired
+	private TransactionTemplate transactionTemplate;
+
 	@Autowired
 	private CartRepository cartRepository;
 	@Autowired
@@ -51,7 +55,8 @@ class JpaCartRepositoryTest {
 		@Test
 		@DisplayName("저장된 CartEntity가 있는 경우")
 		void returnOptionalWhenCartEntityIsFound() {
-			Optional<Cart> findCart = cartRepository.findByCustomerId(fakeCustomerId.toString());
+			Optional<Cart> findCart = transactionTemplate.execute(
+				(status) -> cartRepository.findByCustomerId(fakeCustomerId.toString()));
 			assertThat(findCart.isPresent()).isTrue();
 			assertThat(findCart.get().getCustomerId()).isEqualTo(fakeCustomerId.toString());
 		}
@@ -60,7 +65,8 @@ class JpaCartRepositoryTest {
 		@DisplayName("저장된 CartEntity가 없는 경우")
 		void returnEmptyOptionalWhenCartEntityIsNotFound() {
 			cartEntityRepository.deleteAll();
-			Optional<Cart> findCart = cartRepository.findByCustomerId(fakeCustomerId.toString());
+			Optional<Cart> findCart = transactionTemplate.execute(
+				(status) -> cartRepository.findByCustomerId(fakeCustomerId.toString()));
 			assertThat(findCart.isPresent()).isFalse();
 		}
 	}
