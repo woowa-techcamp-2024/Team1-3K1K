@@ -51,11 +51,11 @@ public class RedisMenuStockCacheService implements MenuStockCacheService {
 		}
 
 		// cache 원자적 재고감소
-		Long newStock = cachedStock.getAndAdd(amount);
+		Long newStock = cachedStock.addAndGet(amount);
 
 		if (newStock < 0) {
 			// 원복
-			cachedStock.getAndAdd(-amount);
+			cachedStock.addAndGet(-amount);
 			throw new NotEnoughStockException("MenuId(" + menuId + ") 재고가 부족합니다.");
 		}
 		return newStock;
