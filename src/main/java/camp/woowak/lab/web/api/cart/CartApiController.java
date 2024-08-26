@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import camp.woowak.lab.cart.domain.Cart;
+import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.cart.service.CartService;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.cart.service.command.CartTotalPriceCommand;
@@ -13,6 +15,7 @@ import camp.woowak.lab.web.authentication.LoginCustomer;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
 import camp.woowak.lab.web.dto.request.cart.AddCartRequest;
 import camp.woowak.lab.web.dto.response.cart.AddCartResponse;
+import camp.woowak.lab.web.dto.response.cart.CartResponse;
 import camp.woowak.lab.web.dto.response.cart.CartTotalPriceResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +27,14 @@ public class CartApiController {
 
 	public CartApiController(CartService cartService) {
 		this.cartService = cartService;
+	}
+
+	@GetMapping
+	public CartResponse getCart(@AuthenticationPrincipal LoginCustomer customer) {
+		Cart cart = cartService.getCart(customer.getId().toString());
+		long totalPrice = cartService.getTotalPrice(new CartTotalPriceCommand(customer.getId().toString()));
+		return new CartResponse(cart.getCustomerId(), cart.getCartItems().stream().mapToLong(CartItem::getAmount).sum(),
+			totalPrice);
 	}
 
 	@PostMapping
@@ -47,4 +58,5 @@ public class CartApiController {
 		log.info("Customer({})'s total price in cart is {}", loginCustomer.getId(), totalPrice);
 		return new CartTotalPriceResponse(totalPrice);
 	}
+
 }
