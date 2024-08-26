@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.cart.domain.Cart;
@@ -46,6 +47,7 @@ import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import jakarta.persistence.EntityManager;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class StockRequesterTest {
 
 	private static final Logger log = LoggerFactory.getLogger(StockRequesterTest.class);
@@ -260,8 +262,8 @@ class StockRequesterTest {
 
 	Vendor saveVendor(PayAccount payAccount) {
 		vendor = new Vendor(
-			"점주1",
-			"점주1@gmail.com",
+			"저어엄주1",
+			"저어엄주1@gmail.com",
 			"123456789"
 			, "010-1111-1111",
 			payAccount,
