@@ -36,8 +36,8 @@ logging:
             sql:
               BasicBinder: TRACE
 cart:
-  dao: jpa
-  repository: jpa
+  dao: redis
+  repository: redis
 
 management:
   endpoints:
