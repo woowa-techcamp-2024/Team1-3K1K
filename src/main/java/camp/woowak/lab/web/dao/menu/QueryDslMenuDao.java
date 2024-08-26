@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.dao;
+package camp.woowak.lab.web.dao.menu;
 
 import static camp.woowak.lab.menu.domain.QMenuCategory.*;
 import static camp.woowak.lab.store.domain.QStore.*;

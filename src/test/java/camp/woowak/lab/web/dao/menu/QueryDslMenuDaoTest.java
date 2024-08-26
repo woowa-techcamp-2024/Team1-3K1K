@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.dao;
+package camp.woowak.lab.web.dao.menu;
 
 import static org.assertj.core.api.Assertions.*;
 

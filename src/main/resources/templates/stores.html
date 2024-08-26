@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>매장 리스트</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: white;
+            padding-bottom: 60px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .store-list {
+            padding: 10px;
+        }
+
+        .store-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .store-info {
+            margin-top: 10px;
+        }
+
+        .store-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .store-category {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .store-min-order {
+            font-size: 14px;
+            color: #2ac1bc;
+        }
+
+        .store-status {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .store-open {
+            background-color: #2ac1bc;
+            color: white;
+        }
+
+        .store-closed {
+            background-color: #e0e0e0;
+            color: #666;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            border-top: 1px solid #e0e0e0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>매장 리스트</h1>
+    </div>
+
+    <div class="store-list" id="storeList">
+        <!-- 스토어 목록이 여기에 동적으로 추가됩니다 -->
+    </div>
+
+    <div class="bottom-nav">
+        <div>🏠</div>
+        <div>🔍</div>
+        <div>❤</div>
+        <div>📃</div>
+        <div>👤</div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchStores();
+    });
+
+    function fetchStores() {
+        fetch('/stores')
+            .then(response => response.json())
+            .then(data => {
+                const storeList = document.getElementById('storeList');
+                storeList.innerHTML = ''; // 기존 내용 초기화
+                data['data']['stores'].forEach(store => {
+                    const storeElement = createStoreElement(store);
+                    storeList.appendChild(storeElement);
+                });
+            })
+            .catch(error => console.error('Error fetching stores:', error));
+    }
+
+    function createStoreElement(store) {
+        const storeItem = document.createElement('div');
+        storeItem.className = 'store-item';
+        storeItem.innerHTML = `
+            <div class="store-info">
+                <div class="store-name">
+                    ${store.name}
+                    <span class="store-status ${store.open ? 'store-open' : 'store-closed'}">
+                        ${store.open ? '영업중' : '영업종료'}
+                    </span>
+                </div>
+                <div class="store-category">${store.category}</div>
+                <div class="store-min-order">최소주문금액: ${store.minOrderPrice.toLocaleString()}원</div>
+            </div>
+        `;
+        // 클릭 이벤트 추가
+        storeItem.addEventListener('click', function () {
+            navigateToStoreDetail(store.storeId);
+        });
+
+        return storeItem;
+    }
+
+    function navigateToStoreDetail(storeId) {
+        window.location.href = `/view/stores/${storeId}`;
+    }
+</script>
+</body>
+</html>
