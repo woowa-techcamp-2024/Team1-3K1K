@@ -110,9 +110,8 @@ class OrderCreationServiceTest {
 		when(cartRepository.findByCustomerId(customerId.toString())).thenReturn(Optional.empty());
 
 		// When & Then
-		EmptyCartException exception = assertThrows(EmptyCartException.class, () -> {
-			orderCreationService.create(command);
-		});
+		EmptyCartException exception = assertThrows(EmptyCartException.class,
+			() -> orderCreationService.create(command));
 
 		assertEquals("구매자 " + customerId + "가 비어있는 카트로 주문을 시도했습니다.", exception.getMessage());
 	}
