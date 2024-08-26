@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -54,8 +53,8 @@ import camp.woowak.lab.web.authentication.AuthenticationErrorCode;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
+import camp.woowak.lab.web.dao.menu.MenuDao;
 import camp.woowak.lab.web.dao.store.StoreDao;
-import camp.woowak.lab.web.dao.MenuDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.MenuPriceUpdateRequest;
 import camp.woowak.lab.web.dto.request.store.StoreRegistrationRequest;
