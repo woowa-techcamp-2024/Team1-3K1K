@@ -15,9 +15,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedissonConfiguration {
+public class RedissConfiguration {
 
-	private static final Logger log = LoggerFactory.getLogger(RedissonConfiguration.class);
+	private static final Logger log = LoggerFactory.getLogger(RedissConfiguration.class);
 	@Value("${spring.data.redis.host}")
 	private String redisHost;
 
