@@ -13,24 +13,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestPropertySources;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 
 @SpringBootTest
-@Testcontainers
-@ContextConfiguration(initializers = {RedisCartRepositoryTest.Initializer.class})
 @TestPropertySources({
 	@TestPropertySource(properties = "cart.dao=redis"),
 	@TestPropertySource(properties = "cart.repository=redis")
@@ -38,18 +29,6 @@ import camp.woowak.lab.cart.domain.vo.CartItem;
 public class RedisCartRepositoryTest {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
-	@Container
-	public static GenericContainer<?> redis = new GenericContainer<>("redis:6-alpine")
-		.withExposedPorts(6379);
-
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of(
-				"spring.data.redis.host=" + redis.getHost(),
-				"spring.data.redis.port=" + redis.getFirstMappedPort()
-			).applyTo(configurableApplicationContext.getEnvironment());
-		}
-	}
 
 	@Autowired
 	private RedisCartRepository repository;

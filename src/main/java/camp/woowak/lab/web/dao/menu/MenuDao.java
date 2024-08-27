@@ -1,4 +1,4 @@
-package camp.woowak.lab.web.dao;
+package camp.woowak.lab.web.dao.menu;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

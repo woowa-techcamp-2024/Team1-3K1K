@@ -24,7 +24,7 @@ import camp.woowak.lab.store.service.command.StoreRegistrationCommand;
 import camp.woowak.lab.store.service.response.StoreDisplayResponse;
 import camp.woowak.lab.web.authentication.LoginVendor;
 import camp.woowak.lab.web.authentication.annotation.AuthenticationPrincipal;
-import camp.woowak.lab.web.dao.MenuDao;
+import camp.woowak.lab.web.dao.menu.MenuDao;
 import camp.woowak.lab.web.dao.store.StoreDao;
 import camp.woowak.lab.web.dto.request.store.MenuCategoryRegistrationRequest;
 import camp.woowak.lab.web.dto.request.store.MenuPriceUpdateRequest;

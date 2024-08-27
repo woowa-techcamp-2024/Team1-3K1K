@@ -1,26 +1,26 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.3.2'
-    id 'io.spring.dependency-management' version '1.1.6'
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'camp.woowak'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
@@ -40,10 +40,9 @@ dependencies {
 	implementation 'org.redisson:redisson-spring-boot-starter:3.34.1'    // Redis Redisson
 
 
-    //test-container
-    testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
-    testImplementation "org.testcontainers:testcontainers:1.17.2"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.2"
+
+	// https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
+    	implementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
     //QueryDsl
     // QueryDsl
@@ -58,7 +57,7 @@ dependencies {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
 
 // Querydsl 설정부
@@ -66,11 +65,11 @@ def generated = 'src/main/generated'
 
 // querydsl QClass 생성 위치
 tasks.withType(JavaCompile) {
-    options.generatedSourceOutputDirectory = file(generated)
+	options.generatedSourceOutputDirectory = file(generated)
 }
 
 task cleanGenerated(type: Delete) {
-    delete generated
+	delete generated
 }
 
 clean.dependsOn cleanGenerated
@@ -78,5 +77,5 @@ compileJava.dependsOn clean
 
 // java source set 에 querydsl QClass 위치 추가
 sourceSets {
-    main.java.srcDirs += "$projectDir/build/generated"
+	main.java.srcDirs += "$projectDir/build/generated"
 }

@@ -12,10 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestPropertySources;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import camp.woowak.lab.cart.domain.Cart;
 import camp.woowak.lab.cart.repository.CartRepository;
@@ -36,7 +32,6 @@ import camp.woowak.lab.web.dto.response.CartResponse;
 
 @SpringBootTest
 @Transactional
-@Testcontainers
 @TestPropertySources({
 	@TestPropertySource(properties = "cart.dao=redis"),
 	@TestPropertySource(properties = "cart.repository=redis")
@@ -45,16 +40,6 @@ class RedisCartDaoTest extends StoreDummiesFixture {
 	private final CartRepository cartRepository;
 	@Autowired
 	private CartDao cartDao;
-
-	@Container
-	private static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:latest"))
-		.withExposedPorts(6379);
-
-	static {
-		redis.start();
-		System.setProperty("spring.data.redis.port", String.valueOf(redis.getFirstMappedPort()));
-		System.setProperty("spring.data.redis.host", redis.getHost());
-	}
 
 	@Autowired
 	public RedisCartDaoTest(StoreRepository storeRepository,
