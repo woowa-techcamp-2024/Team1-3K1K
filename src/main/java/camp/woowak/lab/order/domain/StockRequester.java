@@ -1,6 +1,7 @@
 package camp.woowak.lab.order.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -63,6 +64,9 @@ public class StockRequester {
 			}
 		}
 		// TODO: RDB 비동기 재고 업데이트
+
+		stockDecreaseSuccessCartItems.sort(Comparator.comparing(CartItem::getMenuId)); // 데드락 해결을 위한 정렬
+
 		for (var cartItem : stockDecreaseSuccessCartItems) {
 			menuRepository.decreaseStock(cartItem.getMenuId(), cartItem.getAmount());
 		}
