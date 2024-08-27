@@ -36,14 +36,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// redis
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.redisson:redisson-spring-boot-starter:3.35.0'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.3'
 
-	//test-container
-	testImplementation "org.junit.jupiter:junit-jupiter:5.8.1"
-	testImplementation "org.testcontainers:testcontainers:1.17.2"
-	testImplementation "org.testcontainers:junit-jupiter:1.17.2"
+
+	// https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
+    	implementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
 	//QueryDsl
 	// QueryDsl
