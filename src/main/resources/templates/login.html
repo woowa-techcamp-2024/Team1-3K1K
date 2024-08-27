@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>배달의민족 로그인</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #2AC1BC;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #219a95;
+        }
+
+        .login-options {
+            margin-top: 20px;
+        }
+
+        .login-option {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .kakao {
+            background-color: #FEE500;
+        }
+
+        .naver {
+            background-color: #03C75A;
+            color: white;
+        }
+
+        .apple {
+            background-color: #000;
+            color: white;
+        }
+
+        .phone {
+            background-color: #f5f5f5;
+        }
+
+        .email-login {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>배달의민족</h1>
+    <form id="loginForm">
+        <input name="email" placeholder="이메일" required type="email">
+        <input name="password" placeholder="비밀번호" required type="password">
+        <button type="submit">로그인</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const email = this.email.value;
+        const password = this.password.value;
+
+        fetch('/customers/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email, password})
+        })
+            .then(response => {
+                if (response.status === 204) {
+                    // 로그인 성공
+                    alert('로그인 성공!');
+                    // 여기에 로그인 성공 후 수행할 작업을 추가하세요.
+                    // 예: 메인 페이지로 리다이렉트
+                    window.location.href = '/view/stores';
+                } else if (!response.ok) {
+                    // 204가 아닌 다른 상태 코드인 경우 에러로 처리
+                    throw new Error('로그인 실패');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('로그인 실패: ' + error.message);
+            });
+    });
+</script>
+</body>
+</html>

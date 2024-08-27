@@ -4,28 +4,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import camp.woowak.lab.order.repository.OrderRepository;
+import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.service.command.RetrieveOrderListCommand;
 import camp.woowak.lab.order.service.dto.OrderDTO;
 import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.exception.NotEqualsOwnerException;
 import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.store.repository.StoreRepository;
+import camp.woowak.lab.web.dao.order.OrderDao;
+import camp.woowak.lab.web.dao.order.OrderQuery;
 
 @Service
 @Transactional(readOnly = true)
 public class RetrieveOrderListService {
-	private final OrderRepository orderRepository;
+	private final OrderDao orderDao;
 	private final StoreRepository storeRepository;
 
-	public RetrieveOrderListService(OrderRepository orderRepository, StoreRepository storeRepository) {
-		this.orderRepository = orderRepository;
+	public RetrieveOrderListService(OrderDao orderDao, StoreRepository storeRepository) {
+		this.orderDao = orderDao;
 		this.storeRepository = storeRepository;
 	}
 
 	public Page<OrderDTO> retrieveOrderListOfVendorStores(RetrieveOrderListCommand command) {
 		// 점주 매장 주문 조회 권한 검증은 필요없다.
-		return orderRepository.findAllByStore_Owner_Id(command.vendorId(), command.pageable()).map(OrderDTO::new);
+		Page<Order> findOrders = orderDao.findAll(
+			new OrderQuery(command.createdAfter(), command.createdBefore(), command.storeId(), command.vendorId()),
+			command.pageable());
+		return findOrders.map(OrderDTO::new);
 	}
 
 	/**
@@ -43,6 +48,10 @@ public class RetrieveOrderListService {
 			throw new NotEqualsOwnerException(command.vendorId() + "는 " + targetStore.getId() + " 매장의 주인이 아닙니다.");
 		}
 
-		return orderRepository.findByStore_Id(command.storeId(), command.pageable()).map(OrderDTO::new);
+		Page<Order> findOrders = orderDao.findAll(
+			new OrderQuery(command.createdAfter(), command.createdBefore(), command.storeId(), command.vendorId()),
+			command.pageable());
+
+		return findOrders.map(OrderDTO::new);
 	}
 }
