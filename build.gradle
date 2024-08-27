@@ -36,11 +36,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter
-	implementation 'org.redisson:redisson-spring-boot-starter:3.35.0'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.3'
+
 
 	// https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
-    implementation 'com.github.codemonstur:embedded-redis:1.4.3'
+    	implementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
 	//QueryDsl
 	// QueryDsl
