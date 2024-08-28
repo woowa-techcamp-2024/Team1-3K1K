@@ -21,10 +21,12 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
   data:
     redis:
-      host: localhost #변경예정
+      host: localhost
       port: 6379
+      password:
 
 cart:
   repository: redis

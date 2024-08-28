@@ -9,6 +9,8 @@ import java.util.UUID;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
+import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
@@ -41,12 +43,16 @@ public abstract class StoreDummiesFixture {
 	protected final OrderRepository orderRepository;
 	protected final CustomerRepository customerRepository;
 	protected final PasswordEncoder passwordEncoder;
-	protected MenuCategoryRepository menuCategoryRepository;
+	protected final MenuStockCacheService menuStockCacheService;
+	protected final MenuCategoryRepository menuCategoryRepository;
 
-	public StoreDummiesFixture(StoreRepository storeRepository, StoreCategoryRepository storeCategoryRepository,
-							   VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
+	public StoreDummiesFixture(StoreRepository storeRepository,
+							   StoreCategoryRepository storeCategoryRepository,
+							   VendorRepository vendorRepository,
+							   PayAccountRepository payAccountRepository,
 							   OrderRepository orderRepository,
-							   CustomerRepository customerRepository, MenuRepository menuRepository) {
+							   CustomerRepository customerRepository,
+							   MenuRepository menuRepository) {
 		this.storeRepository = storeRepository;
 		this.storeCategoryRepository = storeCategoryRepository;
 		this.vendorRepository = vendorRepository;
@@ -55,13 +61,17 @@ public abstract class StoreDummiesFixture {
 		this.customerRepository = customerRepository;
 		this.passwordEncoder = new NoOpPasswordEncoder();
 		this.menuRepository = menuRepository;
+		this.menuStockCacheService = new FakeMenuStockCacheService();
 		this.menuCategoryRepository = null;
 	}
 
-	public StoreDummiesFixture(StoreRepository storeRepository, StoreCategoryRepository storeCategoryRepository,
-							   VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
+	public StoreDummiesFixture(StoreRepository storeRepository,
+							   StoreCategoryRepository storeCategoryRepository,
+							   VendorRepository vendorRepository,
+							   PayAccountRepository payAccountRepository,
 							   OrderRepository orderRepository,
-							   CustomerRepository customerRepository, MenuRepository menuRepository,
+							   CustomerRepository customerRepository,
+							   MenuRepository menuRepository,
 							   MenuCategoryRepository menuCategoryRepository) {
 		this(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
 			 customerRepository, menuRepository);
@@ -109,7 +119,7 @@ public abstract class StoreDummiesFixture {
 				Customer customer = dummyCustomers.get(
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
 				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
-										new StockRequester(menuRepository), new TestPriceChecker(menuRepository),
+										new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
 										new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
 				orders.add(order);
 			}
@@ -127,8 +137,6 @@ public abstract class StoreDummiesFixture {
 			String address = StoreAddress.DEFAULT_DISTRICT;
 			String phoneNumber = "123-456-789" + (i % 10);
 			Integer minOrderPrice = 5000 + (random.nextInt(10000)) / 1000 * 1000;
-			// LocalDateTime startTime = LocalDateTime.now().minusHours(random.nextInt(10)).withSecond(0).withNano(0);
-			// LocalDateTime endTime = startTime.plusHours(random.nextInt(20) + 1);
 			LocalDateTime startTime = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
 			LocalDateTime endTime = LocalDateTime.now().withHour(23).withMinute(59).withSecond(0).withNano(0);
 
@@ -198,7 +206,7 @@ public abstract class StoreDummiesFixture {
 	}
 
 	private class TestSingleStoreOrderValidator extends SingleStoreOrderValidator {
-		private Store store;
+		private final Store store;
 
 		public TestSingleStoreOrderValidator(Store store, StoreRepository storeRepository) {
 			super(storeRepository);

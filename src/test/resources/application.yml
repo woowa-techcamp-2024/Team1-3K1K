@@ -16,25 +16,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
     properties:
       hibernate:
         format_sql: true
-        show_sql: false
+        show_sql: true
         use_sql_comments: false
+
   data:
     redis:
       host: localhost
       port: 6379
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+      password:
+
 cart:
   dao: redis
   repository: redis
