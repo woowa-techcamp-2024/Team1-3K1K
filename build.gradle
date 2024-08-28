@@ -36,14 +36,13 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.3'
-    implementation 'org.redisson:redisson-spring-boot-starter:3.34.1'    // Redis Redisson
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.3'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.35.0'
 
-	// https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
+    // https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
     implementation 'com.github.codemonstur:embedded-redis:1.4.3'
 
-	//QueryDsl
 	// QueryDsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

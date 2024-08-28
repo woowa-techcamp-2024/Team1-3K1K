@@ -64,7 +64,7 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 										 MenuRepository menuRepository,
 										 ObjectMapper objectMapper, MockMvc mvc) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			customerRepository,menuRepository);
+			customerRepository, menuRepository);
 		this.menuRepository = menuRepository;
 		this.objectMapper = objectMapper;
 		this.mvc = mvc;
@@ -296,8 +296,8 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 		@Nested
 		@DisplayName("filterBy 처리")
 		class FilterBy {
-			private Comparator<Store> orderByIdAsc = (o1, o2) -> Long.compare(o1.getId(), o2.getId());
-			private int page = 0;
+			private final Comparator<Store> orderByIdAsc = (o1, o2) -> Long.compare(o1.getId(), o2.getId());
+			private final int page = 0;
 
 			@Nested
 			@DisplayName("CATEGORY_NAME은")
