@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import camp.woowak.lab.infra.aop.idempotent.Idempotent;
 import camp.woowak.lab.order.service.OrderCreationService;
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
@@ -49,11 +50,11 @@ public class OrderApiController {
 
 	@PostMapping("/orders")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Idempotent
 	public OrderCreationResponse order(@AuthenticationPrincipal LoginCustomer loginCustomer) {
 		OrderCreationCommand command = new OrderCreationCommand(loginCustomer.getId());
 		Long createdId = orderCreationService.create(command);
 		log.info("Created order for customer {} with id {}", loginCustomer.getId(), createdId);
 		return new OrderCreationResponse(createdId);
-
 	}
 }
