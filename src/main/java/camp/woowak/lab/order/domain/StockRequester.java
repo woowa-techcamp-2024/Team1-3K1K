@@ -53,6 +53,7 @@ public class StockRequester {
 					Menu menu = menuRepository.findById(menuId)
 						.orElseThrow(() -> new MenuNotFoundException("메뉴가 존재하지 않습니다."));    // 준기: 10, 현수: 8 -> redis: 8
 					menuStockCacheService.updateStock(menuId, menu.getStockCount());    // lock
+					retryCount--;
 				} catch (NotEnoughStockException e) {
 					log.error("menuId: {} 재고가 부족합니다.", menuId, e);
 					rollback(stockDecreaseSuccessCartItems);
