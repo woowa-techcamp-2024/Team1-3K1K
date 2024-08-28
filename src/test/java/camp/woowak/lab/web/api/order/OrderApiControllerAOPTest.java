@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import camp.woowak.lab.order.exception.OrderErrorCode;
 import camp.woowak.lab.order.service.OrderCreationService;
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
@@ -109,14 +110,14 @@ public class OrderApiControllerAOPTest {
 		verify(orderCreationService, times(1)).create(any(OrderCreationCommand.class));
 		action1.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.data.orderId").value(1L));
-		action2.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.data.orderId").value(1L));
-		action3.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.data.orderId").value(1L));
-		action4.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.data.orderId").value(1L));
-		action5.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.data.orderId").value(1L));
+		action2.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorCode").value(OrderErrorCode.ALREADY_COMPLETED_ORDER.getErrorCode()));
+		action3.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorCode").value(OrderErrorCode.ALREADY_COMPLETED_ORDER.getErrorCode()));
+		action4.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorCode").value(OrderErrorCode.ALREADY_COMPLETED_ORDER.getErrorCode()));
+		action5.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorCode").value(OrderErrorCode.ALREADY_COMPLETED_ORDER.getErrorCode()));
 	}
 
 	@Test
