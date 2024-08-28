@@ -30,7 +30,7 @@ public class IdempotentAop {
 		}
 
 		if (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_IDEMPOTENT_KEY + idempotencyKey))) {
-			return redisTemplate.opsForValue().get(REDIS_IDEMPOTENT_KEY);
+			return redisTemplate.opsForValue().get(REDIS_IDEMPOTENT_KEY + idempotencyKey);
 		}
 
 		Object proceed = joinPoint.proceed();
