@@ -12,6 +12,7 @@ public class RedissonConfiguration {
 	private static final String REDISSON_URL_PREFIX = "redis://";
 	@Value("${spring.data.redis.host}")
 	private String redisHost;
+
 	@Value("${spring.data.redis.port}")
 	private String redisPort;
 
@@ -22,4 +23,5 @@ public class RedissonConfiguration {
 			.setAddress(REDISSON_URL_PREFIX + redisHost + ":" + redisPort);
 		return Redisson.create(config);
 	}
+
 }

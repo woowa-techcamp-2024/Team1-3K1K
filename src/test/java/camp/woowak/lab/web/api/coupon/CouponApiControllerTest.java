@@ -174,7 +174,7 @@ class CouponApiControllerTest {
 
 		MockHttpSession session = new MockHttpSession();
 		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
-		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+		given(issueCouponService.issueCouponWithDistributionLock(any(IssueCouponCommand.class)))
 			.willThrow(new InvalidICreationIssuanceException("존재하지 않는 쿠폰 or 구매자 ID 입력입니다."));
 		// when & then
 		mockMvc.perform(post("/coupons/999/issue")
@@ -194,7 +194,7 @@ class CouponApiControllerTest {
 
 		MockHttpSession session = new MockHttpSession();
 		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
-		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+		given(issueCouponService.issueCouponWithDistributionLock(any(IssueCouponCommand.class)))
 			.willThrow(new ExpiredCouponException("쿠폰이 만료되었습니다."));
 		// when & then
 		mockMvc.perform(post("/coupons/999/issue")
@@ -214,7 +214,7 @@ class CouponApiControllerTest {
 
 		MockHttpSession session = new MockHttpSession();
 		session.setAttribute(SessionConst.SESSION_CUSTOMER_KEY, loginCustomer);
-		given(issueCouponService.issueCoupon(any(IssueCouponCommand.class)))
+		given(issueCouponService.issueCouponWithDistributionLock(any(IssueCouponCommand.class)))
 			.willThrow(new InsufficientCouponQuantityException("수량이 부족합니다."));
 		// when & then
 		mockMvc.perform(post("/coupons/999/issue")
