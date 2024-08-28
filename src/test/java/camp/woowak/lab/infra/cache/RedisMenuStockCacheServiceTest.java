@@ -43,7 +43,6 @@ class RedisMenuStockCacheServiceTest {
 			when(atomicLongMock.isExists()).thenReturn(false);
 			when(redissonClient.getLock(anyString())).thenReturn(lockMock);
 			when(lockMock.tryLock(anyLong(), anyLong(), any())).thenReturn(true);
-			when(lockMock.isHeldByCurrentThread()).thenReturn(true);
 
 			// when
 			redisMenuStockCacheService.updateStock(menuId, stock);
