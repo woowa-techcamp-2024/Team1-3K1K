@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import camp.woowak.lab.infra.aop.idempotent.exception.IdempotencyKeyNotExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class IdempotentAop {
 		String idempotencyKey = request.getHeader("Idempotency-Key");
 
 		if (idempotencyKey == null || idempotencyKey.isEmpty()) {
-			throw new IllegalArgumentException("Idempotency-Key is required");
+			throw new IdempotencyKeyNotExistsException("Idempotency-Key is required");
 		}
 
 		if (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_IDEMPOTENT_KEY + idempotencyKey))) {
