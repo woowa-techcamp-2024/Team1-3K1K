@@ -87,10 +87,8 @@ public class RedisMenuStockCacheService implements MenuStockCacheService {
 
 	private void releaseLock(RLock rLock, String key) {
 		try {
-			if (rLock.isHeldByCurrentThread()) {
-				rLock.unlock();
-				log.info("Released lock with key {}", key);
-			}
+			rLock.unlock();
+			log.info("Released lock with key {}", key);
 		} catch (IllegalMonitorStateException e) {
 			// 이 예외가 발생하면 심각한 로직 오류일 수 있으므로 ERROR 레벨로 로깅
 			log.error(
