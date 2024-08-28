@@ -8,4 +8,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Idempotent {
+	boolean throwError() default false;
+
+	Class<? extends RuntimeException> throwable() default RuntimeException.class;
+
+	String exceptionMessage() default "";
 }

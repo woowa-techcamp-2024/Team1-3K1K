@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import camp.woowak.lab.infra.aop.idempotent.Idempotent;
+import camp.woowak.lab.order.exception.CompletedOrderException;
 import camp.woowak.lab.order.service.OrderCreationService;
 import camp.woowak.lab.order.service.RetrieveOrderListService;
 import camp.woowak.lab.order.service.command.OrderCreationCommand;
@@ -44,13 +45,13 @@ public class OrderApiController {
 												   @PathVariable(name = "storeId") Long storeId,
 												   Pageable pageable) {
 		RetrieveOrderListCommand command =
-			new RetrieveOrderListCommand(storeId, loginVendor.getId(), null,null,pageable);
+			new RetrieveOrderListCommand(storeId, loginVendor.getId(), null, null, pageable);
 		return retrieveOrderListService.retrieveOrderListOfStore(command);
 	}
 
 	@PostMapping("/orders")
 	@ResponseStatus(HttpStatus.CREATED)
-	@Idempotent
+	@Idempotent(throwError = true, throwable = CompletedOrderException.class, exceptionMessage = "already completed order")
 	public OrderCreationResponse order(@AuthenticationPrincipal LoginCustomer loginCustomer) {
 		OrderCreationCommand command = new OrderCreationCommand(loginCustomer.getId());
 		Long createdId = orderCreationService.create(command);
