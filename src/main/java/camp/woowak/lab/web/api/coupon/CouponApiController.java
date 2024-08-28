@@ -45,7 +45,7 @@ public class CouponApiController {
 										   @PathVariable Long couponId) {
 		IssueCouponCommand cmd = new IssueCouponCommand(loginCustomer.getId(), couponId);
 
-		issueCouponService.issueCoupon(cmd);
+		issueCouponService.issueCouponWithDistributionLock(cmd);
 
 		return new IssueCouponResponse();
 	}
