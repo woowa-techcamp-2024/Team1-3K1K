@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RedissonConfiguration {
+public class RedisConfiguration {
 	private static final String REDISSON_URL_PREFIX = "redis://";
 	@Value("${spring.data.redis.host}")
 	private String redisHost;
