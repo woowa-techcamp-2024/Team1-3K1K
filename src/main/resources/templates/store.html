@@ -173,7 +173,22 @@
         <p>장바구니에 메뉴를 추가했습니다.</p>
     </div>
 </div>
-
+<div id="orderingModal" class="modal">
+    <div class="modal-content">
+        <p>결제 진행중입니다...</p>
+    </div>
+</div>
+<div id="emptyCartModal" class="modal">
+    <div class="modal-content">
+        <p>장바구니가 비어있습니다...!</p>
+    </div>
+</div>
+<div id="completedOrderModal" class="modal">
+    <div class="modal-content">
+        <p>이미 완료된 주문입니다...</p>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 <script th:inline="javascript">
     function addToCart(menuId) {
         fetch('/cart', {
@@ -186,7 +201,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200) {
-                    showModal();
+                    showModal('addToCartModal');
                     updateCartInfo();
                 } else {
                     if (data.status === 401) {
@@ -222,8 +237,8 @@
             });
     }
 
-    function showModal() {
-        var modal = document.getElementById('addToCartModal');
+    function showModal(id) {
+        var modal = document.getElementById(id);
         modal.style.display = "block";
         setTimeout(function () {
             modal.style.display = "none";
@@ -234,12 +249,14 @@
     document.addEventListener('DOMContentLoaded', function () {
         updateCartInfo();
     });
-
+    const idempotencyKey = uuid.v4();
+    console.log("idempotencyKey = "+idempotencyKey);
     function placeOrder() {
         fetch('/orders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Idempotency-Key':idempotencyKey
             }
         })
             .then(response => response.json())
@@ -247,8 +264,24 @@
                 if (data.status === 201) {
                     showOrderAnimation();
                     updateCartInfo(); // 주문 후 장바구니 정보 갱신
-                } else {
+                }
+                else if(data.status === 400){
+                    if(data.errorCode === 'o_1_0'){
+                        showModal('emptyCartModal');
+                    }
+                    else if(data.errorCode === 'o_1_6'){
+                        showModal('orderingModal');
+                    }
+                    else if(data.errorCode === 'o_1_7'){
+                        showModal('completedOrderModal');
+                    }
+                }
+                else {
                     if (data.status === 401) {
+                        if(data.errorCode === 'idem1'){
+                            alert('잘못된 요청입니다. 새로고침 해서 다시 주문해주세요');
+                            return;
+                        }
                         alert('로그인이 필요합니다.');
                         location.href = '/view/login';
                         return;
