@@ -1,10 +1,11 @@
 # Team1-3K1K
 
 ## 🧑‍💻 팀원 소개
-|                                                                                    Backend                                                                                     |                                                                                        Backend                                                                                         |                                                                                        Backend                                                                                         |                                                                                        Backend                                                                                         |
-|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a href="https://github.com/Dr-KoKo"><br/><img src="https://avatars.githubusercontent.com/u/97681286?v=4" width="90px;" height="90px;" alt="고동훤"/><br/><h4><b>고동훤</b></h4></a> | <a href="https://github.com/june-777"><br/><img src="https://avatars.githubusercontent.com/u/68291395?v=4" width="90px;" height="90px;" alt="김준기"/><br/><h4><b>김준기</b></h4></a> | <a href="https://github.com/kimhyun5u"><br/><img src="https://avatars.githubusercontent.com/u/38347891?v=4" width="90px;" height="90px;" alt="김현수"/><br/><h4><b>김현수</b></h4></a> | <a href="https://github.com/Hyeon-Uk"><br/><img src="https://avatars.githubusercontent.com/u/43038815?v=4" width="90px;" height="90px;" alt="김현욱"/><br/><h4><b>김현욱</b></h4></a> |
 
+
+| [고동훤](https://github.com/Dr-KoKo) | [김준기](https://github.com/june-777) | [김현수](https://github.com/kimhyun5u) | [김현욱](https://github.com/Hyeon-Uk) |
+| --- | --- | --- | --- |
+| <img src="https://avatars.githubusercontent.com/u/97681286?v=4" width="130px;" height="130px;" alt="고동훤"/> | <img src="https://avatars.githubusercontent.com/u/68291395?v=4" width="130px;" height="130px;" alt="김준기"/> | <img src="https://avatars.githubusercontent.com/u/38347891?v=4" width="130px;" height="130px;" alt="김현수"/> | <img src="https://avatars.githubusercontent.com/u/43038815?v=4" width="130px;" height="130px;" alt="김현욱"/> |
 <br>
 
 ## 💬 프로젝트 소개
@@ -39,36 +40,6 @@
 ### 기록하는 문화
 - 개발 과정의 논의 사항, 이슈들을 문서로 남기기
 - 살아있는 문서 관리
-
-<br>
-
-## 🏛️ 팀 규칙
-### 함께 고민하기
-- 스크럼 및 회고
-    - (감정을 비롯한) 모든 고민사항을 적극적으로 공유
-- 개발을 하면서 고민되는 부분들은 Discussion을 적극적으로 활용
-
-### 팀원 간의 솔직한 피드백 해주기
-- 단! 감정이 상하는 워딩은 X
-
-### 코어시간: 14 ~ 17시
-
-### 커밋 규칙
-- 커밋 제목
-  ```
-  [feat] 새로운 기능에 대한 커밋
-  [refactor] 코드 리팩토링에 대한 커밋
-  [test] 테스트 코드 수정에 대한 커밋
-  [fix] 버그 수정에 대한 커밋
-  [build] 빌드 관련 파일 수정에 대한 커밋
-  [chore] 그 외 자잘한 수정에 대한 커밋
-  [docs] 문서 수정에 대한 커밋
-  [style] 코드 스타일 혹은 포맷 등에 관한 커밋
-  ```
-- 커밋 내용은 설명이 필요하면, 한 줄이상 작성하기
-
-### 브랜치 규칙
-- [GitHub Flow](https://docs.aws.amazon.com/prescriptive-guidance/latest/choosing-git-branch-approach/branches-in-a-git-hub-flow-strategy.html)
 
 <br>
 
