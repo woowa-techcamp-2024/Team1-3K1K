@@ -30,7 +30,7 @@ spring:
 
 cart:
   dao: redis
-  repository: redis
+  repository: in_memory
 
 management:
   endpoints:
