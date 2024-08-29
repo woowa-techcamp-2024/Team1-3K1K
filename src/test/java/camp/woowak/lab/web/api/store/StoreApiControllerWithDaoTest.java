@@ -25,6 +25,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.repository.OrderRepository;
@@ -33,6 +35,7 @@ import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.dao.store.StoreDummiesFixture;
 import camp.woowak.lab.web.dto.request.store.StoreFilterBy;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
@@ -62,9 +65,10 @@ public class StoreApiControllerWithDaoTest extends StoreDummiesFixture {
 										 OrderRepository orderRepository,
 										 CustomerRepository customerRepository,
 										 MenuRepository menuRepository,
+										 MenuCategoryRepository menuCategoryRepository,
 										 ObjectMapper objectMapper, MockMvc mvc) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			customerRepository, menuRepository);
+			customerRepository, menuRepository, menuCategoryRepository, new FakeMenuStockCacheService(), new NoOpPasswordEncoder());
 		this.menuRepository = menuRepository;
 		this.objectMapper = objectMapper;
 		this.mvc = mvc;

@@ -16,6 +16,7 @@ import lombok.Getter;
 
 @Getter
 public class Cart {
+	private Long id;
 	private final String customerId;
 	private final List<CartItem> cartItems;
 
@@ -29,12 +30,16 @@ public class Cart {
 	}
 
 	/**
-	 * 해당 Domain을 사용하는 같은 패키지내의 클래스, 혹은 자식 클래스는 List를 커스텀할 수 있습니다.
-	 *
 	 * @param customerId 장바구니 소유주의 ID값입니다.
 	 * @param cartItems   장바구니에 사용될 List입니다.
 	 */
-	protected Cart(String customerId, List<CartItem> cartItems) {
+	public Cart(String customerId, List<CartItem> cartItems) {
+		this.customerId = customerId;
+		this.cartItems = cartItems;
+	}
+
+	public Cart(Long id, String customerId, List<CartItem> cartItems) {
+		this.id = id;
 		this.customerId = customerId;
 		this.cartItems = cartItems;
 	}

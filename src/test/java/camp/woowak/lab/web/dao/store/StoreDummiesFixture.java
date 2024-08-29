@@ -9,8 +9,10 @@ import java.util.UUID;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
-import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
 import camp.woowak.lab.infra.cache.MenuStockCacheService;
+import camp.woowak.lab.menu.domain.Menu;
+import camp.woowak.lab.menu.domain.MenuCategory;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.domain.PriceChecker;
@@ -28,46 +30,66 @@ import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
-import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 public abstract class StoreDummiesFixture {
 	protected final StoreRepository storeRepository;
 	protected final StoreCategoryRepository storeCategoryRepository;
-	protected final MenuRepository menuRepository;
 	protected final VendorRepository vendorRepository;
 	protected final PayAccountRepository payAccountRepository;
 	protected final OrderRepository orderRepository;
 	protected final CustomerRepository customerRepository;
-	protected final PasswordEncoder passwordEncoder;
+	protected final MenuRepository menuRepository;
+	protected final MenuCategoryRepository menuCategoryRepository;
 	protected final MenuStockCacheService menuStockCacheService;
+	protected final PasswordEncoder passwordEncoder;
 
-	public StoreDummiesFixture(StoreRepository storeRepository, StoreCategoryRepository storeCategoryRepository,
-							   VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
+	public StoreDummiesFixture(StoreRepository storeRepository,
+							   StoreCategoryRepository storeCategoryRepository,
+							   VendorRepository vendorRepository,
+							   PayAccountRepository payAccountRepository,
 							   OrderRepository orderRepository,
-							   CustomerRepository customerRepository, MenuRepository menuRepository) {
+							   CustomerRepository customerRepository,
+							   MenuRepository menuRepository,
+							   MenuCategoryRepository menuCategoryRepository,
+							   MenuStockCacheService menuStockCacheService,
+							   PasswordEncoder passwordEncoder) {
 		this.storeRepository = storeRepository;
 		this.storeCategoryRepository = storeCategoryRepository;
 		this.vendorRepository = vendorRepository;
 		this.payAccountRepository = payAccountRepository;
 		this.orderRepository = orderRepository;
 		this.customerRepository = customerRepository;
-		this.passwordEncoder = new NoOpPasswordEncoder();
 		this.menuRepository = menuRepository;
-		this.menuStockCacheService = new FakeMenuStockCacheService();
+		this.menuCategoryRepository = menuCategoryRepository;
+		this.menuStockCacheService = menuStockCacheService;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	protected PayAccount createPayAccount(long balance) {
+		PayAccount payAccount = new PayAccount();
+		payAccount.charge(balance);
+		return payAccountRepository.saveAndFlush(payAccount);
 	}
 
 	protected List<Customer> createDummyCustomers(int numberOfCustomers) {
 		List<Customer> customers = new ArrayList<>(numberOfCustomers);
 		for (int i = 0; i < numberOfCustomers; i++) {
 			PayAccount payAccount = new PayAccount();
-			payAccountRepository.save(payAccount);
+			payAccount.charge(1000000L);
+			payAccountRepository.saveAndFlush(payAccount);
 			Customer customer = new Customer("customer " + i, "cemail" + i + "@gmail.com", "password1234!",
 				"010-1234-5678", payAccount, passwordEncoder);
 			customers.add(customer);
 		}
 
 		return customerRepository.saveAllAndFlush(customers);
+	}
+
+	protected Customer createDummyCustomer(PayAccount payAccount) {
+		Customer customer = new Customer("customer ", "cemail@gmail.com", "password1234!",
+			"010-1234-5678", payAccount, passwordEncoder);
+		return customerRepository.saveAndFlush(customer);
 	}
 
 	protected List<Order> createOrdersWithRandomCount(List<Store> store) {
@@ -103,8 +125,8 @@ public abstract class StoreDummiesFixture {
 			String address = StoreAddress.DEFAULT_DISTRICT;
 			String phoneNumber = "123-456-789" + (i % 10);
 			Integer minOrderPrice = 5000 + (random.nextInt(10000)) / 1000 * 1000;
-			LocalDateTime startTime = LocalDateTime.now().plusHours(random.nextInt(10)).withSecond(0).withNano(0);
-			LocalDateTime endTime = startTime.plusHours(random.nextInt(20) + 1);
+			LocalDateTime startTime = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+			LocalDateTime endTime = LocalDateTime.now().withHour(23).withMinute(59).withSecond(0).withNano(0);
 
 			Store store = new Store(vendor, storeCategory, name, address, phoneNumber, minOrderPrice, startTime,
 				endTime);
@@ -113,6 +135,27 @@ public abstract class StoreDummiesFixture {
 
 		storeRepository.saveAllAndFlush(stores);
 		return stores;
+	}
+
+	protected List<MenuCategory> createDummyMenuCategories(Store store, int numberOfMenuCategories) {
+		List<MenuCategory> categories = new ArrayList<>(numberOfMenuCategories);
+		for (int i = 0; i < numberOfMenuCategories; i++) {
+			MenuCategory menuCategory = new MenuCategory(store, "메뉴 카테고리" + i);
+			categories.add(menuCategory);
+		}
+		return menuCategoryRepository.saveAllAndFlush(categories);
+	}
+
+	protected List<Menu> createDummyMenus(Store store, MenuCategory menuCategory, int numberOfMenus) {
+		List<Menu> menus = new ArrayList<>(numberOfMenus);
+		Random random = new Random();
+		for (int i = 0; i < numberOfMenus; i++) {
+			Menu menu = new Menu(store, menuCategory, "메뉴" + i,
+				Integer.toUnsignedLong(10000 + random.nextInt(1000, 5000)),
+				Integer.toUnsignedLong(100), "imageUrl" + i);
+			menus.add(menu);
+		}
+		return menuRepository.saveAllAndFlush(menus);
 	}
 
 	protected Vendor createDummyVendor() {

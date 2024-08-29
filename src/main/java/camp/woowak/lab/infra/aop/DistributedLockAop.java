@@ -1,5 +1,6 @@
 package camp.woowak.lab.infra.aop;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class DistributedLockAop {
-
 	private static final String REDISSON_LOCK_PREFIX = "LOCK:";
 	private final RedissonClient redissonClient;
 	private final AopForTransaction aopForTransaction;
@@ -39,7 +39,13 @@ public class DistributedLockAop {
 				distributedLock.timeUnit());
 			if (!locked) {
 				log.warn("Failed to acquire lock for method {} with key {}", method.getName(), key);
-				throw new IllegalStateException("Unable to acquire lock");
+
+				Class<? extends RuntimeException> throwable = distributedLock.throwable();
+				String exceptionMessage = distributedLock.exceptionMessage();
+				Constructor<? extends RuntimeException> constructor = throwable.getConstructor(String.class);
+				RuntimeException exceptions = constructor.newInstance(exceptionMessage);
+
+				throw exceptions;
 			}
 			log.info("Acquired lock for method {} with key {}", method.getName(), key);
 			return aopForTransaction.proceed(joinPoint);

@@ -27,3 +27,16 @@ spring:
       host: localhost
       port: 6379
       password:
+
+cart:
+  repository: redis
+  dao: redis
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

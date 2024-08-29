@@ -16,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
+import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
 import camp.woowak.lab.order.repository.OrderRepository;
@@ -24,6 +26,7 @@ import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.dto.request.store.StoreFilterBy;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequest;
 import camp.woowak.lab.web.dto.request.store.StoreInfoListRequestConst;
@@ -39,14 +42,16 @@ class StoreDaoTest extends StoreDummiesFixture {
 	private List<Store> dummies;
 
 	@Autowired
-	public StoreDaoTest(StoreDao storeDao, StoreRepository storeRepository,
+	public StoreDaoTest(StoreDao storeDao, PayAccountRepository payAccountRepository, StoreRepository storeRepository,
 						StoreCategoryRepository storeCategoryRepository,
-						VendorRepository vendorRepository, PayAccountRepository payAccountRepository,
+						VendorRepository vendorRepository,
 						OrderRepository orderRepository,
 						CustomerRepository customerRepository,
-						MenuRepository menuRepository) {
+						MenuRepository menuRepository,
+						MenuCategoryRepository menuCategoryRepository) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			customerRepository, menuRepository);
+			customerRepository, menuRepository, menuCategoryRepository, new FakeMenuStockCacheService(),
+			new NoOpPasswordEncoder());
 		this.storeDao = storeDao;
 		this.dummyCount = 105;
 	}

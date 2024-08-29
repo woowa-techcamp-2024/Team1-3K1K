@@ -16,14 +16,27 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
     properties:
       hibernate:
         format_sql: true
         show_sql: true
+        use_sql_comments: false
 
   data:
     redis:
       host: localhost
       port: 6379
       password:
+
+cart:
+  dao: redis
+  repository: in_memory
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
