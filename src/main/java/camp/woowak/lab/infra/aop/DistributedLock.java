@@ -32,10 +32,10 @@ public @interface DistributedLock {
 	/**
 	 * @return 분산락을 획득하지 못한 스레드들이 던져야하는 exception
 	 */
-	Class<? extends RuntimeException> throwable();
+	Class<? extends RuntimeException> throwable() default IllegalStateException.class;
 
 	/**
 	 * @return 분산락을 획득하지 못했을 때의 메세지
 	 */
-	String exceptionMessage();
+	String exceptionMessage() default "Unable to acquire lock";
 }
