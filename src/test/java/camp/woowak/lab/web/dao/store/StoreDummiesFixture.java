@@ -9,7 +9,6 @@ import java.util.UUID;
 import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
-import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
 import camp.woowak.lab.infra.cache.MenuStockCacheService;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
@@ -31,39 +30,19 @@ import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.domain.Vendor;
 import camp.woowak.lab.vendor.repository.VendorRepository;
-import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.authentication.PasswordEncoder;
 
 public abstract class StoreDummiesFixture {
 	protected final StoreRepository storeRepository;
 	protected final StoreCategoryRepository storeCategoryRepository;
-	protected final MenuRepository menuRepository;
 	protected final VendorRepository vendorRepository;
 	protected final PayAccountRepository payAccountRepository;
 	protected final OrderRepository orderRepository;
 	protected final CustomerRepository customerRepository;
-	protected final PasswordEncoder passwordEncoder;
-	protected final MenuStockCacheService menuStockCacheService;
+	protected final MenuRepository menuRepository;
 	protected final MenuCategoryRepository menuCategoryRepository;
-
-	public StoreDummiesFixture(StoreRepository storeRepository,
-							   StoreCategoryRepository storeCategoryRepository,
-							   VendorRepository vendorRepository,
-							   PayAccountRepository payAccountRepository,
-							   OrderRepository orderRepository,
-							   CustomerRepository customerRepository,
-							   MenuRepository menuRepository) {
-		this.storeRepository = storeRepository;
-		this.storeCategoryRepository = storeCategoryRepository;
-		this.vendorRepository = vendorRepository;
-		this.payAccountRepository = payAccountRepository;
-		this.orderRepository = orderRepository;
-		this.customerRepository = customerRepository;
-		this.passwordEncoder = new NoOpPasswordEncoder();
-		this.menuRepository = menuRepository;
-		this.menuStockCacheService = new FakeMenuStockCacheService();
-		this.menuCategoryRepository = null;
-	}
+	protected final MenuStockCacheService menuStockCacheService;
+	protected final PasswordEncoder passwordEncoder;
 
 	public StoreDummiesFixture(StoreRepository storeRepository,
 							   StoreCategoryRepository storeCategoryRepository,
@@ -72,13 +51,22 @@ public abstract class StoreDummiesFixture {
 							   OrderRepository orderRepository,
 							   CustomerRepository customerRepository,
 							   MenuRepository menuRepository,
-							   MenuCategoryRepository menuCategoryRepository) {
-		this(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			 customerRepository, menuRepository);
+							   MenuCategoryRepository menuCategoryRepository,
+							   MenuStockCacheService menuStockCacheService,
+							   PasswordEncoder passwordEncoder) {
+		this.storeRepository = storeRepository;
+		this.storeCategoryRepository = storeCategoryRepository;
+		this.vendorRepository = vendorRepository;
+		this.payAccountRepository = payAccountRepository;
+		this.orderRepository = orderRepository;
+		this.customerRepository = customerRepository;
+		this.menuRepository = menuRepository;
 		this.menuCategoryRepository = menuCategoryRepository;
+		this.menuStockCacheService = menuStockCacheService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
-	protected PayAccount createPayAccount(long balance){
+	protected PayAccount createPayAccount(long balance) {
 		PayAccount payAccount = new PayAccount();
 		payAccount.charge(balance);
 		return payAccountRepository.saveAndFlush(payAccount);
@@ -91,7 +79,7 @@ public abstract class StoreDummiesFixture {
 			payAccount.charge(1000000L);
 			payAccountRepository.saveAndFlush(payAccount);
 			Customer customer = new Customer("customer " + i, "cemail" + i + "@gmail.com", "password1234!",
-											 "010-1234-5678", payAccount, passwordEncoder);
+				"010-1234-5678", payAccount, passwordEncoder);
 			customers.add(customer);
 		}
 
@@ -100,7 +88,7 @@ public abstract class StoreDummiesFixture {
 
 	protected Customer createDummyCustomer(PayAccount payAccount) {
 		Customer customer = new Customer("customer ", "cemail@gmail.com", "password1234!",
-										 "010-1234-5678", payAccount, passwordEncoder);
+			"010-1234-5678", payAccount, passwordEncoder);
 		return customerRepository.saveAndFlush(customer);
 	}
 
@@ -119,8 +107,8 @@ public abstract class StoreDummiesFixture {
 				Customer customer = dummyCustomers.get(
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
 				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
-										new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
-										new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
+					new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
+					new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
 				orders.add(order);
 			}
 		}
@@ -141,7 +129,7 @@ public abstract class StoreDummiesFixture {
 			LocalDateTime endTime = LocalDateTime.now().withHour(23).withMinute(59).withSecond(0).withNano(0);
 
 			Store store = new Store(vendor, storeCategory, name, address, phoneNumber, minOrderPrice, startTime,
-									endTime);
+				endTime);
 			stores.add(store);
 		}
 
@@ -163,8 +151,8 @@ public abstract class StoreDummiesFixture {
 		Random random = new Random();
 		for (int i = 0; i < numberOfMenus; i++) {
 			Menu menu = new Menu(store, menuCategory, "메뉴" + i,
-								 Integer.toUnsignedLong(10000 + random.nextInt(1000, 5000)),
-								 Integer.toUnsignedLong(100), "imageUrl" + i);
+				Integer.toUnsignedLong(10000 + random.nextInt(1000, 5000)),
+				Integer.toUnsignedLong(100), "imageUrl" + i);
 			menus.add(menu);
 		}
 		return menuRepository.saveAllAndFlush(menus);
@@ -175,7 +163,7 @@ public abstract class StoreDummiesFixture {
 		payAccountRepository.saveAndFlush(payAccount);
 		return vendorRepository.saveAndFlush(
 			new Vendor("VendorName", "email@gmail.com", "Password123!", "010-1234-5678",
-					   payAccount, passwordEncoder));
+				payAccount, passwordEncoder));
 	}
 
 	protected StoreCategory createRandomDummyStoreCategory() {

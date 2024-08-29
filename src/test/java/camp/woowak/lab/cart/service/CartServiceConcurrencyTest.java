@@ -26,6 +26,7 @@ import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.cart.service.command.AddCartCommand;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
+import camp.woowak.lab.infra.cache.FakeMenuStockCacheService;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
@@ -41,6 +42,7 @@ import camp.woowak.lab.store.domain.Store;
 import camp.woowak.lab.store.repository.StoreCategoryRepository;
 import camp.woowak.lab.store.repository.StoreRepository;
 import camp.woowak.lab.vendor.repository.VendorRepository;
+import camp.woowak.lab.web.authentication.NoOpPasswordEncoder;
 import camp.woowak.lab.web.dao.store.StoreDummiesFixture;
 
 @SpringBootTest
@@ -49,19 +51,20 @@ public class CartServiceConcurrencyTest extends StoreDummiesFixture {
 	private final Logger log = LoggerFactory.getLogger(CartServiceConcurrencyTest.class);
 
 	@Autowired
-	public CartServiceConcurrencyTest(StoreRepository storeRepository,
+	public CartServiceConcurrencyTest(PayAccountRepository payAccountRepository,
+									  StoreRepository storeRepository,
 									  StoreCategoryRepository storeCategoryRepository,
 									  VendorRepository vendorRepository,
-									  PayAccountRepository payAccountRepository,
 									  OrderRepository orderRepository,
 									  CustomerRepository customerRepository,
 									  MenuRepository menuRepository,
 									  MenuCategoryRepository menuCategoryRepository,
-									  OrderCreationService orderCreationService,
+									  CartRepository cartRepository,
 									  CartService cartService,
-									  CartRepository cartRepository) {
+									  OrderCreationService orderCreationService) {
 		super(storeRepository, storeCategoryRepository, vendorRepository, payAccountRepository, orderRepository,
-			  customerRepository, menuRepository, menuCategoryRepository);
+			customerRepository, menuRepository, menuCategoryRepository, new FakeMenuStockCacheService(),
+			new NoOpPasswordEncoder());
 		this.cartService = cartService;
 		this.cartRepository = cartRepository;
 		this.orderCreationService = orderCreationService;
