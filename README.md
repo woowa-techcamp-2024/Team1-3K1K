@@ -14,7 +14,7 @@
 <br>
 
 ## 🛠 기술 스택
-
+<img src="https://github.com/user-attachments/assets/12b5b5a6-f3a4-47a0-ba9b-cd0b30d8948b" width=600>
 <br>
 
 ## 💻 프로젝트 구조
