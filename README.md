@@ -1,4 +1,5 @@
 # Team1-3K1K
+<img src="https://github.com/user-attachments/assets/c4dce351-ef1a-4d49-880e-835524cbccc1" width=600>
 
 ## 🧑‍💻 팀원 소개
 
@@ -21,8 +22,11 @@
 <br>
 
 ## 🤔 이런 문제를 해결했어요
+<a href="https://github.com/woowa-techcamp-2024/Team1-3K1K/issues/123"> <img src="https://github.com/user-attachments/assets/cb4e7b0e-5ab0-450d-8d55-5345cad9688a" width=800> </a>
+<a href="https://github.com/woowa-techcamp-2024/Team1-3K1K/issues/118"> <img src="https://github.com/user-attachments/assets/b18cf692-3887-4c85-bf40-2e930555b542" width=800> </a>
 
 <br>
+
 
 ## 🏹 프로젝트 목표
 ### 문제 해결 경험
