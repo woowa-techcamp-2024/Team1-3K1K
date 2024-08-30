@@ -61,5 +61,5 @@ RDS : t3.micro
 
 <br>
 
-## 링크 모음
+[더 자세한 정보 보기](https://github.com/woowa-techcamp-2024/Team1-3K1K/wiki)
 
