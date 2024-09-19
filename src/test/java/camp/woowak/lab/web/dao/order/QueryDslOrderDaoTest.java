@@ -28,6 +28,7 @@ import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
@@ -82,6 +83,8 @@ class QueryDslOrderDaoTest {
 
 	private Vendor vendor1;
 	private Vendor vendor2;
+
+	private OrderFactory orderFactory;
 
 	@BeforeEach
 	void setUp() {
@@ -161,8 +164,10 @@ class QueryDslOrderDaoTest {
 		when(priceChecker.check(any(Store.class), anyList())).thenReturn(orderItems);
 
 		DateTimeProvider fixedTime = () -> LocalDateTime.of(2024, 8, 24, 1, 0, 0);
-		Order order = new Order(customer, Collections.EMPTY_LIST, singleStoreOrderValidator, stockRequester,
-			priceChecker, withdrawPointService, fixedTime.now());
+		orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker, withdrawPointService,
+			fixedTime);
+		Order order = orderFactory.createOrder(customer, Collections.EMPTY_LIST);
+			
 		orderRepository.save(order);
 		return order;
 	}

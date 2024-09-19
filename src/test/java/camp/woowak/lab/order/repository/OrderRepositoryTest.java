@@ -23,6 +23,7 @@ import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
@@ -67,6 +68,8 @@ class OrderRepositoryTest {
 	@Autowired
 	MenuStockCacheService menuStockCacheService;
 
+	private OrderFactory orderFactory;
+
 	private Store store1;
 
 	private Store store2;
@@ -83,6 +86,9 @@ class OrderRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
+		orderFactory = new OrderFactory(new SingleStoreOrderValidator(storeRepository),
+			new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
+			new WithdrawPointService(payAccountRepository), LocalDateTime::now);
 		StoreCategory storeCategory = storeCategoryRepository.save(new StoreCategory("storeCategory"));
 		vendor = vendorRepository.saveAndFlush(
 			new Vendor("vendor", "vendor@email.com", "password", "010-1234-5678",
@@ -118,15 +124,10 @@ class OrderRepositoryTest {
 		// given
 		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
 		orderRepository.saveAndFlush(
-			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
+			orderFactory.createOrder(customer, store1CartItems));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
-			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
-
+			orderFactory.createOrder(customer, store2CartItems));
 		// when
 		List<Order> orders = orderRepository.findAllByOwner(vendor.getId());
 
@@ -153,14 +154,10 @@ class OrderRepositoryTest {
 		// given
 		List<CartItem> store1CartItems = List.of(new CartItem(menu1.getId(), store1.getId(), 1));
 		Order order = orderRepository.saveAndFlush(
-			new Order(customer, store1CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
+			orderFactory.createOrder(customer, store1CartItems));
 		List<CartItem> store2CartItems = List.of(new CartItem(menu1.getId(), store2.getId(), 1));
 		orderRepository.saveAndFlush(
-			new Order(customer, store2CartItems, new SingleStoreOrderValidator(storeRepository),
-				new StockRequester(menuRepository, menuStockCacheService), new PriceChecker(menuRepository),
-				new WithdrawPointService(payAccountRepository), LocalDateTime.now()));
+			orderFactory.createOrder(customer, store2CartItems));
 
 		// when
 		List<Order> orders = orderRepository.findByStore(store1.getId(), vendor.getId());

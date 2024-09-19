@@ -23,6 +23,7 @@ class OrderTest {
 	private PriceChecker priceChecker;
 	private WithdrawPointService withdrawPointService;
 	private final DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
+	private OrderFactory orderFactory;
 
 	@BeforeEach
 	void setUp() {
@@ -30,6 +31,9 @@ class OrderTest {
 		stockRequester = mock(StockRequester.class);
 		priceChecker = mock(PriceChecker.class);
 		withdrawPointService = mock(WithdrawPointService.class);
+
+		orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker, withdrawPointService,
+			fixedDateTime);
 	}
 
 	@Test
@@ -50,8 +54,7 @@ class OrderTest {
 		when(withdrawPointService.withdraw(customer, orderItems)).thenReturn(orderItems);
 
 		// When
-		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-			withdrawPointService, fixedDateTime.now());
+		Order order = orderFactory.createOrder(customer, cartItems);
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());
@@ -76,8 +79,7 @@ class OrderTest {
 
 		// When & Then
 		MultiStoreOrderException exception = assertThrows(MultiStoreOrderException.class, () -> {
-			new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, fixedDateTime.now());
+			orderFactory.createOrder(customer, cartItems);
 		});
 
 		assertEquals("다른 가게의 메뉴를 같이 주문할 수 없습니다.", exception.getMessage());

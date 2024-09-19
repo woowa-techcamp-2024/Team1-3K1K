@@ -19,6 +19,7 @@ import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.menu.domain.Menu;
 import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
@@ -57,6 +58,8 @@ class OrderPaymentTest {
 
 	@Mock
 	WithdrawPointService withdrawPointService;
+
+	private OrderFactory orderFactory;
 
 	@Nested
 	@DisplayName("총 주문 금액을 계산하는 기능은")
@@ -103,8 +106,12 @@ class OrderPaymentTest {
 			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
 
 			LocalDateTime now = LocalDateTime.now();
-			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, now);
+
+			orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService,
+				() -> now);
+
+			Order order = orderFactory.createOrder(customer, cartItems);
 
 			OrderPayment orderPayment = new OrderPayment(order, customer, vendor, OrderPaymentStatus.ORDER_SUCCESS,
 				now);
@@ -139,8 +146,12 @@ class OrderPaymentTest {
 			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
 
 			LocalDateTime now = LocalDateTime.now();
-			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, now);
+
+			orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService,
+				() -> now);
+
+			Order order = orderFactory.createOrder(customer, cartItems);
 
 			OrderPayment orderPayment = new OrderPayment(order, customer, vendor, OrderPaymentStatus.ORDER_SUCCESS,
 				now);
@@ -160,7 +171,7 @@ class OrderPaymentTest {
 
 		@Test
 		@DisplayName("[Success] 정산 대상 Vendor가 수령자이고 상태가 ORDER_SUCCESS이면 예외가 발생하지 않는다.")
-		void test1() {
+		void ƒtest1() {
 			// given
 			customer = createCustomer(createPayAccount());
 			Vendor recipientVendor = createVendor(createPayAccount());
@@ -169,8 +180,13 @@ class OrderPaymentTest {
 			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
 
 			LocalDateTime now = LocalDateTime.now();
-			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, now);
+
+			orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService,
+				() -> now);
+
+			Order order = orderFactory.createOrder(customer, cartItems);
+
 			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
 				OrderPaymentStatus.ORDER_SUCCESS,
 				now);
@@ -190,8 +206,13 @@ class OrderPaymentTest {
 			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
 
 			LocalDateTime now = LocalDateTime.now();
-			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, now);
+
+			orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService,
+				() -> now);
+
+			Order order = orderFactory.createOrder(customer, cartItems);
+
 			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
 				OrderPaymentStatus.ORDER_SUCCESS, now);
 
@@ -210,8 +231,13 @@ class OrderPaymentTest {
 			given(priceChecker.check(store, cartItems)).willReturn(orderItems);
 
 			LocalDateTime now = LocalDateTime.now();
-			Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, now);
+
+			orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker,
+				withdrawPointService,
+				() -> now);
+			
+			Order order = orderFactory.createOrder(customer, cartItems);
+
 			OrderPayment orderPayment = new OrderPayment(order, customer, recipientVendor,
 				OrderPaymentStatus.SETTLEMENT_SUCCESS, now);
 
