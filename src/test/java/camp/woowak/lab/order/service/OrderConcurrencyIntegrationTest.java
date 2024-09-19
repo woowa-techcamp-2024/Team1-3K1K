@@ -138,92 +138,6 @@ public class OrderConcurrencyIntegrationTest {
 		redissonClient.getKeys().flushall();
 	}
 
-	@Nested
-	@DisplayName("카트 담기, 주문 동시성 통합 테스트")
-	class TestClass {
-
-		@Test
-		@DisplayName("N명이 동시에 주문했을 때 음식 상품 메뉴의 재고수가 N개 감소한다.")
-		void concurrentOrderTest() throws InterruptedException {
-			menus = List.of(saveMenu(store, menuCategory, "메뉴1", 5000L, 10L));
-
-			// given
-			int totalCustomerCount = customers.size();    // 고객 수만큼 멀티스레딩
-			ExecutorService executorService = Executors.newFixedThreadPool(totalCustomerCount);
-			CountDownLatch latch = new CountDownLatch(totalCustomerCount);
-
-			Menu targetMenu = menus.get(0);  // 첫 번째 메뉴를 대상으로 테스트
-			Long initialStock = targetMenu.getStockCount();
-
-			// when
-			for (int customerCount = 0; customerCount < totalCustomerCount; customerCount++) {
-				Customer customer = customers.get(customerCount);
-				executorService.submit(() -> executeAddCartAndOrderCreation(latch, customer, targetMenu));
-			}
-			latch.await(10, TimeUnit.SECONDS);
-			executorService.shutdown();
-
-			// then: Redis Cache 정합성
-			assertThat(redissonClient.getAtomicLong(
-				RedisCacheConstants.MENU_STOCK_PREFIX + targetMenu.getId()).get())
-				.isEqualTo(initialStock - totalCustomerCount);
-
-			// then: verify RDB
-			Menu findMenu = getStockCountFromDB(targetMenu.getId());
-			assertThat(findMenu.getStockCount()).isEqualTo(initialStock - totalCustomerCount);
-		}
-
-		/**
-		 * 시나리오:
-		 * 고객1: [메뉴1:1개, 메뉴2:1개]
-		 * 고객2: [메뉴1:1개, 메뉴2:1개]
-		 * 음식 상품: [메뉴1:2개, 메뉴2:1개]
-		 */
-		@Test
-		@DisplayName("여러 고객이 동시에 주문할 때, 재고 부족 시 롤백되어야 한다.")
-		void concurrentOrderWithLimitedStockTest() throws InterruptedException {
-			// given
-			menus = List.of(
-				saveMenu(store, menuCategory, "메뉴1", 5000L, 2L),
-				saveMenu(store, menuCategory, "메뉴2", 5000L, 1L)    // 여기서 터진다.
-			);
-
-			for (int index = 0; index < customers.size(); index++) {
-				Customer customer = customers.get(index);
-				for (Menu menu : menus) {// 각 메뉴를 1개씩 담음
-					cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu.getId()));
-				}
-			}
-
-			int numberOfThreads = 2;
-			ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-			CountDownLatch latch = new CountDownLatch(numberOfThreads);
-			Menu menu1 = menus.get(0);
-			Menu menu2 = menus.get(1);
-
-			// when
-			for (int personCount = 0; personCount < numberOfThreads; personCount++) {
-				final int index = personCount;
-				executorService.submit(() -> executeOrderCreation(latch, customers.get(index)));
-			}
-			latch.await(10, TimeUnit.MINUTES);
-			executorService.shutdown();
-
-			// then: Redis Cache 정합성
-			assertThat(redissonClient.getAtomicLong(
-				RedisCacheConstants.MENU_STOCK_PREFIX + menu1.getId()).get()).isEqualTo(1);
-			assertThat(redissonClient.getAtomicLong(
-				RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(0);
-
-			// then: verify RDB
-			Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
-			Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
-
-			assertThat(updatedMenu1.getStockCount()).isEqualTo(1);
-			assertThat(updatedMenu2.getStockCount()).isEqualTo(0);
-		}
-	}
-
 	/**
 	 * Test Scenario: 계좌 잔액 부족으로 인한 롤백 시나리오
 	 * 고객1: [메뉴1:3개, 메뉴2:3개, 메뉴3:3개]	잔액: 100000원
@@ -298,13 +212,14 @@ public class OrderConcurrencyIntegrationTest {
 		executorService.shutdown();
 
 		// then: verify RDB
-		Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
-		Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
-		Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
-
-		assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
-		assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
-		assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
+		// DB 싱크 스케줄링 변경으로 인한 주석 처리
+		// Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
+		// Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
+		// Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
+		//
+		// assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
+		// assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
+		// assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
 
 		// then: verify Redis
 		assertThat(redissonClient.getAtomicLong(
@@ -399,13 +314,14 @@ public class OrderConcurrencyIntegrationTest {
 		executorService.shutdown();
 
 		// then: verify RDB
-		Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
-		Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
-		Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
-
-		assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
-		assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
-		assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
+		// DB 싱크 스케줄링 변경으로 인한 주석 처리
+		// Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
+		// Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
+		// Menu updatedMenu3 = getStockCountFromDB(menu3.getId());
+		//
+		// assertThat(updatedMenu1.getStockCount()).isEqualTo(menu1ExpectedCount);
+		// assertThat(updatedMenu2.getStockCount()).isEqualTo(menu2ExpectedCount);
+		// assertThat(updatedMenu3.getStockCount()).isEqualTo(menu3ExpectedCount);
 
 		// then: verify Redis
 		assertThat(redissonClient.getAtomicLong(
@@ -414,6 +330,94 @@ public class OrderConcurrencyIntegrationTest {
 			RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(menu2ExpectedCount);
 		assertThat(redissonClient.getAtomicLong(
 			RedisCacheConstants.MENU_STOCK_PREFIX + menu3.getId()).get()).isEqualTo(menu3ExpectedCount);
+	}
+
+	@Nested
+	@DisplayName("카트 담기, 주문 동시성 통합 테스트")
+	class TestClass {
+
+		@Test
+		@DisplayName("N명이 동시에 주문했을 때 음식 상품 메뉴의 재고수가 N개 감소한다.")
+		void concurrentOrderTest() throws InterruptedException {
+			menus = List.of(saveMenu(store, menuCategory, "메뉴1", 5000L, 10L));
+
+			// given
+			int totalCustomerCount = customers.size();    // 고객 수만큼 멀티스레딩
+			ExecutorService executorService = Executors.newFixedThreadPool(totalCustomerCount);
+			CountDownLatch latch = new CountDownLatch(totalCustomerCount);
+
+			Menu targetMenu = menus.get(0);  // 첫 번째 메뉴를 대상으로 테스트
+			Long initialStock = targetMenu.getStockCount();
+
+			// when
+			for (int customerCount = 0; customerCount < totalCustomerCount; customerCount++) {
+				Customer customer = customers.get(customerCount);
+				executorService.submit(() -> executeAddCartAndOrderCreation(latch, customer, targetMenu));
+			}
+			latch.await(10, TimeUnit.SECONDS);
+			executorService.shutdown();
+
+			// then: Redis Cache 정합성
+			assertThat(redissonClient.getAtomicLong(
+				RedisCacheConstants.MENU_STOCK_PREFIX + targetMenu.getId()).get())
+				.isEqualTo(initialStock - totalCustomerCount);
+
+			// then: verify RDB
+			// DB 싱크 스케줄링 변경으로 인한 주석 처리
+			// Menu findMenu = getStockCountFromDB(targetMenu.getId());
+			// assertThat(findMenu.getStockCount()).isEqualTo(initialStock - totalCustomerCount);
+		}
+
+		/**
+		 * 시나리오:
+		 * 고객1: [메뉴1:1개, 메뉴2:1개]
+		 * 고객2: [메뉴1:1개, 메뉴2:1개]
+		 * 음식 상품: [메뉴1:2개, 메뉴2:1개]
+		 */
+		@Test
+		@DisplayName("여러 고객이 동시에 주문할 때, 재고 부족 시 롤백되어야 한다.")
+		void concurrentOrderWithLimitedStockTest() throws InterruptedException {
+			// given
+			menus = List.of(
+				saveMenu(store, menuCategory, "메뉴1", 5000L, 2L),
+				saveMenu(store, menuCategory, "메뉴2", 5000L, 1L)    // 여기서 터진다.
+			);
+
+			for (int index = 0; index < customers.size(); index++) {
+				Customer customer = customers.get(index);
+				for (Menu menu : menus) {// 각 메뉴를 1개씩 담음
+					cartService.addMenu(new AddCartCommand(customer.getId().toString(), menu.getId()));
+				}
+			}
+
+			int numberOfThreads = 2;
+			ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+			CountDownLatch latch = new CountDownLatch(numberOfThreads);
+			Menu menu1 = menus.get(0);
+			Menu menu2 = menus.get(1);
+
+			// when
+			for (int personCount = 0; personCount < numberOfThreads; personCount++) {
+				final int index = personCount;
+				executorService.submit(() -> executeOrderCreation(latch, customers.get(index)));
+			}
+			latch.await(10, TimeUnit.MINUTES);
+			executorService.shutdown();
+
+			// then: Redis Cache 정합성
+			assertThat(redissonClient.getAtomicLong(
+				RedisCacheConstants.MENU_STOCK_PREFIX + menu1.getId()).get()).isEqualTo(1);
+			assertThat(redissonClient.getAtomicLong(
+				RedisCacheConstants.MENU_STOCK_PREFIX + menu2.getId()).get()).isEqualTo(0);
+
+			// then: verify RDB
+			// DB 싱크 스케줄링 변경으로 인한 주석 처리
+			// Menu updatedMenu1 = getStockCountFromDB(menu1.getId());
+			// Menu updatedMenu2 = getStockCountFromDB(menu2.getId());
+			//
+			// assertThat(updatedMenu1.getStockCount()).isEqualTo(1);
+			// assertThat(updatedMenu2.getStockCount()).isEqualTo(0);
+		}
 	}
 
 	void setupMenuToCart(Customer customer, Menu menu, int addCount) {

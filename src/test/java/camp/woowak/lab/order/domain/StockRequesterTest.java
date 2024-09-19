@@ -185,11 +185,11 @@ class StockRequesterTest {
 		// when
 		stockRequester.request(cartItems1);
 		assertThatThrownBy(() -> stockRequester.request(cartItems2)).isInstanceOf(NotEnoughStockException.class);
-
-		Menu findMenu1 = getStockCountFromDB(menu1.getId());
-		Menu findMenu2 = getStockCountFromDB(menu2.getId());
-		assertThat(findMenu1.getStockCount()).isEqualTo(1L);
-		assertThat(findMenu2.getStockCount()).isEqualTo(0L);
+		// DB 싱크 스케줄링 변경으로 인한 주석 처리
+		// Menu findMenu1 = getStockCountFromDB(menu1.getId());
+		// Menu findMenu2 = getStockCountFromDB(menu2.getId());
+		// assertThat(findMenu1.getStockCount()).isEqualTo(1L);
+		// assertThat(findMenu2.getStockCount()).isEqualTo(0L);
 	}
 
 	@Test
