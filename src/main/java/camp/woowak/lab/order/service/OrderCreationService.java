@@ -12,13 +12,9 @@ import camp.woowak.lab.cart.repository.CartRepository;
 import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.infra.aop.DistributedLock;
-import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.order.domain.Order;
-import camp.woowak.lab.order.domain.PriceChecker;
-import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
-import camp.woowak.lab.order.domain.StockRequester;
-import camp.woowak.lab.order.domain.WithdrawPointService;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.exception.DuplicatedOrderException;
 import camp.woowak.lab.order.exception.EmptyCartException;
 import camp.woowak.lab.order.exception.MinimumOrderPriceNotMetException;
@@ -41,13 +37,9 @@ public class OrderCreationService {
 	private final OrderRepository orderRepository;
 	private final CartRepository cartRepository;
 	private final CustomerRepository customerRepository;
-	private final SingleStoreOrderValidator singleStoreOrderValidator;
-	private final StockRequester stockRequester;
-	private final WithdrawPointService withdrawPointService;
-	private final PriceChecker priceChecker;
 	private final OrderPaymentRepository orderPaymentRepository;
 
-	private final DateTimeProvider dateTimeProvider;
+	private final OrderFactory orderFactory;
 
 	/**
 	 * @throws EmptyCartException               카트가 비어 있는 경우
@@ -68,8 +60,7 @@ public class OrderCreationService {
 		List<CartItem> cartItems = cart.getCartItems();
 
 		Order savedOrder = orderRepository.save(
-			new Order(requester, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-				withdrawPointService, dateTimeProvider.now())
+			orderFactory.createOrder(requester, cartItems)
 		);
 
 		saveOrderPayment(savedOrder);

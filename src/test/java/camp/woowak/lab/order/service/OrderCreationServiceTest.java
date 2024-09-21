@@ -22,6 +22,7 @@ import camp.woowak.lab.customer.domain.Customer;
 import camp.woowak.lab.customer.repository.CustomerRepository;
 import camp.woowak.lab.infra.date.DateTimeProvider;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
@@ -61,9 +62,13 @@ class OrderCreationServiceTest {
 
 	private final DateTimeProvider fixedDateTime = () -> LocalDateTime.of(2024, 8, 18, 1, 30, 30);
 
+	private OrderFactory orderFactory;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+		orderFactory = new OrderFactory(singleStoreOrderValidator, stockRequester, priceChecker, withdrawPointService,
+			fixedDateTime);
 	}
 
 	@Test
@@ -87,8 +92,7 @@ class OrderCreationServiceTest {
 		when(withdrawPointService.withdraw(any(Customer.class), anyList())).thenReturn(orderItems);
 
 		// When
-		Order order = new Order(customer, cartItems, singleStoreOrderValidator, stockRequester, priceChecker,
-			withdrawPointService, fixedDateTime.now());
+		Order order = orderFactory.createOrder(customer, cartItems);
 
 		// Then
 		assertEquals(orderItems, order.getOrderItems());

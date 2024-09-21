@@ -15,6 +15,7 @@ import camp.woowak.lab.menu.domain.MenuCategory;
 import camp.woowak.lab.menu.repository.MenuCategoryRepository;
 import camp.woowak.lab.menu.repository.MenuRepository;
 import camp.woowak.lab.order.domain.Order;
+import camp.woowak.lab.order.domain.OrderFactory;
 import camp.woowak.lab.order.domain.PriceChecker;
 import camp.woowak.lab.order.domain.SingleStoreOrderValidator;
 import camp.woowak.lab.order.domain.StockRequester;
@@ -103,12 +104,14 @@ public abstract class StoreDummiesFixture {
 		for (int i = 0; i < store.size(); i++) {
 			Store s = store.get(i);
 			SingleStoreOrderValidator singleStoreOrderValidator = new TestSingleStoreOrderValidator(s, storeRepository);
+
+			OrderFactory orderFactory = new OrderFactory(singleStoreOrderValidator,
+				new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
+				new TestWithdrawPointService(payAccountRepository), LocalDateTime::now);
 			for (int j = 0; j < orderCount[i]; j++) {
 				Customer customer = dummyCustomers.get(
 					new Random(System.currentTimeMillis()).nextInt(dummyCustomers.size()));
-				Order order = new Order(customer, new ArrayList<>(), singleStoreOrderValidator,
-					new StockRequester(menuRepository, menuStockCacheService), new TestPriceChecker(menuRepository),
-					new TestWithdrawPointService(payAccountRepository), LocalDateTime.now());
+				Order order = orderFactory.createOrder(customer, new ArrayList<>());
 				orders.add(order);
 			}
 		}

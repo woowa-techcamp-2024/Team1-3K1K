@@ -5,18 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import camp.woowak.lab.cart.domain.vo.CartItem;
 import camp.woowak.lab.customer.domain.Customer;
-import camp.woowak.lab.menu.exception.NotEnoughStockException;
 import camp.woowak.lab.order.domain.vo.OrderItem;
-import camp.woowak.lab.order.exception.EmptyCartException;
-import camp.woowak.lab.order.exception.MinimumOrderPriceNotMetException;
-import camp.woowak.lab.order.exception.MultiStoreOrderException;
-import camp.woowak.lab.order.exception.NotFoundMenuException;
-import camp.woowak.lab.payaccount.exception.InsufficientBalanceException;
-import camp.woowak.lab.payaccount.exception.NotFoundAccountException;
 import camp.woowak.lab.store.domain.Store;
-import camp.woowak.lab.store.exception.NotFoundStoreException;
 import camp.woowak.lab.vendor.domain.Vendor;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
@@ -54,37 +45,11 @@ public class Order {
 
 	private LocalDateTime createdAt;
 
-	/**
-	 * @throws EmptyCartException 카트가 비어 있는 경우
-	 * @throws NotFoundStoreException 가게가 조회되지 않는 경우
-	 * @throws MultiStoreOrderException 여러 가게의 메뉴를 주문한 경우
-	 * @throws NotEnoughStockException 메뉴의 재고가 부족한 경우
-	 * @throws NotFoundMenuException 주문한 메뉴가 조회되지 않는 경우
-	 * @throws MinimumOrderPriceNotMetException 가게의 최소 주문금액보다 적은 금액을 주문한 경우
-	 * @throws NotFoundAccountException 구매자의 계좌가 조회되지 않는 경우
-	 * @throws InsufficientBalanceException 구매자의 계좌에 잔액이 충분하지 않은 경우
-	 */
-	public Order(Customer requester, List<CartItem> cartItems,
-				 SingleStoreOrderValidator singleStoreOrderValidator,
-				 StockRequester stockRequester, PriceChecker priceChecker, WithdrawPointService withdrawPointService,
-				 LocalDateTime createdAt) {
-		Store store = singleStoreOrderValidator.check(cartItems);
-
-		List<CartItem> stockDecreaseSuccessCartItems = null;
-		try {
-			stockDecreaseSuccessCartItems = stockRequester.request(cartItems);
-			List<OrderItem> orderItems = priceChecker.check(store, cartItems);
-			withdrawPointService.withdraw(requester, orderItems);
-			this.requester = requester;
-			this.store = store;
-			this.orderItems = orderItems;
-			this.createdAt = createdAt;
-		} catch (Exception e) {
-			if (stockDecreaseSuccessCartItems != null) {
-				stockRequester.rollback(stockDecreaseSuccessCartItems);
-			}
-			throw e;
-		}
+	public Order(Customer requester, Store store, List<OrderItem> orderItems, LocalDateTime createdAt) {
+		this.requester = requester;
+		this.store = store;
+		this.orderItems = orderItems;
+		this.createdAt = createdAt;
 	}
 
 	public Customer getRequester() {
