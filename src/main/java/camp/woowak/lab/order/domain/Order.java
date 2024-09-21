@@ -45,8 +45,7 @@ public class Order {
 
 	private LocalDateTime createdAt;
 
-	public Order(Customer requester
-		, Store store, List<OrderItem> orderItems, LocalDateTime createdAt) {
+	public Order(Customer requester, Store store, List<OrderItem> orderItems, LocalDateTime createdAt) {
 		this.requester = requester;
 		this.store = store;
 		this.orderItems = orderItems;
